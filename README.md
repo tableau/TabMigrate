@@ -24,8 +24,21 @@ NOTE: You can also specify database IDs and Passwords to use when publishing you
 ```xml
 <!-- Example file that shows how credentials can be declared. This file can be used as part of site import to supply needed workbook and datasource credentials-->
 <xml>
-<credential contentType="workbook" contentProjectName="Test Site Import" contentName="test.twbx" dbUser="SimpleUser" dbPassword="q.123456" credentialIsEmbedded="false"> </credential>
-<credential contentType="datasource" contentProjectName="Test Site Import" contentName="test2.tds" dbUser="SimpleUser3" dbPassword="q.12345678"> </credential>
+     <credential 
+          contentType="workbook" 
+          contentProjectName="Test Site Import" 
+	      contentName="test.twbx" 
+		  dbUser="SimpleUser" 
+	      dbPassword="q.123456" 
+	      credentialIsEmbedded="false"> 
+     </credential>
+     <credential 
+	      contentType="datasource" 
+		  contentProjectName="Test Site Import" 
+		  contentName="test2.tds" 
+		  dbUser="SimpleUser3" 
+		  dbPassword="q.12345678"> 
+     </credential>
 </xml>
 ```
 
