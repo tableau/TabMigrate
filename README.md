@@ -21,11 +21,13 @@ Application: The application can be run in either interactive (UI) or command li
 (3)	Import content from your file system: You can bulk upload workbooks and datasources from your local file system into a Tableau Server site that you choose. This expects the same file system directory site export; file system directories are named for the Tableau Server projects that they will be published into.
 NOTE: You can also specify database IDs and Passwords to use when publishing your Workbooks and Data Sources. Workbooks with live database connections REQUIRE passwords to be included during publish. These are specified by listing the database credentials in an XML (text) file.  Example:
 
+```xml
 <!-- Example file that shows how credentials can be declared. This file can be used as part of site import to supply needed workbook and datasource credentials-->
 <xml>
 <credential contentType="workbook" contentProjectName="Test Site Import" contentName="test.twbx" dbUser="SimpleUser" dbPassword="q.123456" credentialIsEmbedded="false"> </credential>
 <credential contentType="datasource" contentProjectName="Test Site Import" contentName="test2.tds" dbUser="SimpleUser3" dbPassword="q.12345678"> </credential>
 </xml>
+```
 
 ### Safety tips? 
 The REST APIs used by this application allow you to upload, download, and otherwise modify your site’s content, workbooks, data sources, content tags, etc. So yes, it is certainly possible for you to overwrite existing content on server. A few tips:
