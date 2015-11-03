@@ -29,14 +29,14 @@ NOTE: You can also specify database IDs and Passwords to use when publishing you
 </xml>
 ```
 
-### Safety tips? 
+### Safety tips 
 The REST APIs used by this application allow you to upload, download, and otherwise modify your site’s content, workbooks, data sources, content tags, etc. So yes, it is certainly possible for you to overwrite existing content on server. A few tips:
 -	“Generate site inventory” – This option does not perform write/upload/delete actions on your site, it should be “read only” in its behavior. It should have no negative side effects and is a great way to learn about and explore the capabilities of the application.
 -	“Export site contents to local directory” – Be default, this option does not perform any write actions to your site and will be “read only” in its behavior. It downloads your Tableau Server site’s content to your local machines file system. NOTE: There are non-default options such as “[x] Remove tag from exported content” that will perform minor modifications your site’s content.
 -	“Upload from file system into site” – This certainly will modify content on the site you specify. If there is existing content with the same name as content being uploaded it will overwrite it. Before running this command against a site with existing content, we recommend you run it using an empty site to verify the expected behavior.
 -	To reduce the chance of accidently writing to the wrong site we recommend using a “site admin” (not system admin) account when possible. For best protection, the site admin account should only be a member of the single site you are uploading to.
 
-## Getting started with TabMigrate? (for developers)
+## Getting started with TabMigrate (for developers)
 Source code: The project is written in C# and should load into Visual Studio 2013 or newer, including the free Visual Studio Express for Desktop.             
 
 ### What’s particularly useful in the source code? 
