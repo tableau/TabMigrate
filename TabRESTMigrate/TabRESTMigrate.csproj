@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3E515DF4-BB4A-44D2-9BA8-2D41BF7C7444}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TabRESTMigrate</RootNamespace>
+    <AssemblyName>TabRESTMigrate</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>C:\Users\ISalmre\Desktop\SV_Export\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <WebPage>publish.htm</WebPage>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>9</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>8042C2653533123FF8A990A60D85367DAA6D3A4D</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>OnlineContentDownloader_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RESTHelpers\CredentialManager_static.cs" />
+    <Compile Include="RESTHelpers\CredentialManager.Credential.cs" />
+    <Compile Include="RESTHelpers\CredentialManager.cs" />
+    <Compile Include="RESTHelpers\FilterProjectMembership.cs" />
+    <Compile Include="RESTHelpers\IProjectsList.cs" />
+    <Compile Include="RESTHelpers\CredentialXmlHelper.cs" />
+    <Compile Include="RESTHelpers\FilterTagSet.cs" />
+    <Compile Include="RESTHelpers\ServerVersion.cs" />
+    <Compile Include="RESTHelpers\ServerProtocol.cs" />
+    <Compile Include="RESTRequests\DownloadGroupsList.cs" />
+    <Compile Include="RESTRequests\DownloadUsersListInGroup.cs" />
+    <Compile Include="RESTRequests\DownloadUsersListBase.cs" />
+    <Compile Include="RESTRequests\SendDeleteDatasourceTag.cs" />
+    <Compile Include="RESTRequests\SendDeleteWorkbookTag.cs" />
+    <Compile Include="ServerData\ITagSetInfo.cs" />
+    <Compile Include="ServerData\SiteGroup.cs" />
+    <Compile Include="ServerData\SiteTag.cs" />
+    <Compile Include="ServerData\SiteTagsSet.cs" />
+    <Compile Include="ServerData\SiteDocumentBase.cs" />
+    <Compile Include="TaskManager\CommandLineParser_static.cs" />
+    <Compile Include="TaskManager\CommandLineParser.cs" />
+    <Compile Include="FilesLogging\CsvDataGenerator.cs" />
+    <Compile Include="FilesLogging\CsvRowValuePairs.cs" />
+    <Compile Include="FilesLogging\CustomerSiteInventory.cs" />
+    <Compile Include="FilesLogging\CustomerManualActionManager.cs" />
+    <Compile Include="ServerData\IHasProjectId.cs" />
+    <Compile Include="RESTRequests\SendCreateProject.cs" />
+    <Compile Include="RESTHelpers\DownloadListHelper.cs" />
+    <Compile Include="TaskManager\TaskMaster_static.cs" />
+    <Compile Include="RESTHelpers\TableauServerWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RESTHelpers\ProjectFindCreateHelper.cs" />
+    <Compile Include="RESTHelpers\UploadBehaviorProjects.cs" />
+    <Compile Include="RESTHelpers\XmlHelper.cs" />
+    <Compile Include="TaskManager\TaskMasterOptions_static.cs" />
+    <Compile Include="TaskManager\TaskMasterOptions.cs" />
+    <Compile Include="RESTHelpers\DownloadPayloadTypeHelper.cs" />
+    <Compile Include="UI\FormSiteExportImport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FormSiteExportImport.Designer.cs">
+      <DependentUpon>FormSiteExportImport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ServerData\SiteProject.cs" />
+    <Compile Include="ServerData\SiteDatasource.cs" />
+    <Compile Include="ServerData\SiteUser.cs" />
+    <Compile Include="ServerData\SiteInfo.cs" />
+    <Compile Include="RESTHelpers\ITableauServerSiteInfo.cs" />
+    <Compile Include="WorkbookTransforms\TwbDataSourceEditor.cs" />
+    <Compile Include="WorkbookTransforms\TwbxDataSourceEditor.cs" />
+    <Compile Include="RESTRequests\DownloadProjectsList.cs" />
+    <Compile Include="RESTRequests\UploadWorkbooks.cs" />
+    <Compile Include="RESTHelpers\MimeWriterBase.cs" />
+    <Compile Include="RESTHelpers\MimeWriterFileUploadChunk.cs" />
+    <Compile Include="RESTHelpers\MimeWriterXml.cs" />
+    <Compile Include="RESTRequests\DownloadDatasourcesList.cs" />
+    <Compile Include="RESTRequests\UploadFile.cs" />
+    <Compile Include="RESTRequests\UploadDatasources.cs" />
+    <Compile Include="RESTRequests\DownloadDatasources.cs" />
+    <Compile Include="RESTRequests\DownloadUsersList.cs" />
+    <Compile Include="RESTRequests\DownloadSiteInfo.cs" />
+    <Compile Include="RESTRequests\SendPostLogInCommand.cs" />
+    <Compile Include="FilesLogging\Logger.cs" />
+    <Compile Include="TaskManager\TaskMaster.cs" />
+    <Compile Include="FilesLogging\TaskStatusLogs.cs" />
+    <Compile Include="RESTHelpers\TableauServerSignedInRequestBase.cs" />
+    <Compile Include="RESTRequests\DownloadWorkbooks.cs" />
+    <Compile Include="RESTRequests\DownloadWorkbooksList.cs" />
+    <Compile Include="RESTRequests\TableauServerSignIn.cs" />
+    <Compile Include="RESTHelpers\TableauServerRequestBase.cs" />
+    <Compile Include="ServerData\SiteWorkbook.cs" />
+    <Compile Include="FilesLogging\AppDiagnostics.cs" />
+    <Compile Include="FilesLogging\FileIOHelper.cs" />
+    <Compile Include="RESTHelpers\TableauServerUrls.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="UI\FormSiteExportImport.resx">
+      <DependentUpon>FormSiteExportImport.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="_SampleFiles\CredentialExample.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
