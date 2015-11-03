@@ -16,9 +16,9 @@ This tool offers a lightweight approach built on top of Tableau Server’s REST 
 You do not need to download and compile the source code to use TabMigrate. Those interested in simply running the application can download and unzip the “setup” folder. Running setup.exe will install the TabMigrate application on your Windows machine. 
 
 Application: The application can be run in either interactive (UI) or command line mode. When running in interactive mode the application will also show you the command line for performing all of the actions, making it easy to automate.  The application UI offers three top level options: 
-1. Generate an inventory of your site: This downloads information about your site into a *.csv file that can easily be loaded into Tableau Desktop or Excel.
-2. Export content from your site: You can either export your entire site (all the Workbooks and Data Sources), or choose an individual Project whose contents you want to export. Export will create file system directories for “workbooks” and “datasources” and download your sites content into subdirectories named after each Tableau Server site you export.
-3. Import content from your file system: You can bulk upload workbooks and datasources from your local file system into a Tableau Server site that you choose. This expects the same file system directory site export; file system directories are named for the Tableau Server projects that they will be published into.
+   1. Generate an inventory of your site: This downloads information about your site into a *.csv file that can easily be loaded into Tableau Desktop or Excel.
+   2. Export content from your site: You can either export your entire site (all the Workbooks and Data Sources), or choose an individual Project whose contents you want to export. Export will create file system directories for “workbooks” and “datasources” and download your sites content into subdirectories named after each Tableau Server site you export.
+   3. Import content from your file system: You can bulk upload workbooks and datasources from your local file system into a Tableau Server site that you choose. This expects the same file system directory site export; file system directories are named for the Tableau Server projects that they will be published into.
 NOTE: You can also specify database IDs and Passwords to use when publishing your Workbooks and Data Sources. Workbooks with live database connections REQUIRE passwords to be included during publish. These are specified by listing the database credentials in an XML (text) file.  Example:
 
 ```xml
@@ -55,7 +55,7 @@ Source code: The project is written in C# and should load into Visual Studio 201
 ### What’s particularly useful in the source code? 
 The code demonstrates complex aspects of both the REST API and moving content between sites/servers. Someone working with the code will have a great base for calling any Tableau REST APIs from C#.
 Examples of things that are hard without detailed working code:
--  Using the REST api to sign in to your Tableau Server or site and including the session token in all subsequent REST API calls
+- Using the REST api to sign in to your Tableau Server or site and including the session token in all subsequent REST API calls
 - Packaging MIME messages to the REST API can be complex and challenging to debug
 - Downloading and uploading both compressed *.twbx/*.tdsx and text *.twb/*.tds Workbooks and Data Sources requires interpretation of server response types
 - Uploading large files in chunks requires exact formatting of data sent to the server
