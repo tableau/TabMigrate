@@ -13,7 +13,8 @@ This tool offers a lightweight approach built on top of Tableau Server’s REST 
 - It generates XML files for the export and import operations, allowing you to quickly repeat or modify these steps.
 
 ## Getting started with TabMigrate (for non-developers)
-You do not need to download and compile the source code to use TabMigrate. Those interested in simply running the application can download and unzip the “setup” folder. Running setup.exe will install the TabMigrate application on your Windows machine. 
+You do not need to download and compile the source code to use TabMigrate. Those interested in simply running the application can download and unzip the setup from https://github.com/tableau/TabMigrate/releases. 
+Running setup.exe will install the TabMigrate application on your Windows machine. 
 
 Application: The application can be run in either interactive (UI) or command line mode. When running in interactive mode the application will also show you the command line for performing all of the actions, making it easy to automate.  The application UI offers three top level options: 
    1. Generate an inventory of your site: This downloads information about your site into a *.csv file that can easily be loaded into Tableau Desktop or Excel.
