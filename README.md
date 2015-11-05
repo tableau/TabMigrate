@@ -10,7 +10,7 @@ By comparison, Tableau Server’s tabAdmin tool offers a full “site import and
 This tool offers a lightweight approach built on top of Tableau Server’s REST APIs. 
 - It allows the contents (Workbooks, Data Sources, and Projects) to be downloaded from a Tableau Server site into your local file system.
 - It allows this file system content to be transformed and uploaded back into another Tableau Server or Tableau Server site, along-side existing content.
-- It generates XML files for the export and import operations, allowing you to quickly repeat or modify these steps.
+- It generates command line arguments for the export and import operations, allowing you to quickly repeat or modify these steps.
 
 ## Getting started with TabMigrate (for non-developers)
 You do not need to download and compile the source code to use TabMigrate. Those interested in simply running the application can download and unzip the setup from https://github.com/tableau/TabMigrate/releases. 
