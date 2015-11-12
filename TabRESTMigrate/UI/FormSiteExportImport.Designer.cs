@@ -548,7 +548,6 @@
             this.txtExportOnlyTagged.Name = "txtExportOnlyTagged";
             this.txtExportOnlyTagged.Size = new System.Drawing.Size(200, 22);
             this.txtExportOnlyTagged.TabIndex = 94;
-            this.txtExportOnlyTagged.Text = "NYI";
             // 
             // label12
             // 
