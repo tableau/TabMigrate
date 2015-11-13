@@ -183,7 +183,7 @@ namespace OnlineContentDownloader
                 out commandLineParsed);
 
             //Show the user the command line, so that they can copy/paste and run it
-            textSiteExportCommandLine.Text = GetApplicaitonPath() + " " + commandLineAsText;
+            textSiteExportCommandLine.Text = PathHelper.GetApplicaitonPath() + " " + commandLineAsText;
 
             //=====================================================================
             //Create the task
@@ -280,7 +280,7 @@ namespace OnlineContentDownloader
                  out commandLineParsed);
 
             //Show the user the command line, so that they can copy/paste and run it
-            txtSiteImportCommandLineExample.Text = GetApplicaitonPath() + " " + commandLineAsText;
+            txtSiteImportCommandLineExample.Text = PathHelper.GetApplicaitonPath() + " " + commandLineAsText;
 
             //=====================================================================
             //Create the task
@@ -344,12 +344,13 @@ namespace OnlineContentDownloader
                 isSystemAdmin,
                 localPathForLogFile,
                 localPathForErrorsFile,
+                chkGenerateInventoryTwb.Checked,
                 chkVerboseLog.Checked,
                 out commandLineAsText,
                 out commandLineParsed);
 
             //Show the user the command line, so that they can copy/paste and run it
-            txtInventoryExampleCommandLine.Text = GetApplicaitonPath() + " " + commandLineAsText;
+            txtInventoryExampleCommandLine.Text = PathHelper.GetApplicaitonPath() + " " + commandLineAsText;
 
 
             //=====================================================================
@@ -378,16 +379,6 @@ namespace OnlineContentDownloader
         }
 
 
-        /// <summary>
-        /// Path to the applicaiton
-        /// </summary>
-        /// <returns></returns>
-        private string GetApplicaitonPath()
-        {
-            //Gets the path to the application
-//            return System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
-            return System.Reflection.Assembly.GetExecutingAssembly().Location;
-        }
         /// <summary>
         /// TRUE if the applicaiton is running in interactive mode
         /// FALSE if the application is running in automated mode and should not interrupt the user in any way
@@ -511,7 +502,15 @@ namespace OnlineContentDownloader
             //If the job was to take a site inventory,show the report
             if (taskMaster.JobName == TaskMaster.JobName_SiteInventory)
             {
-                string inventoryFile = taskMaster.PathToSiteInventoryReport;
+                //First, see if we have a generated *.twb file
+                string inventoryFile = taskMaster.PathToSiteInventoryReportTwb;
+                //Second, if we don't have a *.twb file, see if we have a *.csv file of the raw data
+                if(string.IsNullOrWhiteSpace(inventoryFile))
+                {
+                    inventoryFile = taskMaster.PathToSiteInventoryReportCsv;
+                }                    
+
+                //If we have either file, shell it    
                 if (!string.IsNullOrWhiteSpace(inventoryFile))
                 {
                     AttemptToShellFile(inventoryFile);

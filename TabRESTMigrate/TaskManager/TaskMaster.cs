@@ -16,19 +16,32 @@ internal partial class TaskMaster
     private readonly TaskStatusLogs _statusLog = null;
     private readonly TaskMasterOptions _taskOptions;
     private readonly CustomerManualActionManager _manualActions; //Tracks the list of manual actions the customer will need to perform after the import/export
-    private string _pathGeneratedSiteInventoryReport; //If non-null, it indicates we have generated a site inventory report
+    private string _pathGeneratedSiteInventoryReportCsv; //If non-null, it indicates we have generated a site inventory report
+    private string _pathGeneratedSiteInventoryReportTwb; //If non-null, it indicates we have generated a site inventory report
     private string _pathGeneratedManualStepsReport; //If non-null, it indicates we have generated a report
 
     /// <summary>
     /// If there was a task to produce a site inventory report, this property will contain the path to that report
     /// </summary>
-    public string PathToSiteInventoryReport
+    public string PathToSiteInventoryReportCsv
     {
         get
         {
-            return _pathGeneratedSiteInventoryReport;
+            return _pathGeneratedSiteInventoryReportCsv;
         }
     }
+
+    /// <summary>
+    /// If there was a task to produce a site inventory report, this property will contain the path to that report
+    /// </summary>
+    public string PathToSiteInventoryReportTwb
+    {
+        get
+        {
+            return _pathGeneratedSiteInventoryReportTwb;
+        }
+    }
+
 
     /// <summary>
     /// If there were manual steps recorded in a CSV file, this path will point to that file
@@ -772,6 +785,12 @@ internal partial class TaskMaster
         if(!string.IsNullOrWhiteSpace(inventoryFile))
         {
             Execute_GenerateSiteInventoryFile(inventoryFile);
+
+            //Do we want to generate a TWB file that uses the inventory file
+            if(taskOptions.IsOptionSet(TaskMasterOptions.Option_GenerateInventoryTwb))
+            {
+                Execute_GenerateSiteInventoryFile_Twb(inventoryFile);
+            }
         }
 
         //===================================================================================
@@ -909,6 +928,46 @@ internal partial class TaskMaster
     }
 
     /// <summary>
+    /// Creates a TWB file that points to the CSV file
+    /// </summary>
+    /// <param name="pathReportCsv"></param>
+    private void Execute_GenerateSiteInventoryFile_Twb(string pathReportCsv)
+    {
+        try
+        {
+            //Calculate the name/path for the output TWB.  It will match the name/path of the CSV file
+            string pathTwbOut = PathHelper.GetInventoryTwbPathMatchingCsvPath(pathReportCsv);
+            this.StatusLog.AddStatusHeader("Generating Tableau Workbook " + pathTwbOut);
+
+
+            var twbGenerateFromTemplate = new TwbReplaceCSVReference(
+                PathHelper.GetInventoryTwbTemplatePath(),   //*.twb we are using as our template
+                pathTwbOut,                                 //Output *.twb we are generating
+                "siteInventory",                            //Datasource name in tempalte workbook
+                pathReportCsv,                              //CSV file we want to associate with the datasource above
+                _statusLog);
+
+            //Transform the template into the output file
+            bool successRemapping = twbGenerateFromTemplate.Execute();
+            if (!successRemapping)
+            {
+                this.StatusLog.AddError("Error generating site inventory TWB. No data source could be found to remap");
+            }
+
+
+            //Store it as our output
+            if (File.Exists(pathTwbOut))
+            {
+                _pathGeneratedSiteInventoryReportTwb = pathTwbOut;
+            }
+        }
+        catch(Exception ex)
+        {
+            StatusLog.AddError("Error generating Twb file: " + ex.ToString());
+        }
+    }
+
+    /// <summary>
     /// Generate the status report of the site's inventory
     /// </summary>
     /// <param name="pathReport"></param>
@@ -926,7 +985,7 @@ internal partial class TaskMaster
             reportGenerator.GenerateCSVFile(pathReport);
 
             //Store the path to the report we just generated
-            _pathGeneratedSiteInventoryReport = pathReport;
+            _pathGeneratedSiteInventoryReportCsv = pathReport;
         }
         catch (Exception ex)
         {

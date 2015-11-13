@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\ISalmre\Desktop\SV_Export\</PublishUrl>
+    <PublishUrl>C:\Users\ISalmre\Desktop\SV_Export\setup-here\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -23,8 +23,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <WebPage>publish.htm</WebPage>
-    <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>9</ApplicationRevision>
+    <ApplicationRevision>11</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -81,6 +80,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FilesLogging\PathHelper.cs" />
     <Compile Include="RESTHelpers\CredentialManager_static.cs" />
     <Compile Include="RESTHelpers\CredentialManager.Credential.cs" />
     <Compile Include="RESTHelpers\CredentialManager.cs" />
@@ -130,6 +130,8 @@
     <Compile Include="ServerData\SiteUser.cs" />
     <Compile Include="ServerData\SiteInfo.cs" />
     <Compile Include="RESTHelpers\ITableauServerSiteInfo.cs" />
+    <Compile Include="WorkbookTransforms\TableauPersistFileHelper.cs" />
+    <Compile Include="WorkbookTransforms\TwbReplaceCSVReference.cs" />
     <Compile Include="WorkbookTransforms\TwbDataSourceEditor.cs" />
     <Compile Include="WorkbookTransforms\TwbxDataSourceEditor.cs" />
     <Compile Include="RESTRequests\DownloadProjectsList.cs" />
@@ -182,6 +184,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="_SampleFiles\SiteInventory.twb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

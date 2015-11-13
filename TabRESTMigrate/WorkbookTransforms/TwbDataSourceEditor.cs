@@ -4,6 +4,11 @@ using System.Text;
 using System.IO.Compression;
 using System.IO;
 using System.Xml;
+
+/// <summary>
+/// Re-Maps all of the references to published datasources inside a Workbook to point to a different server/site.
+/// This transformation is needed to successfully copy a Workbook from one site/server to another site/server.
+/// </summary>
 class TwbDataSourceEditor
 {
     private readonly string _pathToTwbInput;
@@ -23,6 +28,10 @@ class TwbDataSourceEditor
         _statusLog = statusLog;
     }
 
+
+    /// <summary>
+    /// Run the file transformation and output the remapped file
+    /// </summary>
     public void Execute()
     {
         //4. Load XML for *.twb file
@@ -32,28 +41,11 @@ class TwbDataSourceEditor
         //5. Look for Data Sources that are 'sqlproxy'
         //6. Remap server-path to point to correct server/site
         RemapDataServerReferences(xmlDoc, _serverMapInfo, _statusLog);
+        //Remap global XML references to the server
         RemapWorkbookGlobalReferences(xmlDoc, _serverMapInfo, _statusLog);
 
-        //Remap global XML references to the server
-
-        //[2015-03-20]   Presently Server will error if it gets a TWB (XML) document uploaded that has a Byte Order Marker
-        //                  (this will however work if the TWB is within a TWBX).  
-        //                  To accomodate we need to write out XML without a BOM
-        var utf8_noBOM = new System.Text.UTF8Encoding(false);
-        using (var textWriter = new XmlTextWriter(_pathToTwbOutput, utf8_noBOM))                   
-        {
-            xmlDoc.WriteTo(textWriter);
-            textWriter.Close();
-        }
-
-        //Write out the modified XML
-//        var textWriter = new XmlTextWriter(_pathToTwbOutput, Encoding.UTF8);  //[2015-03-20] FAILS in TWB uploads (works in TWBX uploads) because Server errrors if it hits the byte order marker
-//        var textWriter = new XmlTextWriter(_pathToTwbOutput, Encoding.ASCII); //[2015-03-20] Succeeds; but too limiting.  We want UTF-8
-//        using (textWriter)
-//        {
-//            xmlDoc.WriteTo(textWriter);
-//            textWriter.Close();
-//        }
+        //Write out the transformed XML document
+        TableauPersistFileHelper.WriteTableauXmlFile(xmlDoc, _pathToTwbOutput);
     }
 
     /// <summary>

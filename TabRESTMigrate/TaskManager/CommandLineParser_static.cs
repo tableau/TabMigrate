@@ -24,9 +24,10 @@ partial class CommandLineParser
     public const string Parameter_DBCredentialsFile     = "-dbCredentialsFile";   //If specified, this points to the file we should get upload DB credentials from
     public const string Parameter_LogFile               = "-logFile";             //File for log output
     public const string Parameter_LogVerbose            = "-logVerbose";          //Verbose logging level
+    public const string Parameter_GenerateInventoryTwb  = "-generateInventoryTwb";//Create a Tableau Workbook with inventory data
     public const string Parameter_ErrorsFile            = "-errorFile";           //File for error output
     public const string Parameter_ManualStepsFile       = "-manualStepsFile";     //File for recording manual steps for tasks that could not be automatically completed
-    public const string Parameter_InventoryOutputFile = "-inventoryOutputFile";   //Where the inventory output goes
+    public const string Parameter_InventoryOutputFile   = "-inventoryOutputFile"; //Where the inventory output goes
     public const string Parameter_ExportDirectory       = "-exportDirectory";     //Where the site gets exported to
     public const string Parameter_ImportDirectory       = "-importDirectory";     //Where the site gets imported from
     public const string Parameter_ExitWhenDone          = "-exitWhenDone";        //When running as command line, if 'true' we will exit when the work is done
@@ -78,6 +79,7 @@ partial class CommandLineParser
         bool isSystemAdmin,
         string pathToLogFile,
         string pathToErrorsFile,
+        bool generateTwbFile,
         bool logVerbose,
         out string commandLineOut,
         out CommandLineParser parsedCommandLine)
@@ -88,12 +90,18 @@ partial class CommandLineParser
 
         var sb = new StringBuilder();
         helper_AppendParameter(arguments, sb, Parameter_Command              , ParameterValue_Command_Inventory); //Command is 'take inventory'
-        helper_AppendParameter(arguments, sb, Parameter_FromUserId, userName);
-        helper_AppendParameter(arguments, sb, Parameter_FromUserPassword, password, uiPassword);
-        helper_AppendParameter(arguments, sb, Parameter_InventoryOutputFile, pathToOutputFile);
+        helper_AppendParameter(arguments, sb, Parameter_FromUserId           , userName);
+        helper_AppendParameter(arguments, sb, Parameter_FromUserPassword     , password, uiPassword);
+        helper_AppendParameter(arguments, sb, Parameter_InventoryOutputFile  , pathToOutputFile);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteUrl          , siteUrl);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteIsSystemAdmin, helper_BoolToText(isSystemAdmin));
         helper_AppendParameter(arguments, sb, Parameter_LogVerbose           , helper_BoolToText(logVerbose));
+
+        //Do we want to generate a *.twb file that goes along with the inventory file
+        if(generateTwbFile)
+        {
+            helper_AppendParameter(arguments, sb, Parameter_GenerateInventoryTwb, helper_BoolToText(true));
+        }
 
 
         //Log file?

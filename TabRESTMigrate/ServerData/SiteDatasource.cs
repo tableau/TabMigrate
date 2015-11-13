@@ -13,11 +13,6 @@ class SiteDatasource : SiteDocumentBase
     public readonly string Type;
 
     /// <summary>
-    /// Any developer/diagnostic notes we want to indicate
-    /// </summary>
-    public readonly string DeveloperNotes;
-
-    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="datasourceNode"></param>

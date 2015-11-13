@@ -45,12 +45,13 @@ internal partial class TaskMaster
         if(commandType == CommandLineParser.ParameterValue_Command_Inventory)
         {
             return helper_CreateTaskMaster_SiteInventory(
-                commandLine.GetParameterValue(CommandLineParser.Parameter_InventoryOutputFile),
-                commandLine.GetParameterValue(CommandLineParser.Parameter_FromSiteUrl),
-                commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserId),
-                commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserPassword),
-                commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromSiteIsSystemAdmin),
-                taskOptions
+                commandLine.GetParameterValue(CommandLineParser.Parameter_InventoryOutputFile)
+                ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromSiteUrl)
+                ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserId)
+                ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserPassword)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromSiteIsSystemAdmin)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_GenerateInventoryTwb, false)
+                ,taskOptions
                 );
         }
         else if (commandType == CommandLineParser.ParameterValue_Command_Export)
@@ -70,14 +71,14 @@ internal partial class TaskMaster
         else if (commandType == CommandLineParser.ParameterValue_Command_Import)
         {
             return helper_CreateTaskMaster_SiteImport(
-                commandLine.GetParameterValue(CommandLineParser.Parameter_ImportDirectory),
-                commandLine.GetParameterValue(CommandLineParser.Parameter_ToSiteUrl),
-                commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserId),
-                commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserPassword),
-                commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ToSiteIsSystemAdmin),
-                commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_RemapDataserverReferences),
-                commandLine.GetParameterValue(CommandLineParser.Parameter_DBCredentialsFile),
-                taskOptions
+                commandLine.GetParameterValue(CommandLineParser.Parameter_ImportDirectory)
+                ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToSiteUrl)
+                ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserId)
+                ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserPassword)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ToSiteIsSystemAdmin)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_RemapDataserverReferences)
+                ,commandLine.GetParameterValue(CommandLineParser.Parameter_DBCredentialsFile)
+                ,taskOptions
                 );
         }
 
@@ -101,6 +102,7 @@ internal partial class TaskMaster
         string userName, 
         string password,
         bool isSystemAdmin,
+        bool generateTwbFile,
         TaskMasterOptions options)
     {
         //If we were passed in no existing options, then add them
@@ -125,6 +127,13 @@ internal partial class TaskMaster
             options.AddOption(TaskMasterOptions.Option_GetSiteInfo);
             options.AddOption(TaskMasterOptions.Option_GetGroupsList);
         }
+
+        //Do we want to create a Tableau Workbook that uses the inventory CSV file?
+        if(generateTwbFile)
+        {
+            options.AddOption(TaskMasterOptions.Option_GenerateInventoryTwb);
+        }
+
 
         //Generate the URLs mapping class
         var onlineUrls = TableauServerUrls.FromContentUrl(urlToServerSite, TaskMasterOptions.RestApiReponsePageSizeDefault);

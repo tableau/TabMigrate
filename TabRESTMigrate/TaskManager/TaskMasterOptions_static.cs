@@ -25,6 +25,7 @@ public partial class TaskMasterOptions
     public const string Option_GetSiteUsers = "SiteUsers";
     public const string Option_RemapWorkbookReferencesOnUpload = "UploadRemapWorkbookReferences";
     public const string Option_DBCredentialsPath = "DBCredentialsFile";
+    public const string Option_GenerateInventoryTwb = "GenerateInventoryTwb";
 
     //Take values associated with the parameters
     public const string OptionParameter_PathUploadFrom = "PathUploadFrom";

@@ -70,6 +70,7 @@
             this.txtExportSingleProject = new System.Windows.Forms.TextBox();
             this.btnLinkExportSiteCommandLine = new System.Windows.Forms.LinkLabel();
             this.panelInventorySite = new System.Windows.Forms.Panel();
+            this.chkGenerateInventoryTwb = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -617,6 +618,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelInventorySite.BackColor = System.Drawing.Color.DarkSalmon;
             this.panelInventorySite.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelInventorySite.Controls.Add(this.chkGenerateInventoryTwb);
             this.panelInventorySite.Controls.Add(this.label8);
             this.panelInventorySite.Controls.Add(this.label7);
             this.panelInventorySite.Controls.Add(this.label6);
@@ -632,6 +634,17 @@
             this.panelInventorySite.Name = "panelInventorySite";
             this.panelInventorySite.Size = new System.Drawing.Size(1150, 287);
             this.panelInventorySite.TabIndex = 57;
+            // 
+            // chkGenerateInventoryTwb
+            // 
+            this.chkGenerateInventoryTwb.AutoSize = true;
+            this.chkGenerateInventoryTwb.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkGenerateInventoryTwb.Location = new System.Drawing.Point(525, 85);
+            this.chkGenerateInventoryTwb.Name = "chkGenerateInventoryTwb";
+            this.chkGenerateInventoryTwb.Size = new System.Drawing.Size(210, 21);
+            this.chkGenerateInventoryTwb.TabIndex = 90;
+            this.chkGenerateInventoryTwb.Text = "Generate Tableau Workbook";
+            this.chkGenerateInventoryTwb.UseVisualStyleBackColor = true;
             // 
             // label8
             // 
@@ -809,8 +822,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1274, 615);
-            this.Controls.Add(this.panelExportSite);
             this.Controls.Add(this.panelInventorySite);
+            this.Controls.Add(this.panelExportSite);
             this.Controls.Add(this.panelTopSplitter);
             this.Controls.Add(this.comboBoxChooseAction);
             this.Controls.Add(this.panelRunCommandLine);
@@ -898,6 +911,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox chkExportRemoveExportTag;
+        private System.Windows.Forms.CheckBox chkGenerateInventoryTwb;
     }
 }
 

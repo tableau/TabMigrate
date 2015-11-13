@@ -11,11 +11,12 @@ class SiteWorkbook : SiteDocumentBase
     //Note: [2015-10-28] Datasources presently don't return this information, so we need to make this workbook specific
     public readonly string ContentUrl;
 
+    /*
     /// <summary>
     /// Any developer/diagnostic notes we want to indicate
     /// </summary>
     public readonly string DeveloperNotes;
-
+    */
     /// <summary>
     /// Constructor
     /// </summary>
