@@ -1,4 +1,4 @@
-# TabMigrate
+﻿# TabMigrate
 
 
 ## What is TabMigrate?
@@ -11,6 +11,13 @@ This tool offers a lightweight approach built on top of Tableau Server’s REST 
 - It allows the contents (Workbooks, Data Sources, and Projects) to be downloaded from a Tableau Server site into your local file system.
 - It allows this file system content to be transformed and uploaded back into another Tableau Server or Tableau Server site, along-side existing content.
 - It generates command line arguments for the export and import operations, allowing you to quickly repeat or modify these steps.
+
+## Versions of Tableau Server
+TabMigrate was written and tested with version 9.1 of Tableau Server. 
+- It should work in all Tableau Server versions >= 9.1.  
+- The application also "probably" works in Tableau Server 9.0, but this has not been tested.
+- Moving forward, the application will be maintained and gain new features with each released version of Tableau Server, as the REST API set expands. If you need older versions, you can download the previous releases.
+
 
 ## Getting started with TabMigrate (for non-developers)
 You do not need to download and compile the source code to use TabMigrate. Those interested in simply running the application can download and unzip the setup from https://github.com/tableau/TabMigrate/releases. 
