@@ -28,6 +28,7 @@ class TableauServerUrls : ITableauServerSiteInfo
     /// Template for URL to acess workbooks list
     /// </summary>
     private readonly string _urlListWorkbooksForUserTemplate;
+    private readonly string _urlListWorkbookConnectionsTemplate;
     private readonly string _urlListDatasourcesTemplate;
     private readonly string _urlListProjectsTemplate;
     private readonly string _urlListGroupsTemplate;
@@ -79,6 +80,7 @@ class TableauServerUrls : ITableauServerSiteInfo
         this.ServerUrlWithProtocol                 = serverNameWithProtocol;
         this.UrlLogin                              = serverNameWithProtocol + "/api/2.0/auth/signin";
         this._urlListWorkbooksForUserTemplate      = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/users/{{iwsUserId}}/workbooks?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListWorkbookConnectionsTemplate   = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}/connections";
         this._urlListDatasourcesTemplate           = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/datasources?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListProjectsTemplate              = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/projects?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListGroupsTemplate                = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/groups?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
@@ -247,7 +249,6 @@ class TableauServerUrls : ITableauServerSiteInfo
     /// </summary>
     /// <param name="siteUrlSegment"></param>
     /// <returns></returns>
-//    public string Url_WorkbooksList(TableauServerSignIn session, OnlineUser user)
     public string Url_WorkbooksListForUser(TableauServerSignIn session, string userId, int pageSize, int pageNumber = 1)
     {
         string workingText = _urlListWorkbooksForUserTemplate;
@@ -255,6 +256,21 @@ class TableauServerUrls : ITableauServerSiteInfo
         workingText = workingText.Replace("{{iwsUserId}}", userId);
         workingText = workingText.Replace("{{iwsPageSize}}", pageSize.ToString());
         workingText = workingText.Replace("{{iwsPageNumber}}", pageNumber.ToString());
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for the Workbooks list
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_WorkbookConnectionsList(TableauServerSignIn session, string workbookId)
+    {
+        string workingText = _urlListWorkbookConnectionsTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsWorkbookId}}", workbookId);
         ValidateTemplateReplaceComplete(workingText);
 
         return workingText;

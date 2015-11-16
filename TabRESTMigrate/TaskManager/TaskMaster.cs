@@ -398,6 +398,48 @@ internal partial class TaskMaster
         }
     }
 
+
+    /// <summary>
+    /// Downloads the connections list for each workbook specified
+    /// </summary>
+    /// <param name="serverLogin"></param>
+    /// <param name="serverContent"></param>
+    private void Execute_DownloadWorkbooksConnections(
+        TableauServerSignIn serverLogin, 
+        IEnumerable<SiteWorkbook> serverContent)
+    {
+        _statusLog.AddStatusHeader("Download each workbooks connections list");
+        if(serverContent == null)
+        {
+            _statusLog.AddError("Null workbooks list");
+            return;
+        }
+
+        //For each content item attempt to download it's list of connections
+        foreach(var contentItem in serverContent)
+        {
+            try
+            {
+                //Request the list of data connections embedded in the content
+                var wbDownloadConnections = new DownloadWorkbookConnections(
+                    _onlineUrls,
+                    serverLogin,
+                    contentItem.Id);
+                wbDownloadConnections.ExecuteRequest();
+
+                //Put it into the content object
+                //Note: We are using a dedicated interface expose the Edit/Set method because most people using the 
+                //      object only want to read the data
+                ((IEditDataConnectionsSet) contentItem).SetDataConnections(wbDownloadConnections.Connections);
+            }
+            catch(Exception ex)
+            {
+                _statusLog.AddError("Error attepting to get data connection information for " + contentItem.Id + "/" + contentItem.Name + ", " + ex.Message);
+            }
+        }//end: foreach
+    }
+
+
     /// <summary>
     /// Download the workbooks
     /// </summary>
@@ -743,6 +785,15 @@ internal partial class TaskMaster
         if (taskOptions.IsOptionSet(TaskMasterOptions.Option_GetWorkbooksList))
         {
             Execute_DownloadWorkbooksList(serverLogin);
+
+            //Do we want to download the connection information for each workbook?
+            if(taskOptions.IsOptionSet(TaskMasterOptions.Option_GetWorkbooksConnections))
+            {
+                Execute_DownloadWorkbooksConnections(
+                    serverLogin
+                    , this.WorkbooksList);
+            }
+
         }
 
         //===================================================================================
@@ -820,6 +871,7 @@ internal partial class TaskMaster
             Execute_SaveErrorsFile(errorsFile);
         }
     }
+
 
     /// <summary>
     /// Attempts to load a DB credential file

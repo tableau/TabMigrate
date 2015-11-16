@@ -10,7 +10,13 @@ class CustomerSiteInventory : CsvDataGenerator
 {
     const string ContentType = "content-type";
     const string ContentUrl = "content-url";
+    const string ContentConnectionServer = "connection-server";
+    const string ContentConnectionType = "connection-type";
+    const string ContentConnectionPort = "connection-port";
+    const string ContentConnectionUserName = "connection-user-name";
     const string ContentProjectId = "project-id";
+    const string ContentWorkbookId = "workbook-id";
+    const string ContentWorkbookName = "workbook-name";
     const string ContentProjectName = "project-name";
     const string ContentUserId = "user-id";
     const string ContentUserName= "user-name";
@@ -96,27 +102,78 @@ class CustomerSiteInventory : CsvDataGenerator
                    ContentType            //1 
                   ,ContentId              //2
                   ,ContentName            //3
-                  ,ContentUrl             //4
-                  ,ContentProjectId       //5
-                  ,ContentProjectName     //6
-                  ,ContentOwnerId         //7
-                  ,WorkbookShowTabs       //8
-                  ,ContentTags            //9
-                  ,DeveloperNotes         //10
+                  ,ContentWorkbookId      //4
+                  ,ContentWorkbookName    //5
+                  ,ContentUrl             //6
+                  ,ContentProjectId       //7
+                  ,ContentProjectName     //8
+                  ,ContentOwnerId         //9
+                  ,WorkbookShowTabs       //10
+                  ,ContentTags            //11
+                  ,DeveloperNotes         //12
                            },
               new string[] { 
                   "workbook"                //1 
                   ,thisWorkbook.Id          //2
                   ,thisWorkbook.Name        //3
-                  ,thisWorkbook.ContentUrl  //4
-                  ,thisWorkbook.ProjectId   //5
-                  ,thisWorkbook.ProjectName //6
-                  ,thisWorkbook.OwnerId     //7
-                  ,XmlHelper.BoolToXmlText(thisWorkbook.ShowTabs) //8
-                  ,thisWorkbook.TagSetText  //9
-                  ,thisWorkbook.DeveloperNotes //10
-                           }); 
+                  ,thisWorkbook.Id          //4
+                  ,thisWorkbook.Name        //5
+                  ,thisWorkbook.ContentUrl  //6
+                  ,thisWorkbook.ProjectId   //7
+                  ,thisWorkbook.ProjectName //8
+                  ,thisWorkbook.OwnerId     //9
+                  ,XmlHelper.BoolToXmlText(thisWorkbook.ShowTabs) //10
+                  ,thisWorkbook.TagSetText  //11
+                  ,thisWorkbook.DeveloperNotes //12
+                           });
+
+          //If we have workbooks connections information then log that
+          AddWorkbookConnectionData(thisWorkbook);
       }
+  }
+
+  private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
+  {
+      var dataConnections = thisWorkbook.DataConnections;
+      if(dataConnections == null)
+      {
+          return;
+      }
+
+      foreach (var thisConnection in dataConnections)
+      {
+          this.AddKeyValuePairs(
+              new string[] { 
+                   ContentType              //1 
+                  ,ContentId                //2
+                  ,ContentConnectionType    //3
+                  ,ContentConnectionServer  //4
+                  ,ContentConnectionPort    //5
+                  ,ContentConnectionUserName//6
+                  ,ContentWorkbookId        //7
+                  ,ContentWorkbookName      //8
+                  ,ContentProjectId         //9
+                  ,ContentProjectName       //10
+                  ,ContentOwnerId           //11
+                  ,DeveloperNotes           //12
+                           },
+              new string[] { 
+                  "data-connection"              //1 
+                  ,thisConnection.Id             //2
+                  ,thisConnection.ConnectionType //3
+                  ,thisConnection.ServerAddress  //4
+                  ,thisConnection.ServerPort     //5
+                  ,thisConnection.UserName       //6
+                  ,thisWorkbook.Id               //7
+                  ,thisWorkbook.Name             //8
+                  ,thisWorkbook.ProjectId        //9
+                  ,thisWorkbook.ProjectName      //10
+                  ,thisWorkbook.OwnerId          //11
+                  ,thisWorkbook.DeveloperNotes   //12
+                           });
+
+      }
+
   }
 
     /// <summary>
