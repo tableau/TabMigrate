@@ -262,7 +262,7 @@ class TableauServerUrls : ITableauServerSiteInfo
     }
 
     /// <summary>
-    /// URL for the Workbooks list
+    /// URL for the Workbook's data source connections list
     /// </summary>
     /// <param name="siteUrlSegment"></param>
     /// <returns></returns>
@@ -275,6 +275,18 @@ class TableauServerUrls : ITableauServerSiteInfo
 
         return workingText;
     }
+
+    /// <summary>
+    /// URL for a Datasource's connections list
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="datasourceId"></param>
+    /// <returns></returns>
+    internal string Url_DatasourceConnectionsList(TableauServerSignIn session, string datasourceId)
+    {
+        throw new NotImplementedException("2015-11-16, Tableau Server does not yet have a REST API to support this call");
+    }
+
 
     /// <summary>
     /// URL for the Datasources list
@@ -489,4 +501,5 @@ class TableauServerUrls : ITableauServerSiteInfo
             return this.ServerUrlWithProtocol;
         }
     }
+
 }

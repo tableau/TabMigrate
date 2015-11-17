@@ -4,15 +4,15 @@ using System.Text;
 using System.Xml;
 
 /// <summary>
-/// Downloads the definitions of the data sources embedded inside a workbook
+/// Downloads the data connection in a published data source
 /// </summary>
-class DownloadWorkbookConnections : TableauServerSignedInRequestBase
+class DownloadDatasourceConnections : TableauServerSignedInRequestBase
 {
     /// <summary>
     /// URL manager
     /// </summary>
     private readonly TableauServerUrls _onlineUrls;
-    private readonly string _workbookId;
+    private readonly string _datasourceId;
 
     /// <summary>
     /// Workbooks we've parsed from server results
@@ -29,14 +29,14 @@ class DownloadWorkbookConnections : TableauServerSignedInRequestBase
     }
 
     /// <summary>
-    /// Constructor: Call when we want to query the workbooks on behalf of the currently logged in user
+    /// Constructor: Call when we want to query the datasource on behalf of the currently logged in user
     /// </summary>
     /// <param name="onlineUrls"></param>
     /// <param name="login"></param>
-    public DownloadWorkbookConnections(TableauServerUrls onlineUrls, TableauServerSignIn login, string workbookId)
+    public DownloadDatasourceConnections(TableauServerUrls onlineUrls, TableauServerSignIn login, string datasourceId)
         : base(login)
     {
-        _workbookId = workbookId;
+        _datasourceId = datasourceId;
         _onlineUrls = onlineUrls;
     }
 
@@ -47,15 +47,15 @@ class DownloadWorkbookConnections : TableauServerSignedInRequestBase
     /// <param name="serverName"></param>
     public void ExecuteRequest()
     {
-        var wbConnections = new List<SiteConnection>();
+        var dsConnections = new List<SiteConnection>();
 
         //Create a web request, in including the users logged-in auth information in the request headers
-        var urlQuery = _onlineUrls.Url_WorkbookConnectionsList(_onlineSession, _workbookId);
+        var urlQuery = _onlineUrls.Url_DatasourceConnectionsList(_onlineSession, _datasourceId);
         var webRequest = CreateLoggedInWebRequest(urlQuery);
         webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var response = GetWebReponseLogErrors(webRequest, "get workbook's connections list");
+        var response = GetWebReponseLogErrors(webRequest, "get datasources's connections list");
         var xmlDoc = GetWebResponseAsXml(response);
 
         //Get all the workbook nodes
@@ -68,7 +68,7 @@ class DownloadWorkbookConnections : TableauServerSignedInRequestBase
             try
             {
                 var connection = new SiteConnection(itemXml);
-                wbConnections.Add(connection);
+                dsConnections.Add(connection);
             }
             catch
             {
@@ -77,6 +77,6 @@ class DownloadWorkbookConnections : TableauServerSignedInRequestBase
             }
         } //end: foreach
 
-        _connections = wbConnections;
+        _connections = dsConnections;
     }
 }

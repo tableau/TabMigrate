@@ -132,49 +132,52 @@ class CustomerSiteInventory : CsvDataGenerator
       }
   }
 
-  private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
-  {
-      var dataConnections = thisWorkbook.DataConnections;
-      if(dataConnections == null)
-      {
-          return;
-      }
+/// <summary>
+/// Add data source connection data
+/// </summary>
+/// <param name="thisWorkbook"></param>
+private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
+{
+    var dataConnections = thisWorkbook.DataConnections;
+    if(dataConnections == null)
+    {
+        return;
+    }
 
-      foreach (var thisConnection in dataConnections)
-      {
-          this.AddKeyValuePairs(
-              new string[] { 
-                   ContentType              //1 
-                  ,ContentId                //2
-                  ,ContentConnectionType    //3
-                  ,ContentConnectionServer  //4
-                  ,ContentConnectionPort    //5
-                  ,ContentConnectionUserName//6
-                  ,ContentWorkbookId        //7
-                  ,ContentWorkbookName      //8
-                  ,ContentProjectId         //9
-                  ,ContentProjectName       //10
-                  ,ContentOwnerId           //11
-                  ,DeveloperNotes           //12
-                           },
-              new string[] { 
-                  "data-connection"              //1 
-                  ,thisConnection.Id             //2
-                  ,thisConnection.ConnectionType //3
-                  ,thisConnection.ServerAddress  //4
-                  ,thisConnection.ServerPort     //5
-                  ,thisConnection.UserName       //6
-                  ,thisWorkbook.Id               //7
-                  ,thisWorkbook.Name             //8
-                  ,thisWorkbook.ProjectId        //9
-                  ,thisWorkbook.ProjectName      //10
-                  ,thisWorkbook.OwnerId          //11
-                  ,thisWorkbook.DeveloperNotes   //12
-                           });
-
-      }
-
-  }
+    //Write out details for each data connection
+    foreach (var thisConnection in dataConnections)
+    {
+        this.AddKeyValuePairs(
+            new string[] { 
+                ContentType               //1 
+                ,ContentId                //2
+                ,ContentConnectionType    //3
+                ,ContentConnectionServer  //4
+                ,ContentConnectionPort    //5
+                ,ContentConnectionUserName//6
+                ,ContentWorkbookId        //7
+                ,ContentWorkbookName      //8
+                ,ContentProjectId         //9
+                ,ContentProjectName       //10
+                ,ContentOwnerId           //11
+                ,DeveloperNotes           //12
+                        },
+            new string[] { 
+                "data-connection"              //1 
+                ,thisConnection.Id             //2
+                ,thisConnection.ConnectionType //3
+                ,thisConnection.ServerAddress  //4
+                ,thisConnection.ServerPort     //5
+                ,thisConnection.UserName       //6
+                ,thisWorkbook.Id               //7
+                ,thisWorkbook.Name             //8
+                ,thisWorkbook.ProjectId        //9
+                ,thisWorkbook.ProjectName      //10
+                ,thisWorkbook.OwnerId          //11
+                ,thisWorkbook.DeveloperNotes   //12
+                        });
+    }
+}
 
     /// <summary>
     /// Add CSV rows for all the projects data

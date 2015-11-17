@@ -49,11 +49,14 @@ class SiteWorkbook : SiteDocumentBase, IEditDataConnectionsSet
     }
 
 
+    /// <summary>
+    /// Friendly text
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
         return "Workbook: " + Name + "/" + ContentUrl + "/" + Id + ", Proj: " + ProjectId;
     }
-
 
     /// <summary>
     /// Interface for inserting the set of data connections associated with this content
@@ -66,6 +69,5 @@ class SiteWorkbook : SiteDocumentBase, IEditDataConnectionsSet
             _dataConnections = null;
         }
         _dataConnections = new List<SiteConnection>(connections);
-
     }
 }

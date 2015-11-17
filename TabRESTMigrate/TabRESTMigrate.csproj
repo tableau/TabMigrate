@@ -93,6 +93,7 @@
     <Compile Include="RESTRequests\DownloadGroupsList.cs" />
     <Compile Include="RESTRequests\DownloadUsersListInGroup.cs" />
     <Compile Include="RESTRequests\DownloadUsersListBase.cs" />
+    <Compile Include="RESTRequests\DownloadDatasourceConnections.cs" />
     <Compile Include="RESTRequests\DownloadWorkbookConnections.cs" />
     <Compile Include="RESTRequests\SendDeleteDatasourceTag.cs" />
     <Compile Include="RESTRequests\SendDeleteWorkbookTag.cs" />

@@ -408,7 +408,7 @@ internal partial class TaskMaster
         TableauServerSignIn serverLogin, 
         IEnumerable<SiteWorkbook> serverContent)
     {
-        _statusLog.AddStatusHeader("Download each workbooks connections list");
+        _statusLog.AddStatusHeader("Download each workbook's connections");
         if(serverContent == null)
         {
             _statusLog.AddError("Null workbooks list");
@@ -433,6 +433,48 @@ internal partial class TaskMaster
                 ((IEditDataConnectionsSet) contentItem).SetDataConnections(wbDownloadConnections.Connections);
             }
             catch(Exception ex)
+            {
+                _statusLog.AddError("Error attepting to get data connection information for " + contentItem.Id + "/" + contentItem.Name + ", " + ex.Message);
+            }
+        }//end: foreach
+    }
+
+
+
+    /// <summary>
+    /// Downloads the connections list for each datasource specified
+    /// </summary>
+    /// <param name="serverLogin"></param>
+    /// <param name="serverContent"></param>
+    private void Execute_DownloadDatasourceConnections(
+        TableauServerSignIn serverLogin,
+        IEnumerable<SiteDatasource> serverContent)
+    {
+        _statusLog.AddStatusHeader("Download each datasource's connections");
+        if (serverContent == null)
+        {
+            _statusLog.AddError("Null datasources list");
+            return;
+        }
+
+        //For each content item attempt to download it's list of connections
+        foreach (var contentItem in serverContent)
+        {
+            try
+            {
+                //Request the list of data connections embedded in the content
+                var dsDownloadConnections = new DownloadDatasourceConnections(
+                    _onlineUrls,
+                    serverLogin,
+                    contentItem.Id);
+                dsDownloadConnections.ExecuteRequest();
+
+                //Put it into the content object
+                //Note: We are using a dedicated interface expose the Edit/Set method because most people using the 
+                //      object only want to read the data
+                ((IEditDataConnectionsSet)contentItem).SetDataConnections(dsDownloadConnections.Connections);
+            }
+            catch (Exception ex)
             {
                 _statusLog.AddError("Error attepting to get data connection information for " + contentItem.Id + "/" + contentItem.Name + ", " + ex.Message);
             }
