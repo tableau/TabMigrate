@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FilesLogging\PathHelper.cs" />
+    <Compile Include="FilesLogging\SimpleLatch.cs" />
     <Compile Include="RESTHelpers\CredentialManager_static.cs" />
     <Compile Include="RESTHelpers\CredentialManager.Credential.cs" />
     <Compile Include="RESTHelpers\CredentialManager.cs" />

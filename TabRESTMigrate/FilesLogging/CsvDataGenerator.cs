@@ -83,38 +83,37 @@ class CsvDataGenerator
     public string GenerateCSVText(bool addRowIdColumn)
     {
         var sb = new StringBuilder();
-        bool isFirstItem;
-
         //--------------------------------------------------
         //Header row - list all the column headers
         //--------------------------------------------------
-        isFirstItem = true;
+        var headerNotFirstItem = new SimpleLatch();
         //If we want to count rows (for ordering), then add the column
         if (addRowIdColumn)
         {
-            AppendCSVValue(sb, "row-id", ref isFirstItem);
+            AppendCSVValue(sb, "row-id", headerNotFirstItem);
         }
         foreach(var keyName in _knownKeys)
         {
-            AppendCSVValue(sb, keyName, ref isFirstItem);
+            AppendCSVValue(sb, keyName, headerNotFirstItem);
         }
-        EndCSVLine(sb, ref isFirstItem);
+        EndCSVLine(sb);
 
         //For each content row, look up the values for each column
         int idxRowCount = 1;
         foreach(var row in _customerActions)
         {
+            var notFirstItem = new SimpleLatch();
             //Include row count?
             if (addRowIdColumn)
             {
-                AppendCSVValue(sb, idxRowCount.ToString(), ref isFirstItem);
+                AppendCSVValue(sb, idxRowCount.ToString(), notFirstItem);
             }
             //Add each of the column values, in the same order as the header row
             foreach (var columnName in _knownKeys)
             {
-                AppendCSVValue(sb, row.GetColumnValue(columnName), ref isFirstItem);
+                AppendCSVValue(sb, row.GetColumnValue(columnName), notFirstItem);
             }
-            EndCSVLine(sb, ref isFirstItem);
+            EndCSVLine(sb);
             idxRowCount++;
         }
 
@@ -126,10 +125,10 @@ class CsvDataGenerator
     /// </summary>
     /// <param name="sb"></param>
     /// <param name="isFirstItem"></param>
-    private static void EndCSVLine(StringBuilder sb, ref bool isFirstItem)
+//    private static void EndCSVLine(StringBuilder sb, ref bool isFirstItem)
+    private static void EndCSVLine(StringBuilder sb)
     {
         sb.AppendLine();
-        isFirstItem = true; //Reset the first item marker
     }
 
     /// <summary>
@@ -138,7 +137,7 @@ class CsvDataGenerator
     /// <param name="sb"></param>
     /// <param name="appendValue"></param>
     /// <param name="isFirstItem"></param>
-    private static void AppendCSVValue(StringBuilder sb, string appendValue, ref bool isFirstItem)
+    private static void AppendCSVValue(StringBuilder sb, string appendValue, SimpleLatch notFirstItem)
     {
         //Normalize the input
         if (appendValue == null)
@@ -147,20 +146,60 @@ class CsvDataGenerator
         }
 
         //Add a preceeding comma if we are not the first item
-        if(!isFirstItem)
+        if (notFirstItem.Value)
         {
             sb.Append(",");
         }
         var escapedValue = appendValue;
-        escapedValue = escapedValue.Replace("\"", "\"\""); //Replace any single " with ""  (CSV convention)
+
+        var needsQuoting = new SimpleLatch();
+        escapedValue = ReplaceIfExists(escapedValue, "\"", "\"\"", needsQuoting); //Replace any single " with ""  (CSV convention)
+
+        //escapedValue = escapedValue.Replace("\"", "\"\""); //Replace any single " with ""  (CSV convention)
         escapedValue = escapedValue.Replace("\n", " "); //Remove newlines
         escapedValue = escapedValue.Replace("\r", " "); //Remove carrage returns
-        bool containsComma = escapedValue.Contains(",");
 
-        if (containsComma) { sb.Append("\""); } //Start quote
+        //If it has a comma it needs to be quoted
+        if(escapedValue.Contains(","))
+        {
+            needsQuoting.Trigger();
+        }
+        //bool containsComma = escapedValue.Contains(",");
+
+        if (needsQuoting.Value) { sb.Append("\""); } //Start quote
         sb.Append(escapedValue);
-        if (containsComma) { sb.Append("\""); } //End quote
-        isFirstItem = false; //No longer the first tiem
+        if (needsQuoting.Value) { sb.Append("\""); } //End quote
+        notFirstItem.Trigger(); //No longer the first item
+    }
+
+    /// <summary>
+    /// Replace any 'find' with 'replace'.  Trigger the latch if a replace occured
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="find"></param>
+    /// <param name="replace"></param>
+    /// <param name="triggerIfFound"></param>
+    /// <returns></returns>
+    private static string ReplaceIfExists(string text, string find, string replace, SimpleLatch triggerIfFound)
+    {
+        if (text == null) return "";
+        //
+        if(text.IndexOf(find) == -1)
+        {
+            return text;
+        }
+
+        //If there's text to replace, then replace it
+        string outText = text.Replace(find, replace);
+
+        //If the text changed, trigger the latch
+        if (outText != text)
+        {
+            //Set the latch
+            triggerIfFound.Trigger();
+        }
+
+        return outText;
     }
 
     /// <summary>
