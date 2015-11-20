@@ -5,7 +5,7 @@ using System.Xml;
 /// <summary>
 /// Information about a User in a Server's site
 /// </summary>
-class SiteUser
+class SiteUser : IHasSiteItemId
 {
     public readonly string Name;
     public readonly string Id;
@@ -35,5 +35,10 @@ class SiteUser
     public override string ToString()
     {
         return "User: " + this.Name + "/" + this.Id + "/" + this.SiteRole;
+    }
+
+    string IHasSiteItemId.Id
+    {
+        get { return this.Id; }
     }
 }

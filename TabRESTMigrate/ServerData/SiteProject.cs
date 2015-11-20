@@ -5,7 +5,7 @@ using System.Xml;
 /// <summary>
 /// Information about a Project in a Server's site
 /// </summary>
-class SiteProject
+class SiteProject : IHasSiteItemId
 {
     public readonly string Id;
     public readonly string Name;
@@ -55,5 +55,10 @@ class SiteProject
     public override string ToString()
     {
         return "Project: " + this.Name + "/" + this.Id;
+    }
+
+    string IHasSiteItemId.Id
+    {
+        get { return this.Id; }
     }
 }

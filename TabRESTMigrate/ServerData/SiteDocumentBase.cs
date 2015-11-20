@@ -6,7 +6,7 @@ using System.Xml;
 /// <summary>
 /// Base class for information common to Workbooks and Data Sources, so we don't have lots of redundant code
 /// </summary>
-abstract class SiteDocumentBase: IHasProjectId, ITagSetInfo
+abstract class SiteDocumentBase : IHasProjectId, ITagSetInfo, IHasSiteItemId
 {
     public readonly string Id;
     public readonly string Name;
@@ -76,5 +76,10 @@ abstract class SiteDocumentBase: IHasProjectId, ITagSetInfo
             return false;
         }
         return TagsSet.IsTaggedWith(tagText);
+    }
+
+    string IHasSiteItemId.Id
+    {
+        get { return this.Id; }
     }
 }

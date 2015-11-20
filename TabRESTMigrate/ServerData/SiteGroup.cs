@@ -5,7 +5,7 @@ using System.Xml;
 /// <summary>
 /// Information about a Grou[ in a Server's site
 /// </summary>
-class SiteGroup
+class SiteGroup : IHasSiteItemId
 {
     public readonly string Id;
     public readonly string Name;
@@ -73,5 +73,10 @@ class SiteGroup
         }
 
         _usersInGroup.AddRange(usersList);
+    }
+
+    string IHasSiteItemId.Id
+    {
+        get { return this.Id; }
     }
 }

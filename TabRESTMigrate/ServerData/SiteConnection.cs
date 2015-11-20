@@ -5,7 +5,7 @@ using System.Xml;
 /// <summary>
 /// Information about a Data connection that is embedded in a Workbook or Data Source
 /// </summary>
-class SiteConnection
+class SiteConnection : IHasSiteItemId
 {
     public readonly string Id;
     public readonly string ConnectionType;
@@ -46,5 +46,10 @@ class SiteConnection
     public override string ToString()
     {
         return "Connection: " + this.ConnectionType + "/" + this.ServerAddress + "/" + this.Id;
+    }
+
+    string IHasSiteItemId.Id
+    {
+        get { return this.Id; }
     }
 }

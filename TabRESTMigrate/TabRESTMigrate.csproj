@@ -99,9 +99,11 @@
     <Compile Include="RESTRequests\SendDeleteDatasourceTag.cs" />
     <Compile Include="RESTRequests\SendDeleteWorkbookTag.cs" />
     <Compile Include="ServerData\IEditDataConnectionsSet.cs" />
+    <Compile Include="ServerData\IHasSiteItemId.cs" />
     <Compile Include="ServerData\ITagSetInfo.cs" />
     <Compile Include="ServerData\SiteGroup.cs" />
     <Compile Include="ServerData\SiteConnection.cs" />
+    <Compile Include="ServerData\KeyedLookup.cs" />
     <Compile Include="ServerData\SiteTag.cs" />
     <Compile Include="ServerData\SiteTagsSet.cs" />
     <Compile Include="ServerData\SiteDocumentBase.cs" />

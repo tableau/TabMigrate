@@ -26,28 +26,67 @@ class CustomerSiteInventory : CsvDataGenerator
     const string ContentName = "name";
     const string ContentDescription = "description";
     const string ContentOwnerId = "owner-id";
+    const string ContentOwnerName = "owner-name";
     const string ContentTags = "tags";
     const string WorkbookShowTabs = "workbook-show-tabs";
     const string SiteRole = "user-role";
     const string DeveloperNotes = "developer-notes";
 
-   /// <summary>
-   /// Constructor.  Builds the data for the CSV file
-   /// </summary>
-   /// <param name="projects"></param>
-   /// <param name="dataSources"></param>
-  public CustomerSiteInventory(IEnumerable<SiteProject> projects, 
+    /// <summary>
+    /// Efficent store for looking up user names
+    /// </summary>
+    private readonly KeyedLookup<SiteUser> _siteUserMapping;
+
+    /// <summary>
+    /// Constructor.  Builds the data for the CSV file
+    /// </summary>
+    /// <param name="projects"></param>
+    /// <param name="dataSources"></param>
+    /// <param name="workbooks"></param>
+    /// <param name="users"></param>
+    /// <param name="groups"></param>
+    public CustomerSiteInventory(
+      IEnumerable<SiteProject> projects, 
       IEnumerable<SiteDatasource> dataSources,
       IEnumerable<SiteWorkbook> workbooks,
       IEnumerable<SiteUser> users,
       IEnumerable<SiteGroup> groups)
   {
+       if(users != null)
+       {
+           _siteUserMapping = new KeyedLookup<SiteUser>(users);
+       }
+
       AddProjectsData(projects);
       AddDatasourcesData(dataSources);
       AddWorkbooksData(workbooks);
       AddUsersData(users);
       AddGroupsData(groups);
   }
+
+    /// <summary>
+    /// Attempt to look up the name of a user
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    private string helper_AttemptUserNameLookup(string userId)
+    {
+        var userIdMap = _siteUserMapping;
+        //If we have no user mapping, then return a blank
+        if(userIdMap == null)
+        {
+            return "";
+        }
+
+        //We always expect to find the user
+        var user = userIdMap.FindItem(userId);
+        if(user == null)
+        {
+            throw new Exception("CSV inventory error. User ID cannot be mapped " + userId);
+        }
+        return user.Name;
+    }
+
 
     /// <summary>
     /// Add CSV for all the data sources
@@ -61,6 +100,9 @@ class CustomerSiteInventory : CsvDataGenerator
       //Add each data source as a row in the CSV file we will generate
       foreach (var thisDatasource in dataSources)
       {
+          //Attempt to look up the owner name.  This will be blank if we do not have a users list
+          string ownerName = helper_AttemptUserNameLookup(thisDatasource.OwnerId);
+
           this.AddKeyValuePairs(
               new string[] { 
                    ContentType         //1
@@ -69,8 +111,9 @@ class CustomerSiteInventory : CsvDataGenerator
                   ,ContentProjectId    //4
                   ,ContentProjectName  //5
                   ,ContentOwnerId      //6
-                  ,ContentTags         //7
-                  ,DeveloperNotes      //8
+                  ,ContentOwnerName    //7
+                  ,ContentTags         //8
+                  ,DeveloperNotes      //9
                   },
               new string[] { 
                    "datasource"                //1
@@ -79,8 +122,9 @@ class CustomerSiteInventory : CsvDataGenerator
                   ,thisDatasource.ProjectId    //4
                   ,thisDatasource.ProjectName  //5
                   ,thisDatasource.OwnerId      //6
-                  ,thisDatasource.TagSetText   //7
-                  ,thisDatasource.DeveloperNotes //8
+                  ,ownerName                   //7
+                  ,thisDatasource.TagSetText   //8
+                  ,thisDatasource.DeveloperNotes //9
                   });
       }
   }
@@ -97,6 +141,9 @@ class CustomerSiteInventory : CsvDataGenerator
       //Add each data source as a row in the CSV file we will generate
       foreach (var thisWorkbook in workbooks)
       {
+          //Attempt to look up the owner name.  This will be blank if we do not have a users list
+          string ownerName = helper_AttemptUserNameLookup(thisWorkbook.OwnerId);
+
           this.AddKeyValuePairs(
               new string[] { 
                    ContentType            //1 
@@ -108,9 +155,10 @@ class CustomerSiteInventory : CsvDataGenerator
                   ,ContentProjectId       //7
                   ,ContentProjectName     //8
                   ,ContentOwnerId         //9
-                  ,WorkbookShowTabs       //10
-                  ,ContentTags            //11
-                  ,DeveloperNotes         //12
+                  ,ContentOwnerName       //10
+                  ,WorkbookShowTabs       //11
+                  ,ContentTags            //12
+                  ,DeveloperNotes         //13
                            },
               new string[] { 
                   "workbook"                //1 
@@ -122,9 +170,10 @@ class CustomerSiteInventory : CsvDataGenerator
                   ,thisWorkbook.ProjectId   //7
                   ,thisWorkbook.ProjectName //8
                   ,thisWorkbook.OwnerId     //9
-                  ,XmlHelper.BoolToXmlText(thisWorkbook.ShowTabs) //10
-                  ,thisWorkbook.TagSetText  //11
-                  ,thisWorkbook.DeveloperNotes //12
+                  ,ownerName                //10
+                  ,XmlHelper.BoolToXmlText(thisWorkbook.ShowTabs) //11
+                  ,thisWorkbook.TagSetText  //12
+                  ,thisWorkbook.DeveloperNotes //13
                            });
 
           //If we have workbooks connections information then log that

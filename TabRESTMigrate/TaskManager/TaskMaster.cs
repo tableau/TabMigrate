@@ -1027,6 +1027,8 @@ internal partial class TaskMaster
     /// <param name="pathReportCsv"></param>
     private void Execute_GenerateSiteInventoryFile_Twb(string pathReportCsv)
     {
+        _statusLog.AddStatusHeader("Generate site inventory TWB");
+
         try
         {
             //Calculate the name/path for the output TWB.  It will match the name/path of the CSV file
@@ -1067,6 +1069,8 @@ internal partial class TaskMaster
     /// <param name="pathReport"></param>
     private void Execute_GenerateSiteInventoryFile(string pathReport)
     {
+        _statusLog.AddStatusHeader("Generate site inventory CSV");
+
         try
         {
             var reportGenerator = new CustomerSiteInventory(
