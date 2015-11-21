@@ -1078,7 +1078,8 @@ internal partial class TaskMaster
                 this.DatasourcesList,
                 this.WorkbooksList,
                 this.UsersList,
-                this.GroupsList);
+                this.GroupsList,
+                _statusLog);
 
             reportGenerator.GenerateCSVFile(pathReport);
 

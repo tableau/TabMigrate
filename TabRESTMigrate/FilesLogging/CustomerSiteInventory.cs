@@ -38,6 +38,11 @@ class CustomerSiteInventory : CsvDataGenerator
     private readonly KeyedLookup<SiteUser> _siteUserMapping;
 
     /// <summary>
+    /// Status log data
+    /// </summary>
+    public readonly TaskStatusLogs StatusLog;
+
+    /// <summary>
     /// Constructor.  Builds the data for the CSV file
     /// </summary>
     /// <param name="projects"></param>
@@ -50,12 +55,22 @@ class CustomerSiteInventory : CsvDataGenerator
       IEnumerable<SiteDatasource> dataSources,
       IEnumerable<SiteWorkbook> workbooks,
       IEnumerable<SiteUser> users,
-      IEnumerable<SiteGroup> groups)
+      IEnumerable<SiteGroup> groups,
+      TaskStatusLogs statusLogger)
   {
-       if(users != null)
-       {
-           _siteUserMapping = new KeyedLookup<SiteUser>(users);
-       }
+        //Somewhere to store status logs
+        if (statusLogger == null)
+        {
+            statusLogger = new TaskStatusLogs();
+        }
+        this.StatusLog = statusLogger;
+
+        //If we have a user-set, put it into a lookup class so we can quickly look up user names when we write out other data
+        //that has user ids
+        if(users != null)
+        {
+            _siteUserMapping = new KeyedLookup<SiteUser>(users);
+        }
 
       AddProjectsData(projects);
       AddDatasourcesData(dataSources);
@@ -71,6 +86,24 @@ class CustomerSiteInventory : CsvDataGenerator
     /// <returns></returns>
     private string helper_AttemptUserNameLookup(string userId)
     {
+        try
+        {
+            return helper_AttemptUserNameLookup_inner(userId);
+        }
+        catch(Exception ex)
+        {
+            this.StatusLog.AddError("Error looking up user id, " + ex.Message);
+            return "** Error in user lookup **"; //Continue onward
+        }
+    }
+
+    /// <summary>
+    /// Attempt to look up the name of a user
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    private string helper_AttemptUserNameLookup_inner(string userId)
+    {
         var userIdMap = _siteUserMapping;
         //If we have no user mapping, then return a blank
         if(userIdMap == null)
@@ -82,7 +115,7 @@ class CustomerSiteInventory : CsvDataGenerator
         var user = userIdMap.FindItem(userId);
         if(user == null)
         {
-            throw new Exception("CSV inventory error. User ID cannot be mapped " + userId);
+            throw new Exception("User ID cannot be mapped '" + userId + "'");
         }
         return user.Name;
     }
