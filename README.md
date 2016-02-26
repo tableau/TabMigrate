@@ -12,6 +12,19 @@ This tool offers a lightweight approach built on top of Tableau Server’s REST 
 - It allows this file system content to be transformed and uploaded back into another Tableau Server or Tableau Server site, along-side existing content.
 - It generates command line arguments for the export and import operations, allowing you to quickly repeat or modify these steps.
 
+### Video Introduction
+There's a short video introduction available on Tableau's YouTube channel. You can [watch the full video](https://www.youtube.com/watch?v=zxeo_gBT8dk) or just jump to specific sections:<br />
+* [Introduction (00:00)](https://www.youtube.com/watch?v=zxeo_gBT8dk)
+* [What is TabMigrate? (00:32)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=00m32s)
+* [Running TabMigrate in Visual Studio (01:23)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=01m23s)
+* [Getting a Site's Inventory (02:30)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=02m30s)
+* [Exporting Site Content (03:33)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=03m33s)
+* [Uploading Content to a New Tableau Server (05:34)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=05m34s)
+* [Remapping Workbook Server References (07:13)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=07m13s)
+* [Showing Migrated Content in the New Server (09:18)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=09m18s)
+* [Diving into the Source Code (09:42)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=09m42s)
+* [Wrap-up & Getting the Code on GitHub (12:30)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=12m30s)
+
 ## Versions of Tableau Server
 TabMigrate was written and tested with version 9.1 of Tableau Server. 
 - It should work in all Tableau Server versions >= 9.1.  
