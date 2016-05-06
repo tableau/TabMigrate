@@ -33,7 +33,7 @@ TabMigrate was written and tested with version 9.1 of Tableau Server.
 
 
 ## Getting started with TabMigrate (for non-developers)
-You do not need to download and compile the source code to use TabMigrate. Those interested in simply running the application can download and unzip the setup from https://github.com/tableau/TabMigrate/releases. 
+You do not need to download and compile the source code to use TabMigrate. Those interested in simply running the application can download and unzip the setup from https://github.com/tableau/TabMigrate/releases (hint: the latest release is in v1.02_2015_11_13_TabRESTMigrate.zip -> download, unzip, and rock on). 
 Running setup.exe will install the TabMigrate application on your Windows machine. 
 
 Application: The application can be run in either interactive (UI) or command line mode. When running in interactive mode the application will also show you the command line for performing all of the actions, making it easy to automate.  The application UI offers three top level options: 
