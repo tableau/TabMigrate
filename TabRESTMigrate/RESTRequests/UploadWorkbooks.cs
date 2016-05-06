@@ -149,7 +149,7 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
         }
         else
         {
-            projectName = FileIOHelper.ReverseGenerateWindowsSafeFilename(Path.GetFileName(currentContentPath));
+            projectName = FileIOHelper.Undo_GenerateWindowsSafeFilename(Path.GetFileName(currentContentPath));
         }
 
         //Start off with no project ID -- we'll look it up as needed
@@ -329,7 +329,12 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
         {
             string fileName = Path.GetFileNameWithoutExtension(localFilePath);
             string uploadType = RemoveFileExtensionDot(Path.GetExtension(localFilePath).ToLower());
-            var workbook = FinalizePublish(uploadSessionId, fileName, uploadType, projectId, dbCredentials);
+            var workbook = FinalizePublish(
+                uploadSessionId,
+                FileIOHelper.Undo_GenerateWindowsSafeFilename(fileName), //[2016-05-06] If the name has escapted characters, unescape them 
+                uploadType, 
+                projectId, 
+                dbCredentials);
             StatusLog.AddStatus("Upload content details: " + workbook.ToString(), -10);
             StatusLog.AddStatus("Success! Uploaded workbook " + Path.GetFileName(localFilePath));
         }

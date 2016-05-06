@@ -14,6 +14,12 @@ class SendCreateProject : TableauServerSignedInRequestBase
     private readonly string _projectName;
     private readonly string _projectDesciption = "";
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="onlineUrls"></param>
+    /// <param name="login"></param>
+    /// <param name="projectName"></param>
     public SendCreateProject(
         TableauServerUrls onlineUrls, 
         TableauServerSignIn login,
@@ -42,7 +48,6 @@ class SendCreateProject : TableauServerSignedInRequestBase
             return null;
         }
     }
-
 
 
     private SiteProject CreateProject(string projectName, string projectDescription)

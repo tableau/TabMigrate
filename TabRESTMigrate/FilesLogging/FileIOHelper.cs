@@ -20,21 +20,70 @@ static class FileIOHelper
         Directory.CreateDirectory(localPath);
     }
 
+    /// <summary>
+    /// Characters we will do search/replace on to make a Tableau Server content name safe for the Windows file system
+    /// </summary>
+    private static List<KeyValuePair<string, string>> s_generateSwapPairs;
+    private static List<KeyValuePair<string, string>> GetFilenameSwapValues()
+    {
+        //Already exists? Return it.
+        List<KeyValuePair<string, string>>  outValues = s_generateSwapPairs;
+        if(outValues != null) return outValues;
 
+        //Create a new one
+        outValues = new List<KeyValuePair<string, string>>();
+        outValues.Add(new KeyValuePair<string, string>("\\", "{{!x5c}}"));
+        outValues.Add(new KeyValuePair<string, string>("/",  "{{!x2f}}"));
+        outValues.Add(new KeyValuePair<string, string>("*",  "{{!x42}}"));
+        outValues.Add(new KeyValuePair<string, string>("?",  "{{!x3f}}"));
+        outValues.Add(new KeyValuePair<string, string>(":",  "{{!x3a}}"));
+        outValues.Add(new KeyValuePair<string, string>("|",  "{{!x7c}}"));
+        outValues.Add(new KeyValuePair<string, string>("\"", "{{!x22}}"));
+        outValues.Add(new KeyValuePair<string, string>(">",  "{{!x3e}}"));
+        outValues.Add(new KeyValuePair<string, string>("<",  "{{!x3c}}"));
+        s_generateSwapPairs = outValues; //Store it so we don't need to create it again
+
+        return outValues;
+    }
+
+    /// <summary>
+    /// Take any text in an munge it into name that is valid on windows
+    /// </summary>
+    /// <param name="fileNameIn"></param>
+    /// <returns></returns>
     public static string GenerateWindowsSafeFilename(string fileNameIn)
     {
         string fileNameOut = fileNameIn;
-        fileNameOut = fileNameOut.Replace("\\", "-SLASH-");
-        fileNameOut = fileNameOut.Replace("/", "-SLASH-");
-        fileNameOut = fileNameOut.Replace("$", "-DOLLAR-");
-        fileNameOut = fileNameOut.Replace("*", "STAR");
-        fileNameOut = fileNameOut.Replace("?", "-QQQ-");
-        fileNameOut = fileNameOut.Replace("%", "-PERCENT-");
-        fileNameOut = fileNameOut.Replace(":", "-COLON-");
-        fileNameOut = fileNameOut.Replace("|", "-PIPE-");
-        fileNameOut = fileNameOut.Replace("\"", "-QUOTE-");
-        fileNameOut = fileNameOut.Replace(">", "-GT-");
-        fileNameOut = fileNameOut.Replace("<", "-LT-");
+        //"{{!x" -- Is an an uncommon sequence, but we should escape it, since this is what we use as our escape sequence for special chars
+        fileNameOut = fileNameOut.Replace("{{!x", "{{!x}"); //Terminate every "{{!x" with "}" (so this is unique from any of our other escape sequences whic hahve hex-numbers)
+
+        var specialCharsSet = GetFilenameSwapValues();
+        foreach(var thisCharSwap in specialCharsSet)
+        {
+            fileNameOut = fileNameOut.Replace(thisCharSwap.Key, thisCharSwap.Value);
+        }
+
+        return fileNameOut;
+    }
+
+    /// <summary>
+    /// Reverses 'GenerateWindowsSafeFilename_Reverse'
+    /// </summary>
+    /// <param name="fileNameIn"></param>
+    /// <returns></returns>
+    public static string Undo_GenerateWindowsSafeFilename(string fileNameIn)
+    {
+        string fileNameOut = fileNameIn;
+        //Small HACK: This assumes that no valid file name contains a "{{!x" -- which would seem an uncommon sequence
+        var specialCharsSet = GetFilenameSwapValues();
+        foreach (var thisCharSwap in specialCharsSet)
+        {
+            fileNameOut = fileNameOut.Replace(thisCharSwap.Value, thisCharSwap.Key);
+        }
+
+        //Undo the original escape sequence for "{{!x", which we changed to "{{!x}"
+        fileNameOut = fileNameOut.Replace("{{!x}", "{{!x");
+
         return fileNameOut;
     }
 
@@ -134,16 +183,4 @@ static class FileIOHelper
         return pathWithProject;
     }
 
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="directoryName"></param>
-    /// <returns></returns>
-    internal static string ReverseGenerateWindowsSafeFilename(string directoryName)
-    {
-        //[2015-03-20] UNDONE: Unmunge any escape characters we baked into the directory name
-        return directoryName;
-    }
 }

@@ -99,7 +99,7 @@ class UploadDatasources : TableauServerSignedInRequestBase
         }
         else
         {
-            projectName = FileIOHelper.ReverseGenerateWindowsSafeFilename(Path.GetFileName(currentContentPath)); 
+            projectName = FileIOHelper.Undo_GenerateWindowsSafeFilename(Path.GetFileName(currentContentPath)); 
         }
 
 
@@ -223,7 +223,12 @@ class UploadDatasources : TableauServerSignedInRequestBase
         {
             string fileName = Path.GetFileNameWithoutExtension(localFilePath);
             string uploadType = RemoveFileExtensionDot(Path.GetExtension(localFilePath).ToLower());
-            var dataSource = FinalizePublish(uploadSessionId, fileName, uploadType, projectId, dbCredentials);
+            var dataSource = FinalizePublish(
+                uploadSessionId,
+                FileIOHelper.Undo_GenerateWindowsSafeFilename(fileName), //[2016-05-06] If the name has escapted characters, unescape them
+                uploadType, 
+                projectId, 
+                dbCredentials);
             StatusLog.AddStatus("Upload content details: " + dataSource.ToString(), -10);
             StatusLog.AddStatus("Success! Uploaded datasource " + Path.GetFileName(localFilePath));
         }

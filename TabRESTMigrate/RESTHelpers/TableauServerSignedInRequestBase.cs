@@ -67,8 +67,15 @@ abstract class TableauServerSignedInRequestBase : TableauServerRequestBase
     private string DownloadFile_inner(string urlDownload, string downloadToDirectory, string baseFilename, DownloadPayloadTypeHelper downloadTypeMapper)
     {
 
+        //[2016-05-06] Interestingly 'GetFileNameWithoutExtension' does more than remove a ".xxxx" extension; it will also remove a preceeding
+        //            path (e.g. GetFileNameWithoutExtension('foo/bar.xxx') -> "bar'.  This is undesireable because these characters are valid 
+        //            in Tableau Server content names. Since this function is supposed to be called with a 'baseFilename' that DOES NOT have a .xxx
+        //            extension, it is safe to remove this call
+        //baseFilename =  FileIOHelper.GenerateWindowsSafeFilename(System.IO.Path.GetFileNameWithoutExtension(baseFilename));
+
         //Strip off an extension if its there
-        baseFilename =  FileIOHelper.GenerateWindowsSafeFilename(System.IO.Path.GetFileNameWithoutExtension(baseFilename));
+        baseFilename = FileIOHelper.GenerateWindowsSafeFilename(baseFilename);
+
 
         var webClient = this.CreateLoggedInWebClient();
         using(webClient)
