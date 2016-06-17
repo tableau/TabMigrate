@@ -37,6 +37,12 @@ internal partial class TaskMaster
             taskOptions.AddOption(TaskMasterOptions.Option_LogVerbose);
         }
 
+        //Background keep alive requests
+        if (commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_BackgroundKeepAlive, false))
+        {
+            taskOptions.AddOption(TaskMasterOptions.Option_BackgroundKeepAlive);
+        }
+
         //----------------------------------------------------------------------------
         //Which command are we dealing with?
         //----------------------------------------------------------------------------

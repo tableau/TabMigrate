@@ -24,6 +24,7 @@ partial class CommandLineParser
     public const string Parameter_DBCredentialsFile     = "-dbCredentialsFile";   //If specified, this points to the file we should get upload DB credentials from
     public const string Parameter_LogFile               = "-logFile";             //File for log output
     public const string Parameter_LogVerbose            = "-logVerbose";          //Verbose logging level
+    public const string Parameter_BackgroundKeepAlive   = "-backgroundKeepAlive"; //Send periodic background requests to ensure the server session is kept alive
     public const string Parameter_GenerateInventoryTwb  = "-generateInventoryTwb";//Create a Tableau Workbook with inventory data
     public const string Parameter_ErrorsFile            = "-errorFile";           //File for error output
     public const string Parameter_ManualStepsFile       = "-manualStepsFile";     //File for recording manual steps for tasks that could not be automatically completed
@@ -149,6 +150,7 @@ partial class CommandLineParser
         bool removeExportTag,
         string pathToLogFile,
         string pathToErrorsFile,
+        bool backgroundKeepAliveRequests,
         bool logVerbose,
         out string commandLineOut,
         out CommandLineParser parsedCommandLine)
@@ -164,6 +166,7 @@ partial class CommandLineParser
         helper_AppendParameter(arguments, sb, Parameter_ExportDirectory, pathToExportDir);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteUrl, siteUrl);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteIsSystemAdmin, helper_BoolToText(isSystemAdmin));
+        helper_AppendParameter(arguments, sb, Parameter_BackgroundKeepAlive, helper_BoolToText(backgroundKeepAliveRequests));
         helper_AppendParameter(arguments, sb, Parameter_LogVerbose, helper_BoolToText(logVerbose));
 
         //Export only a single project?

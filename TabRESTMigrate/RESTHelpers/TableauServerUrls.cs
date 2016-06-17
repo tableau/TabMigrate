@@ -25,6 +25,11 @@ class TableauServerUrls : ITableauServerSiteInfo
     public readonly string UrlLogin;
 
     /// <summary>
+    /// Url for log out
+    /// </summary>
+    public readonly string UrlLogout;
+
+    /// <summary>
     /// Template for URL to acess workbooks list
     /// </summary>
     private readonly string _urlListWorkbooksForUserTemplate;
@@ -79,7 +84,8 @@ class TableauServerUrls : ITableauServerSiteInfo
         this.ServerName = serverName;
         this.ServerUrlWithProtocol                 = serverNameWithProtocol;
         this.UrlLogin                              = serverNameWithProtocol + "/api/2.0/auth/signin";
-        this._urlListWorkbooksForUserTemplate      = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/users/{{iwsUserId}}/workbooks?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this.UrlLogout                             = serverNameWithProtocol + "/api/2.0/auth/signout";
+        this._urlListWorkbooksForUserTemplate = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/users/{{iwsUserId}}/workbooks?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListWorkbookConnectionsTemplate   = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}/connections";
         this._urlListDatasourcesTemplate           = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/datasources?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListProjectsTemplate              = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/projects?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
@@ -96,7 +102,6 @@ class TableauServerUrls : ITableauServerSiteInfo
         this._urlCreateProjectTemplate             = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/projects";
         this._urlDeleteWorkbookTagTemplate         = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}/tags/{{iwsTagText}}";
         this._urlDeleteDatasourceTagTemplate       = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/datasources/{{iwsDatasourceId}}/tags/{{iwsTagText}}";
-
         //Any server version specific things we want to do?
         switch (serverVersion)
         {

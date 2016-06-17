@@ -4,14 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 
-
 /// <summary>
 /// Manages the signed in session for a Tableau Server site's sign in
 /// </summary>
 class TableauServerSignIn : TableauServerRequestBase
 {
-    const string xmlLogIn = "<tsRequest>  <credentials name=\"{{iwsUserName}}\"    password=\"{{iwsPassword}}\" >  <site contentUrl=\"{{iwsSiteUrl}}\" /> </credentials></tsRequest>";
-
     private readonly TableauServerUrls _onlineUrls;
     private readonly string _userName;
     private readonly string _password;
@@ -21,8 +18,37 @@ class TableauServerSignIn : TableauServerRequestBase
     private string _logInSiteId;
     private string _logInUserId;
     public readonly TaskStatusLogs StatusLog;
+    private bool _isSignedIn; //True while we are signed in
 
 
+    /// <summary>
+    /// TRUE if we are currently signed in to a tableau server
+    /// </summary>
+    public bool IsSignedIn
+    {
+        get
+        {
+            return _isSignedIn;
+        }
+    }
+
+    /// <summary>
+    /// Sign us out
+    /// </summary>
+    /// <param name="serverUrls"></param>
+    public void SignOut(TableauServerUrls serverUrls)
+    {
+        if(!_isSignedIn)
+        {
+            StatusLog.AddError("Session not signed in. Sign out aborted");
+        }
+
+        //Perform the sign out
+        var signOut = new TableauServerSignOut(serverUrls, this);
+        signOut.ExecuteRequest();
+
+        _isSignedIn = false;
+    }
 
     /// <summary>
     /// Synchronous call to test and make sure sign in works
@@ -89,6 +115,7 @@ class TableauServerSignIn : TableauServerRequestBase
             return _logInUserId;
         }
     }
+
     /// <summary>
     /// 
     /// </summary>
@@ -96,12 +123,22 @@ class TableauServerSignIn : TableauServerRequestBase
     public bool ExecuteRequest()
     {
         var webRequest = WebRequest.Create(_onlineUrls.UrlLogin);
-        string bodyText = xmlLogIn;
-        bodyText = bodyText.Replace("{{iwsUserName}}", _userName);
-        bodyText = bodyText.Replace("{{iwsPassword}}", _password);
-        bodyText = bodyText.Replace("{{iwsSiteUrl}}", SiteUrlSegment);
-        AssertTemplateFullyReplaced(bodyText);
+        var sbXml = new StringBuilder();
+        var xmlWriter = XmlWriter.Create(sbXml, XmlHelper.XmlSettingsForWebRequests);
+        
+        xmlWriter.WriteStartElement("tsRequest");
+            xmlWriter.WriteStartElement("credentials"); //<credentials>
+                xmlWriter.WriteAttributeString("name", _userName);
+                xmlWriter.WriteAttributeString("password", _password);
+                xmlWriter.WriteStartElement("site");       //<site>
+                xmlWriter.WriteAttributeString("contentUrl", SiteUrlSegment);
+                xmlWriter.WriteEndElement();               //</site>
+            xmlWriter.WriteEndElement();              //</credentials>
 
+        xmlWriter.WriteEndElement();  //</tsRequest>
+        xmlWriter.Flush();
+
+        string bodyText = sbXml.ToString();
         //===============================================================================================
         //Make the sign in request, trap and note, and rethrow any errors
         //===============================================================================================
@@ -179,6 +216,7 @@ class TableauServerSignIn : TableauServerRequestBase
             return false;  //Failed sign in
         }
 
+        _isSignedIn = true; //Mark us as signed in
         return true; //Success
     }
 }

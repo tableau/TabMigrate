@@ -86,6 +86,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.comboBoxChooseAction = new System.Windows.Forms.ComboBox();
             this.panelTopSplitter = new System.Windows.Forms.Panel();
+            this.chkExportContentsWithKeepAlive = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerStatus)).BeginInit();
             this.splitContainerStatus.Panel1.SuspendLayout();
             this.splitContainerStatus.Panel2.SuspendLayout();
@@ -498,6 +499,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelExportSite.BackColor = System.Drawing.Color.Bisque;
             this.panelExportSite.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelExportSite.Controls.Add(this.chkExportContentsWithKeepAlive);
             this.panelExportSite.Controls.Add(this.chkExportRemoveExportTag);
             this.panelExportSite.Controls.Add(this.label5);
             this.panelExportSite.Controls.Add(this.txtExportOnlyTagged);
@@ -816,14 +818,25 @@
             this.panelTopSplitter.TabIndex = 59;
             this.panelTopSplitter.Visible = false;
             // 
+            // checkBoxExportContentsWithKeepAlive
+            // 
+            this.chkExportContentsWithKeepAlive.AutoSize = true;
+            this.chkExportContentsWithKeepAlive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkExportContentsWithKeepAlive.Location = new System.Drawing.Point(593, 83);
+            this.chkExportContentsWithKeepAlive.Name = "checkBoxExportContentsWithKeepAlive";
+            this.chkExportContentsWithKeepAlive.Size = new System.Drawing.Size(186, 21);
+            this.chkExportContentsWithKeepAlive.TabIndex = 97;
+            this.chkExportContentsWithKeepAlive.Text = "Send keep alive requests";
+            this.chkExportContentsWithKeepAlive.UseVisualStyleBackColor = true;
+            // 
             // FormSiteExportImport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1274, 615);
-            this.Controls.Add(this.panelInventorySite);
             this.Controls.Add(this.panelExportSite);
+            this.Controls.Add(this.panelInventorySite);
             this.Controls.Add(this.panelTopSplitter);
             this.Controls.Add(this.comboBoxChooseAction);
             this.Controls.Add(this.panelRunCommandLine);
@@ -912,6 +925,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox chkExportRemoveExportTag;
         private System.Windows.Forms.CheckBox chkGenerateInventoryTwb;
+        private System.Windows.Forms.CheckBox chkExportContentsWithKeepAlive;
     }
 }
 

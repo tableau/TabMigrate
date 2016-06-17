@@ -10,6 +10,9 @@ public partial class TaskMasterOptions
     //If set, we will generate more detailed log information
     public const string Option_LogVerbose = "LogVerbose";
 
+    //If set, the system will ensure that periodic (parallel to normal requests) keep alive authenticated requests get sent to the server
+    public const string Option_BackgroundKeepAlive = "BackgroundKeepAliveRequests";
+
     //On/Off flags (if the flag is present it's On)
     public const string Option_DownloadDatasources = "DownloadDatasources";
     public const string Option_UploadDatasources = "UploadDatasources";

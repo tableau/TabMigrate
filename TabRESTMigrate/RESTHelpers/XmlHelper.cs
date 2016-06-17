@@ -8,6 +8,22 @@ using System.Xml;
 /// </summary>
 internal static class XmlHelper
 {
+
+    /// <summary>
+    /// Return the XML Settings
+    /// </summary>
+    /// <returns></returns>
+    public static XmlWriterSettings XmlSettingsForWebRequests
+    {
+        get
+        {
+            XmlWriterSettings xWriterSettings = new XmlWriterSettings();
+            xWriterSettings.Encoding = new System.Text.UTF8Encoding(false);  //Use UTF-8; Never use a byte order marker, 
+            xWriterSettings.OmitXmlDeclaration = true; //No XML header
+            return xWriterSettings;
+        }
+    }
+
     /// <summary>
     /// Gets the attribute or returns a default value
     /// </summary>
@@ -53,7 +69,6 @@ internal static class XmlHelper
         }
 
         return System.Convert.ToBoolean(attr.Value);
-
     }
 
     /// <summary>

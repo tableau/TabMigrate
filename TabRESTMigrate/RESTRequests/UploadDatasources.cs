@@ -268,9 +268,7 @@ class UploadDatasources : TableauServerSignedInRequestBase
     {
         //See definition: http://onlinehelp.tableau.com/current/api/rest_api/en-us/help.htm#REST/rest_api_ref.htm#Publish_Datasource%3FTocPath%3DAPI%2520Reference%7C_____29
         var sb = new StringBuilder();
-        var xmlSettings = new XmlWriterSettings();
-        xmlSettings.OmitXmlDeclaration = true;
-        var xmlWriter = XmlWriter.Create(sb, xmlSettings);
+        var xmlWriter = XmlWriter.Create(sb, XmlHelper.XmlSettingsForWebRequests);
         xmlWriter.WriteStartElement("tsRequest");
             xmlWriter.WriteStartElement("datasource");
             xmlWriter.WriteAttributeString("name", publishedContentName);

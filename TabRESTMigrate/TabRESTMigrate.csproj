@@ -92,6 +92,7 @@
     <Compile Include="RESTHelpers\ServerVersion.cs" />
     <Compile Include="RESTHelpers\ServerProtocol.cs" />
     <Compile Include="RESTRequests\DownloadGroupsList.cs" />
+    <Compile Include="RESTRequests\TableauServerSignOut.cs" />
     <Compile Include="RESTRequests\DownloadUsersListInGroup.cs" />
     <Compile Include="RESTRequests\DownloadUsersListBase.cs" />
     <Compile Include="RESTRequests\DownloadDatasourceConnections.cs" />
@@ -116,6 +117,8 @@
     <Compile Include="ServerData\IHasProjectId.cs" />
     <Compile Include="RESTRequests\SendCreateProject.cs" />
     <Compile Include="RESTHelpers\DownloadListHelper.cs" />
+    <Compile Include="TaskManager\KeepAliveBackgroundWebRequest.cs" />
+    <Compile Include="TaskManager\KeepAliveBackgroundTaskBase.cs" />
     <Compile Include="TaskManager\TaskMaster_static.cs" />
     <Compile Include="RESTHelpers\TableauServerWebClient.cs">
       <SubType>Component</SubType>

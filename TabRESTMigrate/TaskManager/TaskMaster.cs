@@ -136,6 +136,7 @@ internal partial class TaskMaster
     }
 
     bool _isDone = false;
+    KeepAliveBackgroundTaskBase _asyncKeepAliveBackgroundTasks = null;
 
     public readonly string JobName;
     /// <summary>
@@ -181,10 +182,12 @@ internal partial class TaskMaster
     }
 
 
+    /// <summary>
+    /// Called to force an abort
+    /// </summary>
+    /// <param name="markAsDone"></param>
     public void Abort(bool markAsDone = false)
     {
-        var thread = _thread;
-        if (thread == null) return;
 
         //Do we want to mark ourselves as done
         if (markAsDone)
@@ -192,6 +195,21 @@ internal partial class TaskMaster
             _isDone = true;
         }
 
+        
+        //=========================================================
+        //If there is an async keep alive task, tell it to stop
+        //=========================================================
+        var asyncKeepAliveTask = _asyncKeepAliveBackgroundTasks;
+        if(asyncKeepAliveTask != null)
+        {
+            asyncKeepAliveTask.ExitAsync();
+        }
+
+        //=========================================================
+        //Deal with the thread this class manages
+        //=========================================================
+        var thread = _thread;
+        if (thread == null) return;
         thread.Abort();
     }
     public bool IsDone
@@ -711,6 +729,17 @@ internal partial class TaskMaster
         }
 
         //========================================================================================
+        //If we need periodic background requests, set them going on a background thread
+        //========================================================================================
+        if(taskOptions.IsOptionSet(TaskMasterOptions.Option_BackgroundKeepAlive))
+        {
+            _statusLog.AddStatusHeader("Setting up async background keep-alive requests");
+            _asyncKeepAliveBackgroundTasks = new KeepAliveBackgroundWebRequest(onlineUrls, serverLogin);
+            _asyncKeepAliveBackgroundTasks.Execute();
+        }
+
+
+        //========================================================================================
         //If there is a custom command we want to execute, do it
         //========================================================================================
         var customCommand1 = taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_ArbitraryCommand1);
@@ -912,6 +941,19 @@ internal partial class TaskMaster
         {
             Execute_SaveErrorsFile(errorsFile);
         }
+
+        
+        //===================================================================================
+        //Sign out and clean up
+        //===================================================================================
+        if(_asyncKeepAliveBackgroundTasks != null) //If we had background async keep alive tasks, tell them to stop
+        {
+            _asyncKeepAliveBackgroundTasks.ExitAsync();
+            _asyncKeepAliveBackgroundTasks = null;
+        }
+        //Sign out of Tableau Server
+        _statusLog.AddStatusHeader("Sign out");
+        serverLogin.SignOut(onlineUrls);
     }
 
 

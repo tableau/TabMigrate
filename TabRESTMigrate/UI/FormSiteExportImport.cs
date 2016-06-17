@@ -178,6 +178,7 @@ namespace OnlineContentDownloader
                 chkExportRemoveExportTag.Checked,
                 localPathForLogFile,
                 localPathForErrorsFile,
+                chkExportContentsWithKeepAlive.Checked,
                 chkVerboseLog.Checked,
                 out commandLineAsText,
                 out commandLineParsed);

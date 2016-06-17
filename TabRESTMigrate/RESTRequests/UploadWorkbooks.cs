@@ -393,9 +393,7 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
         var sb = new StringBuilder();
 
         //Build the XML part of the MIME message we will post up to server
-        var xmlSettings = new XmlWriterSettings();
-        xmlSettings.OmitXmlDeclaration = true;
-        var xmlWriter = XmlWriter.Create(sb, xmlSettings);
+        var xmlWriter = XmlWriter.Create(sb, XmlHelper.XmlSettingsForWebRequests);
         xmlWriter.WriteStartElement("tsRequest");
             xmlWriter.WriteStartElement("workbook");
             xmlWriter.WriteAttributeString("name", publishedContentName);

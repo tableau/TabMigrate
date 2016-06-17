@@ -54,9 +54,7 @@ class SendCreateProject : TableauServerSignedInRequestBase
     {
         //ref: http://onlinehelp.tableau.com/current/api/rest_api/en-us/help.htm#REST/rest_api_ref.htm#Create_Project%3FTocPath%3DAPI%2520Reference%7C_____12  
         var sb = new StringBuilder();
-        var xmlSettings = new XmlWriterSettings();
-        xmlSettings.OmitXmlDeclaration = true;
-        var xmlWriter = XmlWriter.Create(sb, xmlSettings);
+        var xmlWriter = XmlWriter.Create(sb, XmlHelper.XmlSettingsForWebRequests);
         xmlWriter.WriteStartElement("tsRequest");
         xmlWriter.WriteStartElement("project");
         xmlWriter.WriteAttributeString("name", projectName);
