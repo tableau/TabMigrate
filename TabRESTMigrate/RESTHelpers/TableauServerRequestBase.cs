@@ -18,7 +18,7 @@ abstract class TableauServerRequestBase
     {
         request.Method = "POST";
         // Set the ContentType property of the WebRequest.
-        request.ContentType = "application/x-www-form-urlencoded";
+        request.ContentType = "application/xml;charset=utf-8"; //[2016-06-17] We want to be very explicit on the content type; to give servers very clear instructions on how to parse
         // Set the ContentLength property of the WebRequest.
         byte[] byteArray = Encoding.UTF8.GetBytes(bodyText);
         request.ContentLength = byteArray.Length;

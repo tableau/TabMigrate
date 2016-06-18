@@ -70,7 +70,7 @@ class SendCreateProject : TableauServerSignedInRequestBase
 
         //Create a web request 
         var urlCreateProject = _onlineUrls.Url_CreateProject(_onlineSession);
-        var webRequest =this.CreateLoggedInWebRequest(urlCreateProject, "POST");
+        var webRequest = this.CreateLoggedInWebRequest(urlCreateProject, "POST");
         TableauServerRequestBase.SendPostContents(webRequest, xmlText);
         
         //Get the response
