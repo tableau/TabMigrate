@@ -7,7 +7,7 @@ using System.IO;
 /// <summary>
 /// Uploads a directory full of workbooks 
 /// </summary>
-class UploadWorkbooks : TableauServerSignedInRequestBase
+partial class UploadWorkbooks : TableauServerSignedInRequestBase
 {
 
     /// <summary>
@@ -177,7 +177,10 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
                         Path.GetFileName(thisFilePath),
                         projectName);
 
-                    bool wasFileUploaded = AttemptUploadSingleFile(thisFilePath, projectIdForUploads, dbCredentialsIfAny);
+                    //See what content specific settings there may be for this workbook
+                    var publishSettings = helper_DetermineContentPublishSettings(thisFilePath);
+
+                    bool wasFileUploaded = AttemptUploadSingleFile(thisFilePath, projectIdForUploads, dbCredentialsIfAny, publishSettings);
                     if (wasFileUploaded) { countSuccess++; }
                 }
                 catch (Exception ex)
@@ -188,7 +191,7 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
             }
         }
 
-        //If we are recuring, then look in the subdirectories too
+        //If we are running recursive , then look in the subdirectories too
         if(recurseDirectories)
         {
             int subDirSuccess;
@@ -202,6 +205,17 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
         }
     }
 
+
+    /// <summary>
+    /// Look up settings associated with this content
+    /// </summary>
+    /// <param name="workbookWithPath"></param>
+    /// <returns></returns>
+    WorkbookPublishSettings helper_DetermineContentPublishSettings(string workbookWithPath)
+    {
+        return WorkbookPublishSettings.GetSettingsForSavedWorkbook(workbookWithPath);
+    }
+
     /// <summary>
     /// Sanity testing on whether the file being uploaded is worth uploading
     /// </summary>
@@ -209,18 +223,24 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
     /// <returns></returns>
     bool IsValidUploadFile(string localFilePath)
     {
+        //If the file is a custom settings file for the workbook, then ignore it
+        if(WorkbookPublishSettings.IsWorkbookSettingsFile(localFilePath))
+        {
+            return false; //Nothing to do, it's just a settings file
+        }
+
         //Ignore temp files, since we know we don't want to upload them
         var fileExtension = Path.GetExtension(localFilePath).ToLower();
         if ((fileExtension == ".tmp") || (fileExtension == ".temp"))
         {
             StatusLog.AddStatus("Ignoring temp file, " + localFilePath, -10);
             return false;
-        }
+        }        
 
-        //These are the only kinds of data sources we know about...
+        //These are the only kinds of files we know about...
         if ((fileExtension != ".twb") && (fileExtension != ".twbx"))
         {
-            StatusLog.AddError("File is not a data source: " + localFilePath);
+            StatusLog.AddError("File is not a workbook: " + localFilePath);
             return false;
         }
 
@@ -233,19 +253,21 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
     /// <param name="thisFilePath"></param>
     /// <param name="projectIdForUploads"></param>
     /// <param name="dbCredentials">If not NULL, then these are the DB credentials we want to associate with the content we are uploading</param>
+    /// <param name="publishSettings">Workbook publish settings (e.g. whether to show tabs in vizs)</param>
     private bool AttemptUploadSingleFile(
         string thisFilePath, 
         string projectIdForUploads,
-        CredentialManager.Credential dbCredentials)
+        CredentialManager.Credential dbCredentials,
+        WorkbookPublishSettings publishSettings)
     {
         //Assume it's a file we should try to upload
         if (_remapWorkbookReferences)
         {
-            return AttemptUploadSingleFile_ReferencesRemapped(thisFilePath, projectIdForUploads, dbCredentials);
+            return AttemptUploadSingleFile_ReferencesRemapped(thisFilePath, projectIdForUploads, dbCredentials, publishSettings);
         }
         else
         {
-            return AttemptUploadSingleFile_Inner(thisFilePath, projectIdForUploads, dbCredentials);
+            return AttemptUploadSingleFile_Inner(thisFilePath, projectIdForUploads, dbCredentials, publishSettings);
         }
     }
 
@@ -257,7 +279,8 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
     private bool AttemptUploadSingleFile_ReferencesRemapped(
         string thisFilePath, 
         string projectIdForUploads,
-        CredentialManager.Credential dbCredentials)
+        CredentialManager.Credential dbCredentials,
+        WorkbookPublishSettings publishSettings)
     {
         bool success = false;
 
@@ -271,7 +294,7 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
             //Remap the references in the file
             var twbRemapper = new TwbDataSourceEditor(pathToRemapFile, pathToRemapFile, _onlineUrls, this.StatusLog);
             twbRemapper.Execute();
-            success = AttemptUploadSingleFile_Inner(pathToRemapFile, projectIdForUploads, dbCredentials);
+            success = AttemptUploadSingleFile_Inner(pathToRemapFile, projectIdForUploads, dbCredentials, publishSettings);
         }
         else if(fileType == ".twbx")
         {
@@ -286,7 +309,7 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
             var twbxRemapper = new TwbxDataSourceEditor(pathToRemapFile, pathUnzip, _onlineUrls, this.StatusLog);
             string pathTwbxRemappedOutput = twbxRemapper.Execute();
             //Upload the remapped file
-            success = AttemptUploadSingleFile_Inner(pathTwbxRemappedOutput, projectIdForUploads, dbCredentials);
+            success = AttemptUploadSingleFile_Inner(pathTwbxRemappedOutput, projectIdForUploads, dbCredentials, publishSettings);
 
             //Clean-up and delete the whole unzipped directory
             Directory.Delete(pathUnzip, true);
@@ -310,7 +333,8 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
     private bool AttemptUploadSingleFile_Inner(
         string localFilePath, 
         string projectId, 
-        CredentialManager.Credential dbCredentials)
+        CredentialManager.Credential dbCredentials,
+        WorkbookPublishSettings publishSettings)
     {
         string uploadSessionId;
         try
@@ -334,7 +358,8 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
                 FileIOHelper.Undo_GenerateWindowsSafeFilename(fileName), //[2016-05-06] If the name has escapted characters, unescape them 
                 uploadType, 
                 projectId, 
-                dbCredentials);
+                dbCredentials,
+                publishSettings);
             StatusLog.AddStatus("Upload content details: " + workbook.ToString(), -10);
             StatusLog.AddStatus("Success! Uploaded workbook " + Path.GetFileName(localFilePath));
         }
@@ -387,7 +412,8 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
         string publishedContentName, 
         string publishedContentType, 
         string projectId,
-        CredentialManager.Credential dbCredentials)
+        CredentialManager.Credential dbCredentials,
+        WorkbookPublishSettings publishSettings)
     {
         //See definition: http://onlinehelp.tableau.com/current/api/rest_api/en-us/help.htm#REST/rest_api_ref.htm#Publish_Workbook%3FTocPath%3DAPI%2520Reference%7C_____29
         var sb = new StringBuilder();
@@ -397,9 +423,10 @@ class UploadWorkbooks : TableauServerSignedInRequestBase
         xmlWriter.WriteStartElement("tsRequest");
             xmlWriter.WriteStartElement("workbook");
             xmlWriter.WriteAttributeString("name", publishedContentName);
+            xmlWriter.WriteAttributeString("showTabs", XmlHelper.BoolToXmlText(publishSettings.ShowTabs));
 
                 //If we have an associated database credential, write it out
-                if (dbCredentials != null)
+        if (dbCredentials != null)
                 {
                     CredentialXmlHelper.WriteCredential(
                         xmlWriter, 

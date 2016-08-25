@@ -139,7 +139,7 @@ class UploadDatasources : TableauServerSignedInRequestBase
             }
         }
 
-        //If we are recuring, then look in the subdirectories too
+        //If we are running recursive , then look in the subdirectories too
         if (recurseDirectories)
         {
             int subDirSuccess;

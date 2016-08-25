@@ -34,12 +34,12 @@ class TwbDataSourceEditor
     /// </summary>
     public void Execute()
     {
-        //4. Load XML for *.twb file
+        //Load XML for *.twb file
         var xmlDoc = new XmlDocument();
         xmlDoc.Load(_pathToTwbInput);
 
-        //5. Look for Data Sources that are 'sqlproxy'
-        //6. Remap server-path to point to correct server/site
+        //Look for Data Sources that are 'sqlproxy'
+        //Remap server-path to point to correct server/site
         RemapDataServerReferences(xmlDoc, _serverMapInfo, _statusLog);
         //Remap global XML references to the server
         RemapWorkbookGlobalReferences(xmlDoc, _serverMapInfo, _statusLog);

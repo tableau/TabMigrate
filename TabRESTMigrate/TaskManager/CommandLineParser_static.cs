@@ -32,7 +32,8 @@ partial class CommandLineParser
     public const string Parameter_ExportDirectory       = "-exportDirectory";     //Where the site gets exported to
     public const string Parameter_ImportDirectory       = "-importDirectory";     //Where the site gets imported from
     public const string Parameter_ExitWhenDone          = "-exitWhenDone";        //When running as command line, if 'true' we will exit when the work is done
-    public const string Parameter_RemapDataserverReferences = "-remapDataserverReferences"; //On site import, workbook XML should be examined and have data server references updated to point to the target server/site
+    public const string Parameter_RemapDataserverReferences     = "-remapDataserverReferences"; //On site import, workbook XML should be examined and have data server references updated to point to the target server/site
+    public const string Parameter_GenerateInfoFilesForDownloads = "-downloadInfoFiles"; //Downloaded Workbooks/Datasources will get companion XML files with additional metadata that can be used during uploads (e.g. show tabs in workbooks)
 
     //Get an inventory of the running server
     public const string ParameterValue_Command_Inventory = "siteInventory";
@@ -152,6 +153,7 @@ partial class CommandLineParser
         string pathToErrorsFile,
         bool backgroundKeepAliveRequests,
         bool logVerbose,
+        bool generateDownloadInfoFiles,
         out string commandLineOut,
         out CommandLineParser parsedCommandLine)
     {
@@ -168,6 +170,7 @@ partial class CommandLineParser
         helper_AppendParameter(arguments, sb, Parameter_FromSiteIsSystemAdmin, helper_BoolToText(isSystemAdmin));
         helper_AppendParameter(arguments, sb, Parameter_BackgroundKeepAlive, helper_BoolToText(backgroundKeepAliveRequests));
         helper_AppendParameter(arguments, sb, Parameter_LogVerbose, helper_BoolToText(logVerbose));
+        helper_AppendParameter(arguments, sb, Parameter_GenerateInfoFilesForDownloads, helper_BoolToText(generateDownloadInfoFiles));
 
         //Export only a single project?
         if (!string.IsNullOrWhiteSpace(exportSingleProject))

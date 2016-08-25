@@ -91,6 +91,7 @@
     <Compile Include="RESTHelpers\FilterTagSet.cs" />
     <Compile Include="RESTHelpers\ServerVersion.cs" />
     <Compile Include="RESTHelpers\ServerProtocol.cs" />
+    <Compile Include="RESTHelpers\WorkbooksPublishSettings_statics.cs" />
     <Compile Include="RESTRequests\DownloadGroupsList.cs" />
     <Compile Include="RESTRequests\TableauServerSignOut.cs" />
     <Compile Include="RESTRequests\DownloadUsersListInGroup.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="RESTRequests\DownloadWorkbookConnections.cs" />
     <Compile Include="RESTRequests\SendDeleteDatasourceTag.cs" />
     <Compile Include="RESTRequests\SendDeleteWorkbookTag.cs" />
+    <Compile Include="RESTHelpers\WorkbooksPublishSettings.cs" />
     <Compile Include="ServerData\IEditDataConnectionsSet.cs" />
     <Compile Include="ServerData\IHasSiteItemId.cs" />
     <Compile Include="ServerData\ITagSetInfo.cs" />

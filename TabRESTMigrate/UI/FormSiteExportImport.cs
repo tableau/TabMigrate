@@ -180,6 +180,7 @@ namespace OnlineContentDownloader
                 localPathForErrorsFile,
                 chkExportContentsWithKeepAlive.Checked,
                 chkVerboseLog.Checked,
+                chkGenerateDownloadMetadataFiles.Checked,
                 out commandLineAsText,
                 out commandLineParsed);
 

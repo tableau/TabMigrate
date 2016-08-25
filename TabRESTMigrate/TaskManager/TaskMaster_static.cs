@@ -71,7 +71,8 @@ internal partial class TaskMaster
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ExportSingleProject)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ExportOnlyWithTag)
                 ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_RemoveTagAfterExport, false)
-                ,taskOptions
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_GenerateInfoFilesForDownloads, false)
+                , taskOptions
                 );
         }
         else if (commandType == CommandLineParser.ParameterValue_Command_Import)
@@ -174,6 +175,7 @@ internal partial class TaskMaster
         string exportSingleProject,
         string exportOnlyTaggedWith,
         bool removeTagAfterExport,
+        bool generateInfoFilesForDownloadedContent,
         TaskMasterOptions options)
     {
         //If we were passed in no existing options, then add them
@@ -208,7 +210,11 @@ internal partial class TaskMaster
             }
         }
 
-
+        //Do we want add to save additional metadata with each downloaded workbook/datasource?
+        if (generateInfoFilesForDownloadedContent)
+        {
+            options.AddOption(TaskMasterOptions.OptionParameter_GenerateInfoFilesForDownloadedContent);
+        }
 
         //Some features are only accessible to System Admins
         if (isSystemAdmin)

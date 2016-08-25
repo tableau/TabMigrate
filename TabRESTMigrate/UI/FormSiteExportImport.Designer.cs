@@ -60,6 +60,7 @@
             this.txtIdExportFrom = new System.Windows.Forms.TextBox();
             this.txtUrlExportFrom = new System.Windows.Forms.TextBox();
             this.panelExportSite = new System.Windows.Forms.Panel();
+            this.chkExportContentsWithKeepAlive = new System.Windows.Forms.CheckBox();
             this.chkExportRemoveExportTag = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.txtExportOnlyTagged = new System.Windows.Forms.TextBox();
@@ -86,7 +87,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.comboBoxChooseAction = new System.Windows.Forms.ComboBox();
             this.panelTopSplitter = new System.Windows.Forms.Panel();
-            this.chkExportContentsWithKeepAlive = new System.Windows.Forms.CheckBox();
+            this.chkGenerateDownloadMetadataFiles = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerStatus)).BeginInit();
             this.splitContainerStatus.Panel1.SuspendLayout();
             this.splitContainerStatus.Panel2.SuspendLayout();
@@ -499,6 +500,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelExportSite.BackColor = System.Drawing.Color.Bisque;
             this.panelExportSite.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelExportSite.Controls.Add(this.chkGenerateDownloadMetadataFiles);
             this.panelExportSite.Controls.Add(this.chkExportContentsWithKeepAlive);
             this.panelExportSite.Controls.Add(this.chkExportRemoveExportTag);
             this.panelExportSite.Controls.Add(this.label5);
@@ -520,6 +522,17 @@
             this.panelExportSite.Name = "panelExportSite";
             this.panelExportSite.Size = new System.Drawing.Size(1225, 352);
             this.panelExportSite.TabIndex = 53;
+            // 
+            // chkExportContentsWithKeepAlive
+            // 
+            this.chkExportContentsWithKeepAlive.AutoSize = true;
+            this.chkExportContentsWithKeepAlive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkExportContentsWithKeepAlive.Location = new System.Drawing.Point(593, 83);
+            this.chkExportContentsWithKeepAlive.Name = "chkExportContentsWithKeepAlive";
+            this.chkExportContentsWithKeepAlive.Size = new System.Drawing.Size(186, 21);
+            this.chkExportContentsWithKeepAlive.TabIndex = 97;
+            this.chkExportContentsWithKeepAlive.Text = "Send keep alive requests";
+            this.chkExportContentsWithKeepAlive.UseVisualStyleBackColor = true;
             // 
             // chkExportRemoveExportTag
             // 
@@ -818,16 +831,18 @@
             this.panelTopSplitter.TabIndex = 59;
             this.panelTopSplitter.Visible = false;
             // 
-            // checkBoxExportContentsWithKeepAlive
+            // chkGenerateDownloadMetadataFiles
             // 
-            this.chkExportContentsWithKeepAlive.AutoSize = true;
-            this.chkExportContentsWithKeepAlive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkExportContentsWithKeepAlive.Location = new System.Drawing.Point(593, 83);
-            this.chkExportContentsWithKeepAlive.Name = "checkBoxExportContentsWithKeepAlive";
-            this.chkExportContentsWithKeepAlive.Size = new System.Drawing.Size(186, 21);
-            this.chkExportContentsWithKeepAlive.TabIndex = 97;
-            this.chkExportContentsWithKeepAlive.Text = "Send keep alive requests";
-            this.chkExportContentsWithKeepAlive.UseVisualStyleBackColor = true;
+            this.chkGenerateDownloadMetadataFiles.AutoSize = true;
+            this.chkGenerateDownloadMetadataFiles.Checked = true;
+            this.chkGenerateDownloadMetadataFiles.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkGenerateDownloadMetadataFiles.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkGenerateDownloadMetadataFiles.Location = new System.Drawing.Point(593, 127);
+            this.chkGenerateDownloadMetadataFiles.Name = "chkGenerateDownloadMetadataFiles";
+            this.chkGenerateDownloadMetadataFiles.Size = new System.Drawing.Size(257, 21);
+            this.chkGenerateDownloadMetadataFiles.TabIndex = 98;
+            this.chkGenerateDownloadMetadataFiles.Text = "Generate files with content metadata";
+            this.chkGenerateDownloadMetadataFiles.UseVisualStyleBackColor = true;
             // 
             // FormSiteExportImport
             // 
@@ -926,6 +941,7 @@
         private System.Windows.Forms.CheckBox chkExportRemoveExportTag;
         private System.Windows.Forms.CheckBox chkGenerateInventoryTwb;
         private System.Windows.Forms.CheckBox chkExportContentsWithKeepAlive;
+        private System.Windows.Forms.CheckBox chkGenerateDownloadMetadataFiles;
     }
 }
 

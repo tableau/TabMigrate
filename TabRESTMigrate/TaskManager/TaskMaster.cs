@@ -509,13 +509,15 @@ internal partial class TaskMaster
     /// <param name="singleProjectIdFilter">if specified, export only from a single project</param>
     /// <param name="exportOnlyWithThisTag">if specified, export only content with this tag</param>
     /// <param name="deleteTagAfterExport">TRUE: Remove the server-side tag from exported content (only valid if we have an export tag)</param>
+    /// <param name="generateInfoFile">TRUE: Each downloaded workbook will get an information file generated that has additional metadata about it</param>
     private void Execute_DownloadWorkbooks(
         TableauServerSignIn onlineLogin, 
         string exportToPath, 
         IProjectsList projectsList,
         SiteProject singleProjectIdFilter = null,
         string exportOnlyWithThisTag = null,
-        bool deleteTagAfterExport = false)
+        bool deleteTagAfterExport = false,
+        bool generateInfoFile = false)
     {
         var onlineUrls = _onlineUrls;
         _statusLog.AddStatusHeader("Download workbooks");
@@ -576,7 +578,7 @@ internal partial class TaskMaster
         FileIOHelper.CreatePathIfNeeded(workbookPath);
         try
         {
-            var workbookDownloads = new DownloadWorkbooks(onlineUrls, onlineLogin, filteredList, workbookPath, projectsList);
+            var workbookDownloads = new DownloadWorkbooks(onlineUrls, onlineLogin, filteredList, workbookPath, projectsList, generateInfoFile);
             successfullExportSet = workbookDownloads.ExecuteRequest();
         }
         catch (Exception exWorkbooksDownload)
@@ -847,6 +849,7 @@ internal partial class TaskMaster
                 ,exportSingleProject
                 ,taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_ExportOnlyTaggedWith)
                 ,taskOptions.IsOptionSet(TaskMasterOptions.OptionParameter_RemoveTagFromExportedContent)
+                ,taskOptions.IsOptionSet(TaskMasterOptions.OptionParameter_GenerateInfoFilesForDownloadedContent)
                 );
         }
 

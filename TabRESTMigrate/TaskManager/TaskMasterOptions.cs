@@ -10,7 +10,7 @@ using System.Xml;
 public partial class TaskMasterOptions
 {
     private Dictionary<string, string> _optionMapper = new Dictionary<string, string>();
-    //True of the option is sspecified
+    //True of the option is specified
     public bool IsOptionSet(string optionName)
     {
         string optionValue;

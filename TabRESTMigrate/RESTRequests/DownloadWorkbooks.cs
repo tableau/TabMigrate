@@ -29,6 +29,12 @@ class DownloadWorkbooks : TableauServerSignedInRequestBase
     private readonly IProjectsList _downloadToProjectDirectories;
 
     /// <summary>
+    /// If TRUE a companion XML file will be generated for each downloaded Workbook with additional
+    /// information about it that is useful for uploads
+    /// </summary>
+    private readonly bool _generateInfoFile;
+
+    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="onlineUrls"></param>
@@ -41,13 +47,15 @@ class DownloadWorkbooks : TableauServerSignedInRequestBase
         TableauServerSignIn login, 
         IEnumerable<SiteWorkbook> workbooks,
         string localSavePath,
-        IProjectsList projectsList)
+        IProjectsList projectsList,
+        bool generateInfoFile)
         : base(login)
     {
         _onlineUrls = onlineUrls;
         _workbooks = workbooks;
         _localSavePath = localSavePath;
         _downloadToProjectDirectories = projectsList;
+        _generateInfoFile = generateInfoFile;
     }
 
     /// <summary>
@@ -87,10 +95,16 @@ class DownloadWorkbooks : TableauServerSignedInRequestBase
                 var fileDownloadedNoPath = System.IO.Path.GetFileName(fileDownloaded);
                 statusLog.AddStatus("Finished Workbook download " + fileDownloadedNoPath);
 
-                //Add to the list of our downloaded data sources
+                //Add to the list of our downloaded workbooks, and save metadata
                 if (!string.IsNullOrWhiteSpace(fileDownloaded))
                 {
                     downloadedContent.Add(contentInfo);
+
+                    //Generate the metadata file that has additional server provided information about the workbook
+                    if(_generateInfoFile)
+                    {
+                        WorkbookPublishSettings.CreateWorkbookSettingsFile(contentInfo, fileDownloaded);
+                    }
                 }
                 else
                 {
