@@ -24,6 +24,17 @@ class UploadDatasources : TableauServerSignedInRequestBase
     private readonly CredentialManager _credentialManager;
 
     /// <summary>
+    /// TRUE: After the upload, attempt to reassign the owner of the content
+    /// </summary>
+    private readonly bool _attemptOwnershipAssignment;
+
+    /// <summary>
+    /// List of users in the site (used for looking up user-ids, based on the user names and mapping ownership)
+    /// </summary>
+    private readonly IEnumerable<SiteUser> _siteUsers;
+
+
+    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="onlineUrls"></param>
@@ -36,6 +47,8 @@ class UploadDatasources : TableauServerSignedInRequestBase
         string localUploadPath,
         UploadBehaviorProjects uploadProjectBehavior,
         CustomerManualActionManager manualActions,
+        bool attemptOwnershipAssignment,
+        IEnumerable<SiteUser> siteUsers,
         int uploadChunkSizeBytes = TableauServerUrls.UploadFileChunkSize,
         int uploadChunkDelaySeconds = 0)
         : base(login)
@@ -51,6 +64,11 @@ class UploadDatasources : TableauServerSignedInRequestBase
         {
             _manualActions = new CustomerManualActionManager();
         }
+
+        //If we are going to attempt to reassign ownership after publication we'll need this information
+        _attemptOwnershipAssignment = attemptOwnershipAssignment;
+        _siteUsers = siteUsers;
+
         //Test parameters
         _uploadChunkSizeBytes = uploadChunkSizeBytes;
         _uploadChunkDelaySeconds = uploadChunkDelaySeconds;
@@ -127,7 +145,11 @@ class UploadDatasources : TableauServerSignedInRequestBase
                         Path.GetFileName(thisFilePath),
                         projectName);
 
-                    bool wasFileUploaded = AttemptUploadSingleFile(thisFilePath, projectIdForUploads, dbCredentialsIfAny);
+                    //See what content specific settings there may be for this workbook
+                    var publishSettings = DatasourcePublishSettings.GetSettingsForSavedDatasource(thisFilePath);
+
+                    //Do the file upload
+                    bool wasFileUploaded = AttemptUploadSingleFile(thisFilePath, projectIdForUploads, dbCredentialsIfAny, publishSettings);
                     if (wasFileUploaded) { countSuccess++; }
                 }
                 catch (Exception ex)
@@ -176,6 +198,12 @@ class UploadDatasources : TableauServerSignedInRequestBase
     /// <returns></returns>
     bool IsValidUploadFile(string localFilePath)
     {
+        //If the file is a custom settings file for the workbook, then ignore it
+        if (DatasourcePublishSettings.IsSettingsFile(localFilePath))
+        {
+            return false; //Nothing to do, it's just a settings file
+        }
+
         //Ignore temp files, since we know we don't want to upload them
         var fileExtension = Path.GetExtension(localFilePath).ToLower();
         if ((fileExtension == ".tmp") || (fileExtension == ".temp"))
@@ -204,7 +232,8 @@ class UploadDatasources : TableauServerSignedInRequestBase
     private bool AttemptUploadSingleFile(
         string localFilePath, 
         string projectId,
-        CredentialManager.Credential dbCredentials)
+        CredentialManager.Credential dbCredentials,
+        DatasourcePublishSettings publishSettings)
     {
         string uploadSessionId;
         try
@@ -218,12 +247,13 @@ class UploadDatasources : TableauServerSignedInRequestBase
             throw exFileUpload;
         }
 
+        SiteDatasource dataSource = null;
         this.StatusLog.AddStatus("File chunks upload successful. Next step, make it a published datasource", -10);
         try
         {
             string fileName = Path.GetFileNameWithoutExtension(localFilePath);
             string uploadType = RemoveFileExtensionDot(Path.GetExtension(localFilePath).ToLower());
-            var dataSource = FinalizePublish(
+            dataSource = FinalizePublish(
                 uploadSessionId,
                 FileIOHelper.Undo_GenerateWindowsSafeFilename(fileName), //[2016-05-06] If the name has escapted characters, unescape them
                 uploadType, 
@@ -238,6 +268,22 @@ class UploadDatasources : TableauServerSignedInRequestBase
             throw exPublishFinalize; ;
 
         }
+
+        //See if we want to reassign ownership of the datasource
+        if (_attemptOwnershipAssignment)
+        {
+            try
+            {
+                AttemptOwnerReassignment(dataSource, publishSettings, _siteUsers);
+            }
+            catch (Exception exOwnershipAssignment)
+            {
+                this.StatusLog.AddError("Unexpected error reassigning ownership of published datasource " + dataSource.Name + ", " + exOwnershipAssignment.Message);
+                LogManualAction_ReassignOwnership(dataSource.Name);
+                throw exOwnershipAssignment;
+            }
+        }
+
         return true;     //Success
     }
 
@@ -315,7 +361,7 @@ class UploadDatasources : TableauServerSignedInRequestBase
             }
             catch(Exception parseXml)
             {
-                StatusLog.AddError("Data source upload, error parsing XML resposne " + parseXml.Message + "\r\n" + dataSourceXml.InnerXml);
+                StatusLog.AddError("Data source upload, error parsing XML response " + parseXml.Message + "\r\n" + dataSourceXml.InnerXml);
                 return null;
             }
         }
@@ -343,4 +389,116 @@ class UploadDatasources : TableauServerSignedInRequestBase
             projectName);
     }
 
+    /// <summary>
+    /// Assign ownership
+    /// </summary>
+    /// <param name="datasource"></param>
+    /// <param name="publishSettings"></param>
+    /// <param name="siteUsers"></param>
+    /// <returns>TRUE: The server content has the correct owner now.  FALSE: We were unable to give the server content the correct owner</returns>
+    private bool AttemptOwnerReassignment(SiteDatasource datasource, DatasourcePublishSettings publishSettings, IEnumerable<SiteUser> siteUsers)
+    {
+        this.StatusLog.AddStatusHeader("Attempting ownership assignement for Datasource " + datasource.Name + "/" + datasource.Id);
+
+        //Something went wrong if we don't have a set of site users to do the look up
+        if (siteUsers == null)
+        {
+            throw new ArgumentException("No set of site users provided for lookup");
+        }
+
+        //Look the local meta data to see what the desired name is
+        var desiredOwnerName = publishSettings.OwnerName;
+        if (string.IsNullOrEmpty(desiredOwnerName))
+        {
+            this.StatusLog.AddStatus("Skipping owner assignment. The local file system has no metadata with an owner information for " + datasource.Name);
+            LogManualAction_ReassignOwnership(datasource.Name, "none specified", "No client ownership information was specified");
+            return true; //Since there is no ownership preference stated locally, then ownership we assigned during upload was fine.
+        }
+
+        //Look on the list of users in the target site/server, and try to find a match
+        //
+        //NOTE: We are doing a CASE INSENSITIVE name comparison. We assume that there are not 2 users with the same name on server w/differet cases
+        //      Because if this, we want to be flexible and allow that our source/destination servers may have the user name specified with a differnt 
+        //      case.  -- This is less secure than a case-sensitive comparison, but is almost always what we want when porting content between servers
+        var desiredServerUser = SiteUser.FindUserWithName(siteUsers, desiredOwnerName, StringComparison.InvariantCultureIgnoreCase);
+
+        if (desiredServerUser == null)
+        {
+            this.StatusLog.AddError("The local file has a workbook/user mapping: " + datasource.Name + "/" + desiredOwnerName + ", but this user does not exist on the target site");
+            LogManualAction_ReassignOwnership(datasource.Name, desiredOwnerName, "The target site does not contain a user name that matches the owner specified by the local metadata");
+            return false; //Not a run time error, but we have manual steps to perform
+        }
+
+        //If the server content is already correct, then there is nothing to do
+        if (desiredServerUser.Id == datasource.OwnerId)
+        {
+            this.StatusLog.AddStatus("Workbook " + datasource.Name + "/" + datasource.Id + ", already has correct ownership. No update requried");
+            return true;
+        }
+
+        //Lets tell server to update the owner
+        var changeOwnership = new SendUpdateDatasourceOwner(_onlineUrls, _onlineSession, datasource.Id, desiredServerUser.Id);
+        SiteDatasource updatedDatasource;
+        try
+        {
+            this.StatusLog.AddStatus("Server request to change Datasource ownership, ds: " + datasource.Name + "/" + datasource.Id + ", user:" + desiredServerUser.Name + "/" + desiredServerUser.Id);
+            updatedDatasource = changeOwnership.ExecuteRequest();
+        }
+        catch (Exception exChangeOnwnerhsip)
+        {
+            throw exChangeOnwnerhsip; //Unexpected error, send it upward
+        }
+
+        //Sanity check the result we got back: Double check to make sure we have the expected owner.
+        if (updatedDatasource.OwnerId != desiredServerUser.Id)
+        {
+            this.StatusLog.AddError("Unexpected server error! Updated workbook Owner Id does not match expected. ds: "
+                + datasource.Name + "/" + datasource.Id + ", "
+                + "expected user: " + desiredServerUser.Id + ", "
+                + "actual user: " + updatedDatasource.OwnerId
+                );
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// A manual step will be required to set the owner of the content
+    /// </summary>
+    /// <param name="filePath"></param>
+    private void LogManualAction_ReassignOwnership(string datasourceName, string ownerName = "", string cause = "")
+    {
+        //Cannonicalize
+        if (string.IsNullOrEmpty(ownerName))
+        {
+            ownerName = "";
+        }
+
+        if (string.IsNullOrEmpty(cause))
+        {
+            cause = "Either the datasource did not have a local metadata file with ownership information, or we could not match the user name on server";
+        }
+
+        _manualActions.AddKeyValuePairs
+            (
+            new string[]
+            {
+                "action",
+                "content",
+                "cause",
+                "name",
+                "desired-owner"
+            },
+            new string[]
+            {
+                "Reassign owner of Workbook on server",
+                "Datasource",
+                 cause,
+                 datasourceName,
+                 ownerName
+            }
+            );
+    }
+
 }
+

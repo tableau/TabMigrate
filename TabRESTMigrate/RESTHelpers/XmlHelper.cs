@@ -8,6 +8,7 @@ using System.Xml;
 /// </summary>
 internal static class XmlHelper
 {
+    public const string XmlAttribute_Value = "value";
 
     /// <summary>
     /// Return the XML Settings
@@ -211,6 +212,32 @@ internal static class XmlHelper
         }
 
         return attribute.Value;
+    }
+
+
+    /// <summary>
+    /// Write a simple name/value pair as an XML element
+    /// </summary>
+    /// <param name="xmlWriter"></param>
+    /// <param name="elementName"></param>
+    /// <param name="value"></param>
+    internal static void WriteValueElement(XmlWriter xmlWriter, string elementName, bool value)
+    {
+        xmlWriter.WriteStartElement(elementName);
+        XmlHelper.WriteBooleanAttribute(xmlWriter, XmlAttribute_Value, value);
+        xmlWriter.WriteEndElement();
+    }
+    /// <summary>
+    /// Write a simple name/value pair as an XML element
+    /// </summary>
+    /// <param name="xmlWriter"></param>
+    /// <param name="elementName"></param>
+    /// <param name="value"></param>
+    internal static void WriteValueElement(XmlWriter xmlWriter, string elementName, string value)
+    {
+        xmlWriter.WriteStartElement(elementName);
+        xmlWriter.WriteAttributeString(XmlAttribute_Value, value);
+        xmlWriter.WriteEndElement();
     }
 
 }

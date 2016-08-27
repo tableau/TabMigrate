@@ -91,8 +91,12 @@
     <Compile Include="RESTHelpers\FilterTagSet.cs" />
     <Compile Include="RESTHelpers\ServerVersion.cs" />
     <Compile Include="RESTHelpers\ServerProtocol.cs" />
+    <Compile Include="RESTHelpers\DatasourcePublishSettings_statics.cs" />
+    <Compile Include="RESTHelpers\DatasourcePublishSettings.cs" />
     <Compile Include="RESTHelpers\WorkbooksPublishSettings_statics.cs" />
     <Compile Include="RESTRequests\DownloadGroupsList.cs" />
+    <Compile Include="RESTRequests\SendUpdateDatasourceOwner.cs" />
+    <Compile Include="RESTRequests\SendUpdateWorkbookOwner.cs" />
     <Compile Include="RESTRequests\TableauServerSignOut.cs" />
     <Compile Include="RESTRequests\DownloadUsersListInGroup.cs" />
     <Compile Include="RESTRequests\DownloadUsersListBase.cs" />
@@ -110,6 +114,7 @@
     <Compile Include="ServerData\SiteTag.cs" />
     <Compile Include="ServerData\SiteTagsSet.cs" />
     <Compile Include="ServerData\SiteDocumentBase.cs" />
+    <Compile Include="ServerData\SiteUser_statics.cs" />
     <Compile Include="TaskManager\CommandLineParser_static.cs" />
     <Compile Include="TaskManager\CommandLineParser.cs" />
     <Compile Include="FilesLogging\CsvDataGenerator.cs" />

@@ -49,6 +49,8 @@ class TableauServerUrls : ITableauServerSiteInfo
     private readonly string _urlCreateProjectTemplate;
     private readonly string _urlDeleteWorkbookTagTemplate;
     private readonly string _urlDeleteDatasourceTagTemplate;
+    private readonly string _urlUpdateWorkbookTemplate;
+    private readonly string _urlUpdateDatasourceTemplate;
 
     /// <summary>
     /// Server url with protocol
@@ -102,6 +104,8 @@ class TableauServerUrls : ITableauServerSiteInfo
         this._urlCreateProjectTemplate             = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/projects";
         this._urlDeleteWorkbookTagTemplate         = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}/tags/{{iwsTagText}}";
         this._urlDeleteDatasourceTagTemplate       = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/datasources/{{iwsDatasourceId}}/tags/{{iwsTagText}}";
+        this._urlUpdateWorkbookTemplate            = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}";
+        this._urlUpdateDatasourceTemplate          = serverNameWithProtocol + "/api/2.0/sites/{{iwsSiteId}}/datasources/{{iwsDatasourceId}}";
         //Any server version specific things we want to do?
         switch (serverVersion)
         {
@@ -336,6 +340,40 @@ class TableauServerUrls : ITableauServerSiteInfo
         workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
         workingText = workingText.Replace("{{iwsWorkbookId}}", workbookId);
         workingText = workingText.Replace("{{iwsTagText}}", tagText);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for updating workbook metadata (e.g. owners, show tabs)
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="workbookId"></param>
+    /// <param name="tagText">Tag we want to delete</param>
+    /// <returns></returns>
+    public string Url_UpdateWorkbook(TableauServerSignIn session, string workbookId)
+    {
+        string workingText = _urlUpdateWorkbookTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsWorkbookId}}", workbookId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for updating datasource metadata (e.g. owner id)
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="workbookId"></param>
+    /// <param name="tagText">Tag we want to delete</param>
+    /// <returns></returns>
+    public string Url_UpdateDatasource(TableauServerSignIn session, string datasourceId)
+    {
+        string workingText = _urlUpdateDatasourceTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsDatasourceId}}", datasourceId);
         ValidateTemplateReplaceComplete(workingText);
 
         return workingText;

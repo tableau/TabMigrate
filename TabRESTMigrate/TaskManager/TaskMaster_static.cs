@@ -67,7 +67,7 @@ internal partial class TaskMaster
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromSiteUrl)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserId)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserPassword)
-                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromSiteIsSystemAdmin)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromSiteIsSystemAdmin) || commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromSiteIsSiteAdmin)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ExportSingleProject)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ExportOnlyWithTag)
                 ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_RemoveTagAfterExport, false)
@@ -82,9 +82,10 @@ internal partial class TaskMaster
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToSiteUrl)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserId)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserPassword)
-                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ToSiteIsSystemAdmin)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ToSiteIsSystemAdmin) || commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ToSiteIsSiteAdmin)
                 ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_RemapDataserverReferences)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_DBCredentialsFile)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ImportAssignContentOwnership)
                 ,taskOptions
                 );
         }
@@ -171,7 +172,7 @@ internal partial class TaskMaster
         string urlToServerSite,
         string userName,
         string password,
-        bool isSystemAdmin,
+        bool isSiteAdmin,
         string exportSingleProject,
         string exportOnlyTaggedWith,
         bool removeTagAfterExport,
@@ -216,8 +217,8 @@ internal partial class TaskMaster
             options.AddOption(TaskMasterOptions.OptionParameter_GenerateInfoFilesForDownloadedContent);
         }
 
-        //Some features are only accessible to System Admins
-        if (isSystemAdmin)
+        //Some features are only accessible to Site Admins
+        if (isSiteAdmin)
         {
             options.AddOption(TaskMasterOptions.Option_GetSiteUsers);
             options.AddOption(TaskMasterOptions.Option_GetSiteInfo);
@@ -246,6 +247,7 @@ internal partial class TaskMaster
     /// <param name="isSystemAdmin"></param>
     /// <param name="remapDataserverReferences"></param>
     /// <param name="pathDbCredentials"></param>
+    /// <param name="assignContentOwnership">TRUE: Look for metadata files for uploaded content and attempt to reassign its ownership</param>
     /// <param name="options"></param>
     /// <returns></returns>
     private static TaskMaster helper_CreateTaskMaster_SiteImport(
@@ -253,9 +255,10 @@ internal partial class TaskMaster
         string urlToServerSite,
         string userName,
         string password,
-        bool isSystemAdmin,
+        bool isSiteAdmin,
         bool remapDataserverReferences,
         string pathDbCredentials,
+        bool assignContentOwnership,
         TaskMasterOptions options)
     {
         //If we were passed in no existing options, then add them
@@ -272,13 +275,18 @@ internal partial class TaskMaster
         options.AddOption(TaskMasterOptions.Option_UploadWorkbooks);
 
         //Some features are only accessible to System Admins
-        if (isSystemAdmin)
+        if (isSiteAdmin)
         {
             options.AddOption(TaskMasterOptions.Option_UploadCreateNeededProjects);
         }
 
+        if(assignContentOwnership)
+        {
+            options.AddOption(TaskMasterOptions.Option_AssignContentOwnershipAfterPublish);
+        }
+
         //Do we need to remap workbook references to point to the Server/Site we are uploading to
-        if(remapDataserverReferences)
+        if (remapDataserverReferences)
         {
             options.AddOption(TaskMasterOptions.Option_RemapWorkbookReferencesOnUpload);
         }

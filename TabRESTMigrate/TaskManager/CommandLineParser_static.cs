@@ -13,11 +13,13 @@ partial class CommandLineParser
     public const string Parameter_FromSiteUrl           = "-fromSiteUrl";         //URL to site we are accessing
     public const string Parameter_FromUserId            = "-fromSiteUserId";      //User ID we are downloading content from
     public const string Parameter_FromUserPassword      = "-fromSiteUserPassword";//Password for user id 
-    public const string Parameter_FromSiteIsSystemAdmin = "-fromSiteIsSystemAdmin";//Is the user id a System Admin account?
+    public const string Parameter_FromSiteIsSiteAdmin   = "-fromSiteIsSiteAdmin";   //Is the user id a Site Admin account?
+    public const string Parameter_FromSiteIsSystemAdmin = "-fromSiteIsSystemAdmin"; //Is the user id a System Admin account?
     public const string Parameter_ToSiteUrl             = "-toSiteUrl";           //URL to site we are accessing
     public const string Parameter_ToUserId              = "-toSiteUserId";        //User ID we are downloading content from
     public const string Parameter_ToUserPassword        = "-toSiteUserPassword";  //Password for user id 
     public const string Parameter_ToSiteIsSystemAdmin   = "-toSiteIsSystemAdmin"; //Is the user id a System Admin account?
+    public const string Parameter_ToSiteIsSiteAdmin     = "-toSiteIsSiteAdmin";   //Is the user id a Site Admin account?
     public const string Parameter_ExportSingleProject   = "-exportSingleProject"; //If specified, only a single projects content will be exported
     public const string Parameter_ExportOnlyWithTag     = "-exportOnlyTagged";    //If specified, only content with the specified tag will be exported
     public const string Parameter_RemoveTagAfterExport  = "-exportOnlyTaggedRemoveTag"; //If specified, we will remove the tag from any exported content 
@@ -32,6 +34,7 @@ partial class CommandLineParser
     public const string Parameter_ExportDirectory       = "-exportDirectory";     //Where the site gets exported to
     public const string Parameter_ImportDirectory       = "-importDirectory";     //Where the site gets imported from
     public const string Parameter_ExitWhenDone          = "-exitWhenDone";        //When running as command line, if 'true' we will exit when the work is done
+    public const string Parameter_ImportAssignContentOwnership  = "-remapContentOwnership"; //On site import, look for content metadata files that tell us what owner to assign the content to
     public const string Parameter_RemapDataserverReferences     = "-remapDataserverReferences"; //On site import, workbook XML should be examined and have data server references updated to point to the target server/site
     public const string Parameter_GenerateInfoFilesForDownloads = "-downloadInfoFiles"; //Downloaded Workbooks/Datasources will get companion XML files with additional metadata that can be used during uploads (e.g. show tabs in workbooks)
 
@@ -136,7 +139,7 @@ partial class CommandLineParser
     /// <param name="siteUrl"></param>
     /// <param name="userName"></param>
     /// <param name="password"></param>
-    /// <param name="isSystemAdmin"></param>
+    /// <param name="isSiteAdmin"></param>
     /// <param name="commandLineOut">Command line as text ready to show the user</param>
     /// <param name="parsedCommandLine">Command line as set of </param>
     public static void GenerateCommandLine_SiteExport(
@@ -145,7 +148,7 @@ partial class CommandLineParser
         string siteUrl,
         string userName,
         string password,
-        bool isSystemAdmin,
+        bool isSiteAdmin,
         string exportSingleProject,
         string exportOnlyWithTag,
         bool removeExportTag,
@@ -167,7 +170,7 @@ partial class CommandLineParser
         helper_AppendParameter(arguments, sb, Parameter_FromUserPassword, password, uiPassword);
         helper_AppendParameter(arguments, sb, Parameter_ExportDirectory, pathToExportDir);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteUrl, siteUrl);
-        helper_AppendParameter(arguments, sb, Parameter_FromSiteIsSystemAdmin, helper_BoolToText(isSystemAdmin));
+        helper_AppendParameter(arguments, sb, Parameter_FromSiteIsSystemAdmin, helper_BoolToText(isSiteAdmin));
         helper_AppendParameter(arguments, sb, Parameter_BackgroundKeepAlive, helper_BoolToText(backgroundKeepAliveRequests));
         helper_AppendParameter(arguments, sb, Parameter_LogVerbose, helper_BoolToText(logVerbose));
         helper_AppendParameter(arguments, sb, Parameter_GenerateInfoFilesForDownloads, helper_BoolToText(generateDownloadInfoFiles));
@@ -211,13 +214,19 @@ partial class CommandLineParser
     /// <summary>
     /// Site import from local file system
     /// </summary>
+    /// <param name="showPasswordInUi"></param>
     /// <param name="pathToImportFrom"></param>
     /// <param name="siteUrl"></param>
     /// <param name="userName"></param>
     /// <param name="password"></param>
-    /// <param name="isSystemAdmin"></param>
+    /// <param name="isSiteAdmin"></param>
+    /// <param name="remapDataServerReferences"></param>
+    /// <param name="pathToDbCredentialsFile"></param>
     /// <param name="pathToLogFile"></param>
     /// <param name="pathToErrorsFile"></param>
+    /// <param name="pathToManualStepsFile"></param>
+    /// <param name="remapContentOwnership"></param>
+    /// <param name="logVerbose"></param>
     /// <param name="commandLineOut"></param>
     /// <param name="parsedCommandLine"></param>
     internal static void GenerateCommandLine_SiteImport(
@@ -226,12 +235,13 @@ partial class CommandLineParser
         string siteUrl,
         string userName,
         string password,
-        bool isSystemAdmin,
+        bool isSiteAdmin,
         bool remapDataServerReferences,
         string pathToDbCredentialsFile,
         string pathToLogFile,
         string pathToErrorsFile,
         string pathToManualStepsFile,
+        bool remapContentOwnership,
         bool logVerbose,
         out string commandLineOut,
         out CommandLineParser parsedCommandLine)
@@ -246,8 +256,9 @@ partial class CommandLineParser
         helper_AppendParameter(arguments, sb, Parameter_ToUserPassword, password, uiPassword);
         helper_AppendParameter(arguments, sb, Parameter_ImportDirectory, pathToImportFrom);
         helper_AppendParameter(arguments, sb, Parameter_ToSiteUrl, siteUrl);
-        helper_AppendParameter(arguments, sb, Parameter_ToSiteIsSystemAdmin, helper_BoolToText(isSystemAdmin));
+        helper_AppendParameter(arguments, sb, Parameter_ToSiteIsSiteAdmin, helper_BoolToText(isSiteAdmin));
         helper_AppendParameter(arguments, sb, Parameter_RemapDataserverReferences, helper_BoolToText(remapDataServerReferences));
+        helper_AppendParameter(arguments, sb, Parameter_ImportAssignContentOwnership, helper_BoolToText(remapContentOwnership));
         helper_AppendParameter(arguments, sb, Parameter_LogVerbose, helper_BoolToText(logVerbose));
 
         //Credentials file?

@@ -29,6 +29,17 @@ class DownloadDatasources : TableauServerSignedInRequestBase
     private readonly IProjectsList _downloadToProjectDirectories;
 
     /// <summary>
+    /// If TRUE a companion XML file will be generated for each downloaded Workbook with additional
+    /// information about it that is useful for uploads
+    /// </summary>
+    private readonly bool _generateInfoFile;
+
+    /// <summary>
+    /// May be NULL.  If not null, this is the list of sites users, so we can look up the user name
+    /// </summary>
+    private readonly KeyedLookup<SiteUser> _siteUserLookup;
+
+    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="onlineUrls"></param>
@@ -36,18 +47,25 @@ class DownloadDatasources : TableauServerSignedInRequestBase
     /// <param name="Datasources"></param>
     /// <param name="localSavePath"></param>
     /// <param name="projectsList"></param>
+    /// <param name="generateInfoFile">TRUE = Generate companion file for each download that contains metadata (e.g. whether "show tabs" is selected, the owner, etc)</param>
+    /// <param name="siteUsersLookup">If not NULL, use to look up the owners name, so we can write it into the InfoFile for the downloaded content</param>
     public DownloadDatasources(
         TableauServerUrls onlineUrls, 
         TableauServerSignIn login, 
         IEnumerable<SiteDatasource> Datasources,
         string localSavePath,
-        IProjectsList projectsList)
+        IProjectsList projectsList,
+        bool generateInfoFile,
+        KeyedLookup<SiteUser> siteUserLookup)
         : base(login)
     {
         _onlineUrls = onlineUrls;
         _datasources = Datasources;
         _localSavePath = localSavePath;
         _downloadToProjectDirectories = projectsList;
+        _generateInfoFile = generateInfoFile;
+        _siteUserLookup = siteUserLookup;
+
     }
 
     /// <summary>
@@ -92,6 +110,12 @@ class DownloadDatasources : TableauServerSignedInRequestBase
                 if(!string.IsNullOrEmpty(fileDownloaded))
                 {
                     downloadedContent.Add(dsInfo);
+
+                    //Generate the metadata file that has additional server provided information about the workbook
+                    if (_generateInfoFile)
+                    {
+                        DatasourcePublishSettings.CreateSettingsFile(dsInfo, fileDownloaded, _siteUserLookup);
+                    }
                 }
                 else
                 {

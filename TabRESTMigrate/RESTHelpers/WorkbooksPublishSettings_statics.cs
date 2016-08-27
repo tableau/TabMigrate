@@ -4,22 +4,46 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-public partial class WorkbookPublishSettings
+internal partial class WorkbookPublishSettings
 {
     private const string XmlElement_WorkbookInfo = "WorkbookInfo";
     private const string XmlElement_ShowTabsInWorkbook = "ShowTabsInWorkbook";
-    private const string XmlAttribute_Value = "value";
-    private const string WorkbookSettingsSuffix = ".info.xml";
+    public const string XmlElement_ContentOwner = "OwnerName";
+    public const string WorkbookSettingsSuffix = ".info.xml";
 
+    public const string UnknownOwnerName = "**Unknown Owner**"; 
 
     /// <summary>
     /// TRUE if the file is an internal settings file
     /// </summary>
     /// <param name="filePath"></param>
     /// <returns></returns>
-    internal static bool IsWorkbookSettingsFile(string filePath)
+    internal static bool IsSettingsFile(string filePath)
     {
         return filePath.EndsWith(WorkbookSettingsSuffix, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+
+    /// <summary>
+    /// Looks 
+    /// </summary>
+    /// <param name="ownerId">GUID of content owner</param>
+    /// <param name="userLookups">set we are looking the owner up in</param>
+    /// <returns></returns>
+    internal static string helper_LookUpOwnerId(string ownerId, KeyedLookup<SiteUser> userLookups)
+    {
+        //Sanity test
+        AppDiagnostics.Assert(!string.IsNullOrWhiteSpace(ownerId), "blank owner id to look up?");
+
+        string contentOwnerName;
+        var contentOwner = userLookups.FindItem(ownerId);
+        //This should only ever happen if there is a race condition between getting the list of users, and downloading the content, where a user did not exist when we asked for the list of users
+        //Should be very rare
+        if (contentOwner == null)
+        {
+            return UnknownOwnerName;
+        }
+        return contentOwnerName = contentOwner.Name;
     }
 
     /// <summary>
@@ -27,14 +51,25 @@ public partial class WorkbookPublishSettings
     /// </summary>
     /// <param name="wb">Information about the workbook we have downloaded</param>
     /// <param name="localWorkbookPath">Local path to the twb/twbx of the workbook</param>
-    internal static void CreateWorkbookSettingsFile(SiteWorkbook wb, string localWorkbookPath)
+    /// <param name="userLookups">If non-NULL contains the mapping of users/ids so we can look up the owner</param>
+    internal static void CreateSettingsFile(SiteWorkbook wb, string localWorkbookPath, KeyedLookup<SiteUser> userLookups)
     {
-        var xml = System.Xml.XmlWriter.Create(PathForWorkbookSettingsFile(localWorkbookPath));
+        string contentOwnerName = null; //Start off assuming we have no content owner information
+        if(userLookups != null)
+        {
+            contentOwnerName = helper_LookUpOwnerId(wb.OwnerId, userLookups);
+        }
+
+        var xml = System.Xml.XmlWriter.Create(PathForSettingsFile(localWorkbookPath));
         xml.WriteStartDocument();
             xml.WriteStartElement(XmlElement_WorkbookInfo);
-                xml.WriteStartElement(XmlElement_ShowTabsInWorkbook);
-                XmlHelper.WriteBooleanAttribute(xml, XmlAttribute_Value, wb.ShowTabs);
-                xml.WriteEndElement(); //end: ShowTabs
+            XmlHelper.WriteValueElement(xml, XmlElement_ShowTabsInWorkbook, wb.ShowTabs);
+
+                //If we have an owner name, write it out
+                if (!string.IsNullOrWhiteSpace(contentOwnerName))
+                {
+                  XmlHelper.WriteValueElement(xml, XmlElement_ContentOwner, contentOwnerName);
+                }
             xml.WriteEndElement(); //end: WorkbookInfo
         xml.WriteEndDocument();
         xml.Close();
@@ -52,7 +87,7 @@ public partial class WorkbookPublishSettings
         AppDiagnostics.Assert(File.Exists(workbookWithPath), "Underlying workbook does not exist");
 
         //Find the path to the settings file
-        var pathToSettingsFile = PathForWorkbookSettingsFile(workbookWithPath);
+        var pathToSettingsFile = PathForSettingsFile(workbookWithPath);
         if(!File.Exists(pathToSettingsFile))
         {
             return GenerateDefaultSettings();
@@ -61,18 +96,19 @@ public partial class WorkbookPublishSettings
         //===================================================================
         //We've got a setings file, let's parse it!
         //===================================================================
-        bool showSheetsInTabs; 
         var xmlDoc = new XmlDocument();
         xmlDoc.Load(pathToSettingsFile);
 
-        showSheetsInTabs = ParseXml_GetShowSheetsAsTabs(xmlDoc);
+        //Show sheets
+        bool showSheetsInTabs = ParseXml_GetShowSheetsAsTabs(xmlDoc);
+        string ownerName = ParseXml_GetOwnerName(xmlDoc);
 
-        //Return the Settings file
-        return new WorkbookPublishSettings(showSheetsInTabs); 
+        //Return the Settings data
+        return new WorkbookPublishSettings(showSheetsInTabs, ownerName); 
     }
 
     /// <summary>
-    /// Looks for the ShowTabas information inside the XML document
+    /// Looks for the ShowTabs information inside the XML document
     /// </summary>
     /// <param name="xmlDoc"></param>
     /// <returns>
@@ -88,7 +124,25 @@ public partial class WorkbookPublishSettings
             return false;
         }
 
-        return XmlHelper.SafeParseXmlAttribute_Bool(xNodeShowTabs, XmlAttribute_Value, false);
+        return XmlHelper.SafeParseXmlAttribute_Bool(xNodeShowTabs, XmlHelper.XmlAttribute_Value, false);
+    }
+
+    /// <summary>
+    /// Looks for the Owner Name information inside the XML document
+    /// </summary>
+    /// <param name="xmlDoc"></param>
+    /// <returns></returns>
+    internal static string ParseXml_GetOwnerName(XmlDocument xmlDoc)
+    {
+        var xNodeOwner = xmlDoc.SelectSingleNode("//" + XmlElement_ContentOwner);
+
+        //If there is no node, then return the default
+        if (xNodeOwner == null)
+        {
+            return null;
+        }
+
+        return XmlHelper.SafeParseXmlAttribute(xNodeOwner, XmlHelper.XmlAttribute_Value, null);
     }
 
     /// <summary>
@@ -96,7 +150,7 @@ public partial class WorkbookPublishSettings
     /// </summary>
     internal static WorkbookPublishSettings GenerateDefaultSettings()
     {
-        return new WorkbookPublishSettings(false);
+        return new WorkbookPublishSettings(false, null);
     }
 
     /// <summary>
@@ -104,7 +158,7 @@ public partial class WorkbookPublishSettings
     /// </summary>
     /// <param name="workbookPath"></param>
     /// <returns></returns>
-    private static string PathForWorkbookSettingsFile(string workbookPath)
+    internal static string PathForSettingsFile(string workbookPath)
     {
         //Sanity test
         if(string.IsNullOrWhiteSpace(workbookPath))

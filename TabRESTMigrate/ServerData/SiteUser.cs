@@ -5,7 +5,7 @@ using System.Xml;
 /// <summary>
 /// Information about a User in a Server's site
 /// </summary>
-class SiteUser : IHasSiteItemId
+partial class SiteUser : IHasSiteItemId
 {
     public readonly string Name;
     public readonly string Id;

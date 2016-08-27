@@ -10,13 +10,33 @@ using System.IO;
 abstract class TableauServerRequestBase
 {
     /// <summary>
+    /// Sends the body text up to the server, using the PUT method
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="bodyText"></param>
+    protected static void SendPutContents(WebRequest request, string bodyText)
+    {
+        SendHttpRequestContents_Inner(request, bodyText, "PUT");
+    }
+
+    /// <summary>
     /// Sends the body text up to the server
     /// </summary>
     /// <param name="request"></param>
     /// <param name="bodyText"></param>
     protected static void SendPostContents(WebRequest request, string bodyText)
     {
-        request.Method = "POST";
+        SendHttpRequestContents_Inner(request, bodyText, "POST");
+    }
+
+    /// <summary>
+    /// Sends the body text up to the server
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="bodyText"></param>
+    private static void SendHttpRequestContents_Inner(WebRequest request, string bodyText, string httpMethod = "POST")
+    {
+        request.Method = httpMethod;
         // Set the ContentType property of the WebRequest.
         request.ContentType = "application/xml;charset=utf-8"; //[2016-06-17] We want to be very explicit on the content type; to give servers very clear instructions on how to parse
         // Set the ContentLength property of the WebRequest.

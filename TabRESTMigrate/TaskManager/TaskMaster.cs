@@ -288,16 +288,26 @@ internal partial class TaskMaster
     }
 
     /// <summary>
-    /// Download the data sources
+    /// 
     /// </summary>
     /// <param name="onlineLogin"></param>
+    /// <param name="exportToPath"></param>
+    /// <param name="projectsList"></param>
+    /// <param name="singleProjectIdFilter"></param>
+    /// <param name="exportOnlyWithThisTag"></param>
+    /// <param name="deleteTagAfterExport"></param>
+    /// <param name="generateInfoFile">TRUE: Each downloaded workbook will get an information file generated that has additional metadata about it</param>
+    /// <param name="siteUsers"> If not NULL, then this will get used to look the user name for each downloaded workbook, and safe it into the info file</param>
     private void Execute_DownloadDatasources(
         TableauServerSignIn onlineLogin, 
         string exportToPath, 
         IProjectsList projectsList,
         SiteProject singleProjectIdFilter = null,
-        string exportOnlyWithThisTag = null,
-        bool deleteTagAfterExport = false)
+        string exportOnlyWithThisTag      = null,
+        bool deleteTagAfterExport         = false,
+        bool generateInfoFile             = false,
+        IEnumerable<SiteUser>   siteUsers = null
+        )
     {
         _statusLog.AddStatusHeader("Download datasources");
         ICollection<SiteDatasource> datasourcesList = null;
@@ -346,6 +356,12 @@ internal partial class TaskMaster
         //-----------------------------------------------------------
         //Download the data sources
         //-----------------------------------------------------------
+        //If we are going to write out metadata for each download, then create the object that lets us look up the owner of each workbook
+        KeyedLookup<SiteUser> contentOwnerLookup = null;
+        if ((generateInfoFile) && (siteUsers != null))
+        {
+            contentOwnerLookup = new KeyedLookup<SiteUser>(siteUsers);
+        }
         try
         {
             var datasourceDownloads = new DownloadDatasources(
@@ -353,7 +369,9 @@ internal partial class TaskMaster
                 onlineLogin,
                 filteredList, 
                 datasourcePath,
-                projectsList);
+                projectsList,
+                generateInfoFile,
+                contentOwnerLookup);
             successfullExportSet = datasourceDownloads.ExecuteRequest();
         }
         catch (Exception exDatasourceDownload)
@@ -510,14 +528,17 @@ internal partial class TaskMaster
     /// <param name="exportOnlyWithThisTag">if specified, export only content with this tag</param>
     /// <param name="deleteTagAfterExport">TRUE: Remove the server-side tag from exported content (only valid if we have an export tag)</param>
     /// <param name="generateInfoFile">TRUE: Each downloaded workbook will get an information file generated that has additional metadata about it</param>
+    /// <param name="siteUsers"> If not NULL, then this will get used to look the user name for each downloaded workbook, and safe it into the info file</param>
     private void Execute_DownloadWorkbooks(
         TableauServerSignIn onlineLogin, 
         string exportToPath, 
         IProjectsList projectsList,
         SiteProject singleProjectIdFilter = null,
-        string exportOnlyWithThisTag = null,
-        bool deleteTagAfterExport = false,
-        bool generateInfoFile = false)
+        string exportOnlyWithThisTag      = null,
+        bool deleteTagAfterExport         = false,
+        bool generateInfoFile             = false,
+        IEnumerable<SiteUser> siteUsers   = null
+        )
     {
         var onlineUrls = _onlineUrls;
         _statusLog.AddStatusHeader("Download workbooks");
@@ -576,9 +597,25 @@ internal partial class TaskMaster
         var workbookPath = Path.Combine(exportToPath, "workbooks");
         ICollection<SiteWorkbook> successfullExportSet = null;
         FileIOHelper.CreatePathIfNeeded(workbookPath);
+
+        //If we are going to write out metadata for each download, then create the object that lets us look up the owner of each workbook
+        KeyedLookup<SiteUser> workbookOwnerLookup = null;
+        if ((generateInfoFile) && (siteUsers != null))
+        {
+            workbookOwnerLookup = new KeyedLookup<SiteUser>(siteUsers);
+        }
+        //Do the downloads......
         try
         {
-            var workbookDownloads = new DownloadWorkbooks(onlineUrls, onlineLogin, filteredList, workbookPath, projectsList, generateInfoFile);
+            //Create the workbooks downloader
+            var workbookDownloads = new DownloadWorkbooks(
+                onlineUrls, 
+                onlineLogin, 
+                filteredList, 
+                workbookPath, 
+                projectsList, 
+                generateInfoFile,
+                workbookOwnerLookup);
             successfullExportSet = workbookDownloads.ExecuteRequest();
         }
         catch (Exception exWorkbooksDownload)
@@ -767,7 +804,8 @@ internal partial class TaskMaster
         //========================================================================================
         //Attempt to get the list of users
         //========================================================================================
-        if (taskOptions.IsOptionSet(TaskMasterOptions.Option_GetSiteUsers))
+        if ((taskOptions.IsOptionSet(TaskMasterOptions.Option_GetSiteUsers)) 
+            || (taskOptions.IsOptionSet(TaskMasterOptions.Option_AssignContentOwnershipAfterPublish))) //If we do content remapping, we need the users list
         {
             _downloadedList_Users = Execute_DownloadSiteUsers(serverLogin);
         }
@@ -833,6 +871,8 @@ internal partial class TaskMaster
                 ,exportSingleProject
                 ,taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_ExportOnlyTaggedWith)
                 ,taskOptions.IsOptionSet(TaskMasterOptions.OptionParameter_RemoveTagFromExportedContent)
+                ,taskOptions.IsOptionSet(TaskMasterOptions.OptionParameter_GenerateInfoFilesForDownloadedContent)
+                ,_downloadedList_Users
                 ); 
         }
 
@@ -850,6 +890,7 @@ internal partial class TaskMaster
                 ,taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_ExportOnlyTaggedWith)
                 ,taskOptions.IsOptionSet(TaskMasterOptions.OptionParameter_RemoveTagFromExportedContent)
                 ,taskOptions.IsOptionSet(TaskMasterOptions.OptionParameter_GenerateInfoFilesForDownloadedContent)
+                ,_downloadedList_Users
                 );
         }
 
@@ -888,7 +929,9 @@ internal partial class TaskMaster
             Execute_UploadDatasources(
                 serverLogin, 
                 taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_PathUploadFrom),
-                uploadCredentialManager);
+                uploadCredentialManager,
+                taskOptions.IsOptionSet(TaskMasterOptions.Option_AssignContentOwnershipAfterPublish),
+                _downloadedList_Users);
         }
 
         //===================================================================================
@@ -900,7 +943,9 @@ internal partial class TaskMaster
                 serverLogin,
                 taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_PathUploadFrom), 
                 taskOptions.IsOptionSet(TaskMasterOptions.Option_RemapWorkbookReferencesOnUpload),
-                uploadCredentialManager);
+                uploadCredentialManager,
+                taskOptions.IsOptionSet(TaskMasterOptions.Option_AssignContentOwnershipAfterPublish),
+                _downloadedList_Users);
         }
 
         //===================================================================================
@@ -1214,7 +1259,9 @@ internal partial class TaskMaster
     private void Execute_UploadDatasources(
         TableauServerSignIn onlineLogin, 
         string localBasePath,
-        CredentialManager credentialManager)
+        CredentialManager credentialManager,
+        bool attemptContentOwnershipAssignment,
+        IEnumerable<SiteUser> siteUsers)
     {
         StatusLog.AddStatusHeader("Upload datasources");
 
@@ -1244,6 +1291,8 @@ internal partial class TaskMaster
             pathDataSources, 
             uploadProjectBehavior, 
             _manualActions,
+            attemptContentOwnershipAssignment,
+            siteUsers,
             this.UploadChunksSizeBytes,
             this.UploadChunksDelaySeconds);
         try
@@ -1293,19 +1342,23 @@ internal partial class TaskMaster
         }
     }
 
-    
+
     /// <summary>
     /// Called to perform Uploads of the workbooks
     /// </summary>
     /// <param name="onlineLogin"></param>
     /// <param name="localBasePath"></param>
     /// <param name="remapWorkbookReferences">TRUE is we want to transform workbooks to remap any published datasources to the new server/site we are uploading to</param>
+    /// <param name="attemptContentOwnershipAssignment">TRUE: Look for content metadata files, and attempt to assign the owner to the published content</param>
     /// <param name="credentialManager">Database credentials to associate with content we are uploading</param>
+    /// <param name="siteUsers">Users in site, needed for content ownership remapping</param>
     private void Execute_UploadWorkbooks(
         TableauServerSignIn onlineLogin, 
         string localBasePath, 
         bool remapWorkbookReferences, 
-        CredentialManager credentialManager)
+        CredentialManager credentialManager,
+        bool attemptContentOwnershipAssignment,
+        IEnumerable<SiteUser> siteUsers)
     {
         StatusLog.AddStatusHeader("Upload workbooks");
 
@@ -1344,8 +1397,11 @@ internal partial class TaskMaster
             pathRemappingTempspace, 
             uploadProjectBehavior, 
             _manualActions,
+            attemptContentOwnershipAssignment,
+            siteUsers,
             this.UploadChunksSizeBytes,
-            this.UploadChunksDelaySeconds);
+            this.UploadChunksDelaySeconds
+            );
         try
         {
             dsUploader.ExecuteRequest();

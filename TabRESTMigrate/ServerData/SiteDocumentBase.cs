@@ -36,7 +36,13 @@ abstract class SiteDocumentBase : IHasProjectId, ITagSetInfo, IHasSiteItemId
         //Get the project attributes
         var projectNode = xmlNode.SelectSingleNode("iwsOnline:project", nsManager);
         this.ProjectId = projectNode.Attributes["id"].Value;
-        this.ProjectName = projectNode.Attributes["name"].Value;
+
+        //Some responses do not have the project name
+        var attrProjectName = projectNode.Attributes["name"];
+        if(attrProjectName != null)
+        {
+            this.ProjectName = attrProjectName.Value;
+        }  
 
         //Get the owner attributes
         var ownerNode = xmlNode.SelectSingleNode("iwsOnline:owner", nsManager);

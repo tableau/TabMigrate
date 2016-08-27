@@ -35,6 +35,11 @@ class DownloadWorkbooks : TableauServerSignedInRequestBase
     private readonly bool _generateInfoFile;
 
     /// <summary>
+    /// May be NULL.  If not null, this is the list of sites users, so we can look up the user name
+    /// </summary>
+    private readonly KeyedLookup<SiteUser> _siteUserLookup;
+
+    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="onlineUrls"></param>
@@ -42,13 +47,16 @@ class DownloadWorkbooks : TableauServerSignedInRequestBase
     /// <param name="workbooks"></param>
     /// <param name="localSavePath"></param>
     /// <param name="projectsList"></param>
+    /// <param name="generateInfoFile">TRUE = Generate companion file for each download that contains metadata (e.g. whether "show tabs" is selected, the owner, etc)</param>
+    /// <param name="siteUsersLookup">If not NULL, use to look up the owners name, so we can write it into the InfoFile for the downloaded content</param>
     public DownloadWorkbooks(
         TableauServerUrls onlineUrls, 
         TableauServerSignIn login, 
         IEnumerable<SiteWorkbook> workbooks,
         string localSavePath,
         IProjectsList projectsList,
-        bool generateInfoFile)
+        bool generateInfoFile,
+        KeyedLookup<SiteUser> siteUserLookup)
         : base(login)
     {
         _onlineUrls = onlineUrls;
@@ -56,6 +64,7 @@ class DownloadWorkbooks : TableauServerSignedInRequestBase
         _localSavePath = localSavePath;
         _downloadToProjectDirectories = projectsList;
         _generateInfoFile = generateInfoFile;
+        _siteUserLookup = siteUserLookup;
     }
 
     /// <summary>
@@ -103,7 +112,7 @@ class DownloadWorkbooks : TableauServerSignedInRequestBase
                     //Generate the metadata file that has additional server provided information about the workbook
                     if(_generateInfoFile)
                     {
-                        WorkbookPublishSettings.CreateWorkbookSettingsFile(contentInfo, fileDownloaded);
+                        WorkbookPublishSettings.CreateSettingsFile(contentInfo, fileDownloaded, _siteUserLookup);
                     }
                 }
                 else

@@ -90,7 +90,7 @@ class SendCreateProject : TableauServerSignedInRequestBase
             }
             catch (Exception parseXml)
             {
-                StatusLog.AddError("Data source upload, error parsing XML resposne " + parseXml.Message + "\r\n" + xNodeProject.InnerXml);
+                StatusLog.AddError("Create project, error parsing XML response " + parseXml.Message + "\r\n" + xNodeProject.InnerXml);
                 return null;
             }
             

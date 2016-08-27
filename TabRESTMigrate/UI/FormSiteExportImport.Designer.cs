@@ -51,7 +51,7 @@
             this.txtPasswordImportTo = new System.Windows.Forms.TextBox();
             this.buttonRunAsyncImport = new System.Windows.Forms.Button();
             this.txtSiteImportContentPath = new System.Windows.Forms.TextBox();
-            this.chkImportIsSystemAdmin = new System.Windows.Forms.CheckBox();
+            this.chkImportIsSiteAdmin = new System.Windows.Forms.CheckBox();
             this.textSiteExportCommandLine = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.chkExportUserIsAdmin = new System.Windows.Forms.CheckBox();
@@ -60,6 +60,7 @@
             this.txtIdExportFrom = new System.Windows.Forms.TextBox();
             this.txtUrlExportFrom = new System.Windows.Forms.TextBox();
             this.panelExportSite = new System.Windows.Forms.Panel();
+            this.chkGenerateDownloadMetadataFiles = new System.Windows.Forms.CheckBox();
             this.chkExportContentsWithKeepAlive = new System.Windows.Forms.CheckBox();
             this.chkExportRemoveExportTag = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -87,7 +88,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.comboBoxChooseAction = new System.Windows.Forms.ComboBox();
             this.panelTopSplitter = new System.Windows.Forms.Panel();
-            this.chkGenerateDownloadMetadataFiles = new System.Windows.Forms.CheckBox();
+            this.chkImportRemapContentOwnership = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerStatus)).BeginInit();
             this.splitContainerStatus.Panel1.SuspendLayout();
             this.splitContainerStatus.Panel2.SuspendLayout();
@@ -194,6 +195,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelImportSite.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.panelImportSite.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelImportSite.Controls.Add(this.chkImportRemapContentOwnership);
             this.panelImportSite.Controls.Add(this.label17);
             this.panelImportSite.Controls.Add(this.label16);
             this.panelImportSite.Controls.Add(this.label13);
@@ -209,7 +211,7 @@
             this.panelImportSite.Controls.Add(this.txtPasswordImportTo);
             this.panelImportSite.Controls.Add(this.buttonRunAsyncImport);
             this.panelImportSite.Controls.Add(this.txtSiteImportContentPath);
-            this.panelImportSite.Controls.Add(this.chkImportIsSystemAdmin);
+            this.panelImportSite.Controls.Add(this.chkImportIsSiteAdmin);
             this.panelImportSite.Location = new System.Drawing.Point(12, 105);
             this.panelImportSite.Name = "panelImportSite";
             this.panelImportSite.Size = new System.Drawing.Size(1170, 440);
@@ -284,7 +286,7 @@
             this.chkRemapWorkbookDataserverReferences.Checked = true;
             this.chkRemapWorkbookDataserverReferences.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRemapWorkbookDataserverReferences.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkRemapWorkbookDataserverReferences.Location = new System.Drawing.Point(415, 180);
+            this.chkRemapWorkbookDataserverReferences.Location = new System.Drawing.Point(392, 180);
             this.chkRemapWorkbookDataserverReferences.Name = "chkRemapWorkbookDataserverReferences";
             this.chkRemapWorkbookDataserverReferences.Size = new System.Drawing.Size(279, 21);
             this.chkRemapWorkbookDataserverReferences.TabIndex = 7;
@@ -320,7 +322,7 @@
             this.txtSiteImportCommandLineExample.BackColor = System.Drawing.Color.Black;
             this.txtSiteImportCommandLineExample.Font = new System.Drawing.Font("Consolas", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSiteImportCommandLineExample.ForeColor = System.Drawing.Color.White;
-            this.txtSiteImportCommandLineExample.Location = new System.Drawing.Point(10, 210);
+            this.txtSiteImportCommandLineExample.Location = new System.Drawing.Point(10, 234);
             this.txtSiteImportCommandLineExample.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSiteImportCommandLineExample.Multiline = true;
             this.txtSiteImportCommandLineExample.Name = "txtSiteImportCommandLineExample";
@@ -394,18 +396,18 @@
             this.txtSiteImportContentPath.TabIndex = 1;
             this.txtSiteImportContentPath.Text = "C:\\ivosa_work\\_SoftwareProjects\\ServerMigrateSite_REST_003\\tests\\upload001";
             // 
-            // chkImportIsSystemAdmin
+            // chkImportIsSiteAdmin
             // 
-            this.chkImportIsSystemAdmin.AutoSize = true;
-            this.chkImportIsSystemAdmin.Checked = true;
-            this.chkImportIsSystemAdmin.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkImportIsSystemAdmin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkImportIsSystemAdmin.Location = new System.Drawing.Point(10, 180);
-            this.chkImportIsSystemAdmin.Name = "chkImportIsSystemAdmin";
-            this.chkImportIsSystemAdmin.Size = new System.Drawing.Size(377, 21);
-            this.chkImportIsSystemAdmin.TabIndex = 6;
-            this.chkImportIsSystemAdmin.Text = "User is system admin (needed to create projects in site)";
-            this.chkImportIsSystemAdmin.UseVisualStyleBackColor = true;
+            this.chkImportIsSiteAdmin.AutoSize = true;
+            this.chkImportIsSiteAdmin.Checked = true;
+            this.chkImportIsSiteAdmin.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkImportIsSiteAdmin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkImportIsSiteAdmin.Location = new System.Drawing.Point(10, 180);
+            this.chkImportIsSiteAdmin.Name = "chkImportIsSiteAdmin";
+            this.chkImportIsSiteAdmin.Size = new System.Drawing.Size(355, 21);
+            this.chkImportIsSiteAdmin.TabIndex = 6;
+            this.chkImportIsSiteAdmin.Text = "User is site admin (needed to create projects in site)";
+            this.chkImportIsSiteAdmin.UseVisualStyleBackColor = true;
             // 
             // textSiteExportCommandLine
             // 
@@ -436,12 +438,14 @@
             // chkExportUserIsAdmin
             // 
             this.chkExportUserIsAdmin.AutoSize = true;
+            this.chkExportUserIsAdmin.Checked = true;
+            this.chkExportUserIsAdmin.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkExportUserIsAdmin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chkExportUserIsAdmin.Location = new System.Drawing.Point(10, 80);
             this.chkExportUserIsAdmin.Name = "chkExportUserIsAdmin";
-            this.chkExportUserIsAdmin.Size = new System.Drawing.Size(442, 21);
+            this.chkExportUserIsAdmin.Size = new System.Drawing.Size(420, 21);
             this.chkExportUserIsAdmin.TabIndex = 33;
-            this.chkExportUserIsAdmin.Text = "User is system admin (site users, and site info will be downloaded)";
+            this.chkExportUserIsAdmin.Text = "User is site admin (site users, and site info will be downloaded)";
             this.chkExportUserIsAdmin.UseVisualStyleBackColor = true;
             // 
             // btnRunAsync
@@ -518,16 +522,29 @@
             this.panelExportSite.Controls.Add(this.txtPasswordExportFrom);
             this.panelExportSite.Controls.Add(this.chkExportUserIsAdmin);
             this.panelExportSite.Controls.Add(this.btnRunAsync);
-            this.panelExportSite.Location = new System.Drawing.Point(264, 56);
+            this.panelExportSite.Location = new System.Drawing.Point(151, 56);
             this.panelExportSite.Name = "panelExportSite";
             this.panelExportSite.Size = new System.Drawing.Size(1225, 352);
             this.panelExportSite.TabIndex = 53;
+            // 
+            // chkGenerateDownloadMetadataFiles
+            // 
+            this.chkGenerateDownloadMetadataFiles.AutoSize = true;
+            this.chkGenerateDownloadMetadataFiles.Checked = true;
+            this.chkGenerateDownloadMetadataFiles.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkGenerateDownloadMetadataFiles.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkGenerateDownloadMetadataFiles.Location = new System.Drawing.Point(580, 79);
+            this.chkGenerateDownloadMetadataFiles.Name = "chkGenerateDownloadMetadataFiles";
+            this.chkGenerateDownloadMetadataFiles.Size = new System.Drawing.Size(257, 21);
+            this.chkGenerateDownloadMetadataFiles.TabIndex = 98;
+            this.chkGenerateDownloadMetadataFiles.Text = "Generate files with content metadata";
+            this.chkGenerateDownloadMetadataFiles.UseVisualStyleBackColor = true;
             // 
             // chkExportContentsWithKeepAlive
             // 
             this.chkExportContentsWithKeepAlive.AutoSize = true;
             this.chkExportContentsWithKeepAlive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkExportContentsWithKeepAlive.Location = new System.Drawing.Point(593, 83);
+            this.chkExportContentsWithKeepAlive.Location = new System.Drawing.Point(650, 155);
             this.chkExportContentsWithKeepAlive.Name = "chkExportContentsWithKeepAlive";
             this.chkExportContentsWithKeepAlive.Size = new System.Drawing.Size(186, 21);
             this.chkExportContentsWithKeepAlive.TabIndex = 97;
@@ -831,18 +848,19 @@
             this.panelTopSplitter.TabIndex = 59;
             this.panelTopSplitter.Visible = false;
             // 
-            // chkGenerateDownloadMetadataFiles
+            // chkImportRemapContentOwnership
             // 
-            this.chkGenerateDownloadMetadataFiles.AutoSize = true;
-            this.chkGenerateDownloadMetadataFiles.Checked = true;
-            this.chkGenerateDownloadMetadataFiles.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkGenerateDownloadMetadataFiles.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkGenerateDownloadMetadataFiles.Location = new System.Drawing.Point(593, 127);
-            this.chkGenerateDownloadMetadataFiles.Name = "chkGenerateDownloadMetadataFiles";
-            this.chkGenerateDownloadMetadataFiles.Size = new System.Drawing.Size(257, 21);
-            this.chkGenerateDownloadMetadataFiles.TabIndex = 98;
-            this.chkGenerateDownloadMetadataFiles.Text = "Generate files with content metadata";
-            this.chkGenerateDownloadMetadataFiles.UseVisualStyleBackColor = true;
+            this.chkImportRemapContentOwnership.AutoSize = true;
+            this.chkImportRemapContentOwnership.Checked = true;
+            this.chkImportRemapContentOwnership.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkImportRemapContentOwnership.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkImportRemapContentOwnership.Location = new System.Drawing.Point(33, 207);
+            this.chkImportRemapContentOwnership.Name = "chkImportRemapContentOwnership";
+            this.chkImportRemapContentOwnership.Size = new System.Drawing.Size(269, 21);
+            this.chkImportRemapContentOwnership.TabIndex = 98;
+            this.chkImportRemapContentOwnership.Text = "Attempt content ownership assignment";
+            this.chkImportRemapContentOwnership.UseVisualStyleBackColor = true;
+            this.chkImportRemapContentOwnership.CheckedChanged += new System.EventHandler(this.chkImportRemapContentOwnership_CheckedChanged);
             // 
             // FormSiteExportImport
             // 
@@ -850,13 +868,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1274, 615);
+            this.Controls.Add(this.panelImportSite);
             this.Controls.Add(this.panelExportSite);
             this.Controls.Add(this.panelInventorySite);
             this.Controls.Add(this.panelTopSplitter);
             this.Controls.Add(this.comboBoxChooseAction);
             this.Controls.Add(this.panelRunCommandLine);
             this.Controls.Add(this.splitContainerStatus);
-            this.Controls.Add(this.panelImportSite);
             this.MinimumSize = new System.Drawing.Size(1100, 600);
             this.Name = "FormSiteExportImport";
             this.Text = "Online - Site export/import";
@@ -894,7 +912,7 @@
         private System.Windows.Forms.TextBox txtPasswordExportFrom;
         private System.Windows.Forms.TextBox txtIdExportFrom;
         private System.Windows.Forms.TextBox txtUrlExportFrom;
-        private System.Windows.Forms.CheckBox chkImportIsSystemAdmin;
+        private System.Windows.Forms.CheckBox chkImportIsSiteAdmin;
         private System.Windows.Forms.TextBox txtSiteImportContentPath;
         private System.Windows.Forms.Button buttonRunAsyncImport;
         private System.Windows.Forms.TextBox txtPasswordImportTo;
@@ -942,6 +960,7 @@
         private System.Windows.Forms.CheckBox chkGenerateInventoryTwb;
         private System.Windows.Forms.CheckBox chkExportContentsWithKeepAlive;
         private System.Windows.Forms.CheckBox chkGenerateDownloadMetadataFiles;
+        private System.Windows.Forms.CheckBox chkImportRemapContentOwnership;
     }
 }
 
