@@ -24,6 +24,7 @@ public partial class TaskMasterOptions
     public const string Option_GetWorkbooksConnections = "DownloadWorkbooksConnections"; //Download the data connections for each workbook we have in our workbooks list
     public const string Option_DownloadIntoProjects = "DownloadIntoProjects";  //Put the downloads into file system directories named after the projects
     public const string Option_GetProjectsList = "DownloadProjectsList";
+    public const string Option_GetSubscriptionsList = "DownloadSubscriptionsList";
     public const string Option_UploadCreateNeededProjects = "UploadCreateNeededProjects";
     public const string Option_AssignContentOwnershipAfterPublish = "AssignContentOwnershipAfterPublish";
     public const string Option_GetSiteInfo = "SiteInfo";

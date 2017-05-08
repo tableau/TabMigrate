@@ -17,6 +17,7 @@ class CustomerSiteInventory : CsvDataGenerator
     const string ContentProjectId = "project-id";
     const string ContentWorkbookId = "workbook-id";
     const string ContentWorkbookName = "workbook-name";
+    const string ContentViewId = "view-id";
     const string ContentProjectName = "project-name";
     const string ContentUserId = "user-id";
     const string ContentUserName= "user-name";
@@ -28,6 +29,9 @@ class CustomerSiteInventory : CsvDataGenerator
     const string ContentOwnerId = "owner-id";
     const string ContentOwnerName = "owner-name";
     const string ContentTags = "tags";
+    const string ContentSubscriptionId = "subscription-id";
+    const string ContentSubscriptionName = "subscription-name";
+    const string ContentSubscriptionType = "subscription-type";
     const string WorkbookShowTabs = "workbook-show-tabs";
     const string SiteRole = "user-role";
     const string DeveloperNotes = "developer-notes";
@@ -56,6 +60,7 @@ class CustomerSiteInventory : CsvDataGenerator
       IEnumerable<SiteWorkbook> workbooks,
       IEnumerable<SiteUser> users,
       IEnumerable<SiteGroup> groups,
+      IEnumerable<SiteSubscription> subscriptions,
       TaskStatusLogs statusLogger)
   {
         //Somewhere to store status logs
@@ -77,6 +82,7 @@ class CustomerSiteInventory : CsvDataGenerator
       AddWorkbooksData(workbooks);
       AddUsersData(users);
       AddGroupsData(groups);
+      AddSubscriptionsData(subscriptions);
   }
 
     /// <summary>
@@ -276,13 +282,13 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
             this.AddKeyValuePairs(
                 new string[] { 
                     ContentType               //1
-                   ,ContentId                 //2
-                   ,ContentName               //3
-                   ,ContentProjectId          //4
-                   ,ContentProjectName        //5
-                   ,ContentDescription        //6
-                   ,DeveloperNotes            //7
-                             },      
+                    ,ContentId                 //2
+                    ,ContentName               //3
+                    ,ContentProjectId          //4
+                    ,ContentProjectName        //5
+                    ,ContentDescription        //6
+                    ,DeveloperNotes            //7
+                                },      
                 new string[] { 
                      "project"                  //1
                     ,thisProject.Id             //2
@@ -291,8 +297,67 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,thisProject.Name           //5
                     ,thisProject.Description    //6
                     ,thisProject.DeveloperNotes //7
-                               });       
+                                });       
         } 
+    }
+
+    /// <summary>
+    /// Add CSV rows for all the subscriptions data
+    /// </summary>
+    /// <param name="subscriptions"></param>
+    private void AddSubscriptionsData(IEnumerable<SiteSubscription> subscriptions)
+    {
+        //No data to add? do nothing.
+        if (subscriptions == null) return;
+
+        //Add each subscription as a row in the CSV file we will generate
+        foreach (var thisSubscription in subscriptions)
+        {
+            string thisSubscriptionViewId = "";
+            string thisSubscriptionWorkbookId = "";
+
+            if(thisSubscription.ContentType == "View")
+            {
+
+                //UNDONE: We could TRY to look up the Workbook ID, if we have set of VIEWS
+            }
+            else if(thisSubscription.ContentType == "Workbook")
+            {
+                thisSubscriptionWorkbookId = thisSubscription.ContentId;
+            }
+            else
+            {
+                this.StatusLog.AddError("Unknown subscription type: " + thisSubscription.ContentType);
+            }
+
+            this.AddKeyValuePairs(
+                new string[] {
+                ContentType               //1
+                ,ContentId                //2
+                ,ContentDescription       //3
+                ,ContentOwnerId           //4
+                ,ContentOwnerName         //5
+                ,ContentSubscriptionId    //6
+                ,ContentSubscriptionName  //7
+                ,ContentSubscriptionType  //8
+                ,ContentWorkbookId        //9
+                ,ContentViewId            //10
+                ,DeveloperNotes           //11
+                },
+                new string[] {
+                 "subscription"                  //1
+                ,thisSubscription.Id             //2
+                ,thisSubscription.Subject        //3
+                ,thisSubscription.UserId         //4
+                ,thisSubscription.UserName       //5
+                ,thisSubscription.ScheduleId     //6
+                ,thisSubscription.ScheduleName   //7
+                ,thisSubscription.ContentType    //8
+                ,thisSubscriptionWorkbookId      //9
+                ,thisSubscriptionViewId          //10
+                ,thisSubscription.DeveloperNotes //11
+                });
+        }
     }
 
     /// <summary>

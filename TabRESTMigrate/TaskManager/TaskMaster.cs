@@ -67,6 +67,18 @@ internal partial class TaskMaster
     private IEnumerable<SiteProject> _downloadedList_Projects;
 
 
+    /// <summary>
+    /// If we took an  inventory of the list of subscriptions this will contain the list
+    /// </summary>
+    public IEnumerable<SiteSubscription> SubscriptionsList
+    {
+        get
+        {
+            return _downloadedList_Subscriptions;
+        }
+    }
+    private IEnumerable<SiteSubscription> _downloadedList_Subscriptions;
+
 
     /// <summary>
     /// If we took an inventory of groups, return them
@@ -842,6 +854,13 @@ internal partial class TaskMaster
             exportSingleProject = helper_DetermineIfSingleProjectFilter(projectsList);
         }
 
+        //===================================================================================
+        //Subscriptions
+        //===================================================================================
+        if (taskOptions.IsOptionSet(TaskMasterOptions.Option_GetSubscriptionsList))
+        {
+            var subscriptionsList = Execute_DownloadSubscriptionsList(serverLogin);
+        }
         
         //===================================================================================
         //List of groups? 
@@ -1169,6 +1188,7 @@ internal partial class TaskMaster
                 this.WorkbooksList,
                 this.UsersList,
                 this.GroupsList,
+                this.SubscriptionsList,
                 _statusLog);
 
             reportGenerator.GenerateCSVFile(pathReport);
@@ -1214,6 +1234,40 @@ internal partial class TaskMaster
         //Store it
         _downloadedList_Projects = projects.Projects;
         return projects;
+    }
+
+    /// <summary>
+    /// Downloads the set of subscriptions in the site
+    /// </summary>
+    /// <param name="onlineLogin"></param>
+    /// <returns></returns>
+    private DownloadSubscriptionsList Execute_DownloadSubscriptionsList(TableauServerSignIn onlineLogin)
+    {
+        var onlineUrls = _onlineUrls;
+        _statusLog.AddStatusHeader("Request site subscriptions");
+        DownloadSubscriptionsList subscriptions = null;
+        //===================================================================================
+        //Subscriptions...
+        //===================================================================================
+        try
+        {
+            subscriptions = new DownloadSubscriptionsList(onlineUrls, onlineLogin);
+            subscriptions.ExecuteRequest();
+
+            //List all the subscriptions
+            foreach (var singleSubscription in subscriptions.Subscriptions)
+            {
+                _statusLog.AddStatus(singleSubscription.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            _statusLog.AddError("Error during subscriptions query, " + ex.ToString());
+        }
+
+        //Store it
+        _downloadedList_Subscriptions = subscriptions.Subscriptions;
+        return subscriptions;
     }
 
     /// <summary>
