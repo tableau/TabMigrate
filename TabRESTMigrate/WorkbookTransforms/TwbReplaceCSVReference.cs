@@ -12,7 +12,7 @@ class TwbReplaceCSVReference
 {
     private readonly string _pathToTwbInput;
     private readonly string _pathToTwbOutput;
-    private readonly string _datasourceName;
+    private readonly string _oldDatasourceFilename;
     private readonly string _datasourceNewCsvPath;
     private readonly TaskStatusLogs _statusLog;
 
@@ -21,14 +21,14 @@ class TwbReplaceCSVReference
     /// </summary>
     /// <param name="pathTwbInput">TWB we are going to load and transform</param>
     /// <param name="pathTwbOutput">Output path for transformed CSV</param>
-    /// <param name="dataSourceName">Name of data source inside path</param>
+    /// <param name="oldDatasourceFilename">Old filename for the data source (case insensitive)</param>
     /// <param name="newCsvPath">Path to CSV file that we want the data source to point to</param>
     /// <param name="statusLog">Log status and errors here</param>
-    public TwbReplaceCSVReference(string pathTwbInput, string pathTwbOutput, string dataSourceName, string newCsvPath, TaskStatusLogs statusLog)
+    public TwbReplaceCSVReference(string pathTwbInput, string pathTwbOutput, string oldDatasourceFilename, string newCsvPath, TaskStatusLogs statusLog)
     {
         _pathToTwbInput = pathTwbInput;
         _pathToTwbOutput = pathTwbOutput;
-        _datasourceName = dataSourceName;
+        _oldDatasourceFilename = oldDatasourceFilename;
         _datasourceNewCsvPath = newCsvPath;
         _statusLog = statusLog;
     }
@@ -45,7 +45,7 @@ class TwbReplaceCSVReference
         xmlDoc.Load(_pathToTwbInput);
 
         bool foundReplaceItem = 
-            RemapDatasourceCsvReference(xmlDoc, _datasourceName, _datasourceNewCsvPath, _statusLog);
+            RemapDatasourceCsvReference(xmlDoc, _oldDatasourceFilename, _datasourceNewCsvPath, _statusLog);
 
         //Write out the transformed XML document
         TableauPersistFileHelper.WriteTableauXmlFile(xmlDoc, _pathToTwbOutput);
@@ -56,17 +56,16 @@ class TwbReplaceCSVReference
     /// Finds and changes a datasource reference inside a Workbook. Changes the CSV file the data source points to
     /// </summary>
     /// <param name="xmlDoc"></param>
-    /// <param name="datasourceName"></param>
+    /// <param name="oldDatasourceFilename">Filenane (without path) of the datasource we want to replace. Case insensitive</param>
     /// <param name="pathToTargetCsv"></param>
     /// <param name="statusLog"></param>
-    private bool RemapDatasourceCsvReference(XmlDocument xmlDoc, string datasourceName, string pathToTargetCsv, TaskStatusLogs statusLog)
+    private bool RemapDatasourceCsvReference(XmlDocument xmlDoc, string oldDatasourceFilename, string pathToTargetCsv, TaskStatusLogs statusLog)
     {
         int replaceItemCount = 0;
         string newCsvDirectory = Path.GetDirectoryName(_datasourceNewCsvPath);
         string newCsvFileName = Path.GetFileName(_datasourceNewCsvPath);
         string newDatasourceRelationName = Path.GetFileNameWithoutExtension(newCsvFileName) + "#csv";
         string newDatasourceRelationTable = "[" + newDatasourceRelationName + "]";
-        string seekDatasourceCaption = _datasourceName;
 
         var xDataSources = xmlDoc.SelectNodes("workbook/datasources/datasource");
         if(xDataSources != null)
@@ -74,29 +73,54 @@ class TwbReplaceCSVReference
             //Look through the data sources
             foreach (XmlNode xnodeDatasource in xDataSources)
             {
-                //If the data source is matching the caption we are looking for
-                if(XmlHelper.SafeParseXmlAttribute(xnodeDatasource, "caption", "") == seekDatasourceCaption)
+                var xConnections = xnodeDatasource.SelectNodes(".//connection");
+                if (xConnections != null)
                 {
-                    var xnodeConnection = xnodeDatasource.SelectSingleNode("connection");
-                    //It should be 'textscan', it would be unexpected if it were not
-                    if(XmlHelper.SafeParseXmlAttribute(xnodeConnection, "class", "") == "textscan")
+                    foreach (XmlNode xThisConnection in xConnections)
                     {
-                        //Point to the new directory/path
-                        xnodeConnection.Attributes["directory"].Value = newCsvDirectory;
-                        xnodeConnection.Attributes["filename"].Value = newCsvFileName;
+                        //If its a 'textscan' (CSV) and the file name matches the expected type, then this is a datasource's connection we want to remap 
+                        //to point to a new CSV file
+                        if ((XmlHelper.SafeParseXmlAttribute(xThisConnection, "class", "") == "textscan") &&
+                            (string.Compare(XmlHelper.SafeParseXmlAttribute(xThisConnection, "filename", ""),
+                                            oldDatasourceFilename, true) == 0))
+                        {
 
-                        //And it's got a Relation we need to update
-                        var xNodeRelation = xnodeConnection.SelectSingleNode("relation");
-                        xNodeRelation.Attributes["name"].Value = newDatasourceRelationName;
-                        xNodeRelation.Attributes["table"].Value = newDatasourceRelationTable;
+                            //Find any relation nodes beneath the datasource
+                            //Newer version of the document model put the textscan connection inside a federated data source
+                            //to deal with that, we need to look upward from the connection and adjacent in the DOM to find the correct
+                            //node to replace. This is done by looking at child nodes in the datasource
+                            var xNodeAllConnectionRelations = xnodeDatasource.SelectNodes(".//relation");
+                            XmlNode xNodeRelation = null;
+                            if (xNodeAllConnectionRelations != null)
+                            {
+                                if(xNodeAllConnectionRelations.Count == 1)
+                                {
+                                    xNodeRelation = xNodeAllConnectionRelations[0];
+                                }
+                                else
+                                {
+                                    statusLog.AddError("CSV replacement. Expected 1 Relation in data source definition, actual " + xNodeAllConnectionRelations.Count.ToString());
+                                }
+                            }
 
-                        replaceItemCount++;
-                    }
-                    else
-                    {
-                        _statusLog.AddError("Data source remap error. Expected data source to be 'textscan'");
-                    }
-                }//end if
+
+                            //Only if we have all the elements need to replace, should we go ahead with the replacement
+                            if ((xNodeRelation != null) && (xThisConnection != null))
+                            {
+                                //Point to the new directory/path
+                                xThisConnection.Attributes["directory"].Value = newCsvDirectory;
+                                xThisConnection.Attributes["filename"].Value = newCsvFileName;
+
+                                xNodeRelation.Attributes["name"].Value = newDatasourceRelationName;
+                                xNodeRelation.Attributes["table"].Value = newDatasourceRelationTable;
+
+                                replaceItemCount++;
+                            }
+                        }
+
+                    }//end: foreach xThisConnection
+                }
+
             }//end foreach
         }//end if
 

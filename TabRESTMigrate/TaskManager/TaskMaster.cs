@@ -1148,7 +1148,7 @@ internal partial class TaskMaster
             var twbGenerateFromTemplate = new TwbReplaceCSVReference(
                 PathHelper.GetInventoryTwbTemplatePath(),   //*.twb we are using as our template
                 pathTwbOut,                                 //Output *.twb we are generating
-                "siteInventory",                            //Datasource name in tempalte workbook
+                "siteInventoryTemplate.csv",                //Datasource filename in tempalte workbook
                 pathReportCsv,                              //CSV file we want to associate with the datasource above
                 _statusLog);
 
