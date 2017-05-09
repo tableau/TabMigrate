@@ -26,9 +26,9 @@ There's a short video introduction available on Tableau's YouTube channel. You c
 * [Wrap-up & Getting the Code on GitHub (12:30)](https://www.youtube.com/watch?v=zxeo_gBT8dk#t=12m30s)
 
 ## Versions of Tableau Server
-TabMigrate was written and tested with version 9.1 of Tableau Server. 
-- It should work in all Tableau Server versions >= 9.1.  
-- The application also "probably" works in Tableau Server 9.0, but this has not been tested.
+TabMigrate was written and tested with version 10.2 of Tableau Server. 
+- It should work in all Tableau Server versions >= 10.1.  
+- Earlier versions of TabMigrate work with earlier Tableau servers (check the releases)
 - Moving forward, the application will be maintained and gain new features with each released version of Tableau Server, as the REST API set expands. If you need older versions, you can download the previous releases.
 
 
