@@ -95,6 +95,7 @@
     <Compile Include="RESTHelpers\DatasourcePublishSettings.cs" />
     <Compile Include="RESTHelpers\WorkbooksPublishSettings_statics.cs" />
     <Compile Include="RESTRequests\DownloadGroupsList.cs" />
+    <Compile Include="RESTRequests\DownloadViewsList.cs" />
     <Compile Include="RESTRequests\DownloadSubscriptionsList.cs" />
     <Compile Include="RESTRequests\SendUpdateDatasourceOwner.cs" />
     <Compile Include="RESTRequests\SendUpdateWorkbookOwner.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="ServerData\SiteGroup.cs" />
     <Compile Include="ServerData\SiteConnection.cs" />
     <Compile Include="ServerData\KeyedLookup.cs" />
+    <Compile Include="ServerData\SiteView.cs" />
     <Compile Include="ServerData\SiteSubscription.cs" />
     <Compile Include="ServerData\SiteTag.cs" />
     <Compile Include="ServerData\SiteTagsSet.cs" />

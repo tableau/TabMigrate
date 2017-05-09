@@ -16,6 +16,7 @@ class CustomerSiteInventory : CsvDataGenerator
     const string ContentConnectionUserName = "connection-user-name";
     const string ContentProjectId = "project-id";
     const string ContentWorkbookId = "workbook-id";
+    const string ContentViewCount = "view-count";
     const string ContentWorkbookName = "workbook-name";
     const string ContentViewId = "view-id";
     const string ContentProjectName = "project-name";
@@ -30,7 +31,8 @@ class CustomerSiteInventory : CsvDataGenerator
     const string ContentOwnerName = "owner-name";
     const string ContentTags = "tags";
     const string ContentSubscriptionId = "subscription-id";
-    const string ContentSubscriptionName = "subscription-name";
+    const string ContentScheduleId = "schedule-id";
+    const string ContentScheduleName = "schedule-name";
     const string ContentSubscriptionType = "subscription-type";
     const string WorkbookShowTabs = "workbook-show-tabs";
     const string SiteRole = "user-role";
@@ -40,6 +42,16 @@ class CustomerSiteInventory : CsvDataGenerator
     /// Efficent store for looking up user names
     /// </summary>
     private readonly KeyedLookup<SiteUser> _siteUserMapping;
+
+    /// <summary>
+    /// Efficent store for looking up views by ID
+    /// </summary>
+    private readonly KeyedLookup<SiteView> _siteViewMapping;
+
+    /// <summary>
+    /// Efficent store for looking up workbooks by ID
+    /// </summary>
+    private readonly KeyedLookup<SiteWorkbook> _siteWorkbookMapping;
 
     /// <summary>
     /// Status log data
@@ -58,6 +70,7 @@ class CustomerSiteInventory : CsvDataGenerator
       IEnumerable<SiteProject> projects, 
       IEnumerable<SiteDatasource> dataSources,
       IEnumerable<SiteWorkbook> workbooks,
+      IEnumerable<SiteView> views,
       IEnumerable<SiteUser> users,
       IEnumerable<SiteGroup> groups,
       IEnumerable<SiteSubscription> subscriptions,
@@ -77,11 +90,24 @@ class CustomerSiteInventory : CsvDataGenerator
             _siteUserMapping = new KeyedLookup<SiteUser>(users);
         }
 
+        //Want to be able to map views to workbooks (e.g. in subscriptions)
+        if(views != null)
+        {
+            _siteViewMapping = new KeyedLookup<SiteView>(views);
+        }
+
+        //Want to be able to map workbooks to workbook names (e.g. in subscriptions)
+        if (workbooks != null)
+        {
+            _siteWorkbookMapping = new KeyedLookup<SiteWorkbook>(workbooks);
+        }
+
       AddProjectsData(projects);
       AddDatasourcesData(dataSources);
       AddWorkbooksData(workbooks);
       AddUsersData(users);
       AddGroupsData(groups);
+      AddViewsData(views);
       AddSubscriptionsData(subscriptions);
   }
 
@@ -128,10 +154,32 @@ class CustomerSiteInventory : CsvDataGenerator
 
 
     /// <summary>
+    /// If we have cached views, look them up
+    /// </summary>
+    /// <param name="viewId"></param>
+    /// <returns></returns>
+    private SiteView helper_AttemptViewLookup(string viewId)
+    {
+        if (_siteViewMapping == null) return null;
+        return _siteViewMapping.FindItem(viewId);
+    }
+
+    /// <summary>
+    /// If we have cached workbooks, look them up
+    /// </summary>
+    /// <param name="viewId"></param>
+    /// <returns></returns>
+    private SiteWorkbook helper_AttemptWorkbookLookup(string workbookId)
+    {
+        if (_siteWorkbookMapping == null) return null;
+        return _siteWorkbookMapping.FindItem(workbookId);
+    }
+
+    /// <summary>
     /// Add CSV for all the data sources
     /// </summary>
     /// <param name="dataSources"></param>
-  private void AddDatasourcesData(IEnumerable<SiteDatasource> dataSources)
+    private void AddDatasourcesData(IEnumerable<SiteDatasource> dataSources)
   {
       //No data sources? Do nothing.
       if (dataSources == null) return;
@@ -302,6 +350,42 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
     }
 
     /// <summary>
+    /// Add CSV rows for all the views data
+    /// </summary>
+    /// <param name="views"></param>
+    private void AddViewsData(IEnumerable<SiteView> views)
+    {
+        //No data to add? do nothing.
+        if (views == null) return;
+
+        //Add each project as a row in the CSV file we will generate
+        foreach (var thisView in views)
+        {
+            this.AddKeyValuePairs(
+                new string[] {
+                    ContentType                //1
+                    ,ContentId                 //2
+                    ,ContentName               //3
+                    ,ContentUrl                //4
+                    ,ContentOwnerId            //5
+                    ,ContentWorkbookId         //6
+                    ,ContentViewCount          //7
+                    ,DeveloperNotes            //8
+                                },
+                new string[] {
+                     "view"                     //1
+                    ,thisView.Id                //2
+                    ,thisView.Name              //3
+                    ,thisView.ContentUrl        //4
+                    ,thisView.OwnerId           //5
+                    ,thisView.WorkbookId        //6
+                    ,thisView.TotalViewCount.ToString() //7  UNDONE: Could expland CSV generation to be integers and strings, rather than make this a string   
+                    ,thisView.DeveloperNotes    //8
+                                });
+        }
+    }
+
+    /// <summary>
     /// Add CSV rows for all the subscriptions data
     /// </summary>
     /// <param name="subscriptions"></param>
@@ -313,13 +397,21 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
         //Add each subscription as a row in the CSV file we will generate
         foreach (var thisSubscription in subscriptions)
         {
+
+            string contentUrl = "";
             string thisSubscriptionViewId = "";
             string thisSubscriptionWorkbookId = "";
 
             if(thisSubscription.ContentType == "View")
             {
-
-                //UNDONE: We could TRY to look up the Workbook ID, if we have set of VIEWS
+                thisSubscriptionViewId = thisSubscription.ContentId;
+                //If we have view information, then look up the workbook id
+                var thisView = helper_AttemptViewLookup(thisSubscription.ContentId);
+                if(thisView != null)
+                {
+                    thisSubscriptionWorkbookId = thisView.WorkbookId;
+                    contentUrl = thisView.ContentUrl;
+                }
             }
             else if(thisSubscription.ContentType == "Workbook")
             {
@@ -330,32 +422,60 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                 this.StatusLog.AddError("Unknown subscription type: " + thisSubscription.ContentType);
             }
 
+            //If we have workbook information, look up the workbook and get its name
+            string thisWorkbookName = "";
+            string thisWorkbookProjectId = "";
+            if(!string.IsNullOrWhiteSpace(thisSubscriptionWorkbookId))
+            {
+                var thisWorkbook = helper_AttemptWorkbookLookup(thisSubscriptionWorkbookId);
+                if(thisWorkbook != null)
+                {
+                    thisWorkbookName = thisWorkbook.Name;
+                    thisWorkbookProjectId = thisWorkbook.ProjectId;
+
+                    //If the subscription is for a Workbook, and we have that workbook then grab the content URL
+                    if (thisSubscription.ContentType == "Workbook")
+                    {
+                        contentUrl = thisWorkbook.ContentUrl;
+                    }
+                }
+            }
+            
+
             this.AddKeyValuePairs(
                 new string[] {
                 ContentType               //1
                 ,ContentId                //2
-                ,ContentDescription       //3
-                ,ContentOwnerId           //4
-                ,ContentOwnerName         //5
-                ,ContentSubscriptionId    //6
-                ,ContentSubscriptionName  //7
-                ,ContentSubscriptionType  //8
-                ,ContentWorkbookId        //9
-                ,ContentViewId            //10
-                ,DeveloperNotes           //11
+                ,ContentSubscriptionId    //3
+                ,ContentDescription       //4
+                ,ContentOwnerId           //5
+                ,ContentOwnerName         //6
+                ,ContentScheduleId        //7
+                ,ContentScheduleName      //8
+                ,ContentSubscriptionType  //9
+                ,ContentWorkbookId        //10
+                ,ContentViewId            //11
+                ,ContentWorkbookName      //12
+                ,ContentProjectId         //13
+                ,ContentUrl               //14
+                ,DeveloperNotes           //15
                 },
                 new string[] {
                  "subscription"                  //1
                 ,thisSubscription.Id             //2
-                ,thisSubscription.Subject        //3
-                ,thisSubscription.UserId         //4
-                ,thisSubscription.UserName       //5
-                ,thisSubscription.ScheduleId     //6
-                ,thisSubscription.ScheduleName   //7
-                ,thisSubscription.ContentType    //8
-                ,thisSubscriptionWorkbookId      //9
-                ,thisSubscriptionViewId          //10
-                ,thisSubscription.DeveloperNotes //11
+                ,thisSubscription.Id             //3
+                ,thisSubscription.Subject        //4
+                ,thisSubscription.UserId         //5
+                ,thisSubscription.UserName       //6
+                ,thisSubscription.ScheduleId     //7
+                ,thisSubscription.ScheduleName   //8
+                ,thisSubscription.ContentType    //9
+                ,thisSubscriptionWorkbookId      //10
+                ,thisSubscriptionViewId          //11
+                ,thisWorkbookName                //12
+                ,thisWorkbookProjectId           //13
+                ,contentUrl                      //14
+                ,thisSubscription.DeveloperNotes //15
                 });
         }
     }

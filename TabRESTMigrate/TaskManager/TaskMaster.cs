@@ -79,6 +79,18 @@ internal partial class TaskMaster
     }
     private IEnumerable<SiteSubscription> _downloadedList_Subscriptions;
 
+    /// <summary>
+    /// If we took an  inventory of the list of subscriptions this will contain the list
+    /// </summary>
+    public IEnumerable<SiteView> ViewsList
+    {
+        get
+        {
+            return _downloadedList_Views;
+        }
+    }
+    private IEnumerable<SiteView> _downloadedList_Views;
+
 
     /// <summary>
     /// If we took an inventory of groups, return them
@@ -813,6 +825,14 @@ internal partial class TaskMaster
             Execute_CreateProjectWithName(serverLogin, createProjectName);
         }
 
+        //===================================================================================
+        //Views
+        //===================================================================================
+        if (taskOptions.IsOptionSet(TaskMasterOptions.Option_GetViewsList))
+        {
+            var viewsList = Execute_DownloadViewsList(serverLogin);
+        }
+
         //========================================================================================
         //Attempt to get the list of users
         //========================================================================================
@@ -861,7 +881,7 @@ internal partial class TaskMaster
         {
             var subscriptionsList = Execute_DownloadSubscriptionsList(serverLogin);
         }
-        
+
         //===================================================================================
         //List of groups? 
         //===================================================================================
@@ -1186,6 +1206,7 @@ internal partial class TaskMaster
                 this.ProjectsList,
                 this.DatasourcesList,
                 this.WorkbooksList,
+                this.ViewsList,
                 this.UsersList,
                 this.GroupsList,
                 this.SubscriptionsList,
@@ -1268,6 +1289,40 @@ internal partial class TaskMaster
         //Store it
         _downloadedList_Subscriptions = subscriptions.Subscriptions;
         return subscriptions;
+    }
+
+    /// <summary>
+    /// Downloads the set of views in the site
+    /// </summary>
+    /// <param name="onlineLogin"></param>
+    /// <returns></returns>
+    private DownloadViewsList Execute_DownloadViewsList(TableauServerSignIn onlineLogin)
+    {
+        var onlineUrls = _onlineUrls;
+        _statusLog.AddStatusHeader("Request site views");
+        DownloadViewsList siteViews = null;
+        //===================================================================================
+        //Views...
+        //===================================================================================
+        try
+        {
+            siteViews = new DownloadViewsList(onlineUrls, onlineLogin);
+            siteViews.ExecuteRequest();
+
+            //List all the subscriptions
+            foreach (var singleView in siteViews.Views)
+            {
+                _statusLog.AddStatus(singleView.ToString());
+            }
+        }
+        catch (Exception ex)
+        {
+            _statusLog.AddError("Error during views query, " + ex.ToString());
+        }
+
+        //Store it
+        _downloadedList_Views = siteViews.Views;
+        return siteViews;
     }
 
     /// <summary>

@@ -128,6 +128,7 @@ internal partial class TaskMaster
         options.AddOption(TaskMasterOptions.Option_GetWorkbooksList);
         options.AddOption(TaskMasterOptions.Option_GetWorkbooksConnections);
         options.AddOption(TaskMasterOptions.Option_GetSubscriptionsList);
+        options.AddOption(TaskMasterOptions.Option_GetViewsList);
 
         //Some features are only accessible to System Admins
         //NOTE: When the APIs support site-admin getting this information, they will be moved into the more general block above
