@@ -384,7 +384,7 @@ internal partial class TaskMaster
         KeyedLookup<SiteUser> contentOwnerLookup = null;
         if ((generateInfoFile) && (siteUsers != null))
         {
-            contentOwnerLookup = new KeyedLookup<SiteUser>(siteUsers);
+            contentOwnerLookup = new KeyedLookup<SiteUser>(siteUsers, _statusLog);
         }
         try
         {
@@ -626,7 +626,7 @@ internal partial class TaskMaster
         KeyedLookup<SiteUser> workbookOwnerLookup = null;
         if ((generateInfoFile) && (siteUsers != null))
         {
-            workbookOwnerLookup = new KeyedLookup<SiteUser>(siteUsers);
+            workbookOwnerLookup = new KeyedLookup<SiteUser>(siteUsers, _statusLog);
         }
         //Do the downloads......
         try

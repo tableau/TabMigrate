@@ -87,19 +87,19 @@ class CustomerSiteInventory : CsvDataGenerator
         //that has user ids
         if(users != null)
         {
-            _siteUserMapping = new KeyedLookup<SiteUser>(users);
+            _siteUserMapping = new KeyedLookup<SiteUser>(users, statusLogger);
         }
 
         //Want to be able to map views to workbooks (e.g. in subscriptions)
         if(views != null)
         {
-            _siteViewMapping = new KeyedLookup<SiteView>(views);
+            _siteViewMapping = new KeyedLookup<SiteView>(views, statusLogger);
         }
 
         //Want to be able to map workbooks to workbook names (e.g. in subscriptions)
         if (workbooks != null)
         {
-            _siteWorkbookMapping = new KeyedLookup<SiteWorkbook>(workbooks);
+            _siteWorkbookMapping = new KeyedLookup<SiteWorkbook>(workbooks, statusLogger);
         }
 
       AddProjectsData(projects);

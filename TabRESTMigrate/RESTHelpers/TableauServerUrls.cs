@@ -157,10 +157,12 @@ class TableauServerUrls : ITableauServerSiteInfo
         string siteUrlSegment;
         ServerVersion serverVersion;
         //Check for the site specifier.  Infer the server version based on this URL
-        if(urlParts[1] == "t")
+        if (urlParts.Length == 1)
         {
-            siteUrlSegment = urlParts[2];
-            serverVersion = ServerVersion.server8;
+            //The user has just specified the root of the server without a path.
+            //Therefore, use hte default site.
+            siteUrlSegment = ""; //Default site
+            serverVersion = ServerVersion.server9;
         }
         else if((urlParts[1] == "#") && (urlParts[2] == "site"))
         {
@@ -174,7 +176,7 @@ class TableauServerUrls : ITableauServerSiteInfo
         }
         else
         {
-            throw new Exception("Expected /t site splitter in url");
+            throw new Exception("Site URL not recognized as Tableau Server");
         }
          
         return new TableauServerUrls(foundProtocol, serverName, siteUrlSegment, pageSize, serverVersion);
