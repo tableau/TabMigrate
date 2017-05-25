@@ -19,6 +19,7 @@ public partial class TaskMasterOptions
     public const string Option_GetDatasourcesList = "DownloadDatasourcesList";
     public const string Option_GetGroupsList = "DownloadGroupsList";
     public const string Option_GetSchedulesList = "DownloadSchedulesList";
+    public const string Option_GetExtractTasksList = "DownloadExtractTasksList";
     public const string Option_DownloadWorkbooks = "DownloadWorkbooks";
     public const string Option_UploadWorkbooks = "UploadWorkbooks";
     public const string Option_GetWorkbooksList = "DownloadWorkbooksList";

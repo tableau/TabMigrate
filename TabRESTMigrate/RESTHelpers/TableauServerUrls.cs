@@ -38,6 +38,7 @@ class TableauServerUrls : ITableauServerSiteInfo
     private readonly string _urlListProjectsTemplate;
     private readonly string _urlListSubscriptionsTemplate;
     private readonly string _urlListSchedulesTemplate;
+    private readonly string _urlListTasksInScheduleTemplate;
     private readonly string _urlListViewsTemplate;
     private readonly string _urlListGroupsTemplate;
     private readonly string _urlListUsersTemplate;
@@ -96,6 +97,7 @@ class TableauServerUrls : ITableauServerSiteInfo
         this._urlListProjectsTemplate              = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/projects?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListSubscriptionsTemplate         = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/subscriptions?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListSchedulesTemplate             = serverNameWithProtocol + "/api/2.3/schedules?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListTasksInScheduleTemplate       = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/schedules/{{iwsScheduleId}}/extracts?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListViewsTemplate                 = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/views?includeUsageStatistics=true&pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListGroupsTemplate                = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/groups?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
         this._urlListUsersTemplate                 = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/users?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
@@ -451,6 +453,26 @@ class TableauServerUrls : ITableauServerSiteInfo
     {
         string workingText = _urlListSchedulesTemplate;
         workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsPageSize}}", pageSize.ToString());
+        workingText = workingText.Replace("{{iwsPageNumber}}", pageNumber.ToString());
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for a list of tasks inside a schedule
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="scheduleId"></param>
+    /// <param name="pageSize"></param>
+    /// <param name="pageNumber"></param>
+    /// <returns></returns>
+    public string Url_TasksExtractRefreshesForScheduleList(TableauServerSignIn session, string scheduleId, int pageSize, int pageNumber = 1)
+    {
+        string workingText = _urlListTasksInScheduleTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsScheduleId}}", scheduleId);
         workingText = workingText.Replace("{{iwsPageSize}}", pageSize.ToString());
         workingText = workingText.Replace("{{iwsPageNumber}}", pageNumber.ToString());
         ValidateTemplateReplaceComplete(workingText);

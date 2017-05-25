@@ -5,7 +5,7 @@ using System.Xml;
 /// <summary>
 /// Information about a Schedule in a Server's site
 /// </summary>
-class SiteSchedule : IHasSiteItemId
+partial class SiteSchedule : IHasSiteItemId
 {
     public readonly string Id;
     public readonly string ScheduleName;
@@ -15,6 +15,21 @@ class SiteSchedule : IHasSiteItemId
     public readonly string ScheduleFrequency;
     public readonly string NextRunUTCText;
     public readonly string EndScheduleIfHourlyUTC = null;
+
+    /// <summary>
+    /// TRUE if this schedule is of type extract refresh
+    /// </summary>
+    public bool IsExtractRefreshSchedule
+    {
+        get
+        {
+            if(string.Compare(this.ScheduleType, "extract", true) == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
 
     /// [2017-05-25] Currently all Schedules are Server scoped (but available to query by site admins). 
     ///              In the future this class may need to be amdended to indicate which schedules are server vs. site

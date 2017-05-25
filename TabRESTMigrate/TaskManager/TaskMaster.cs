@@ -130,6 +130,17 @@ internal partial class TaskMaster
     private IEnumerable<SiteSchedule> _downloadedList_Schedules;
 
 
+    /// <summary>
+    /// If we downloaded the set of extract refresh tasks, it will be here
+    /// </summary>
+    public IEnumerable<SiteTaskExtractRefresh> TasksExtractRefreshesList
+    {
+        get
+        {
+            return _downloadedList_ExtractRefreshTasks;
+        }
+    }
+    private IEnumerable<SiteTaskExtractRefresh> _downloadedList_ExtractRefreshTasks;
 
     /// <summary>
     /// If we downloaded the list of workbooks, it will be here
@@ -454,7 +465,7 @@ internal partial class TaskMaster
     /// Download the schedules list
     /// </summary>
     /// <param name="onlineLogin"></param>
-    private void Execute_DownloadSchedulesList(TableauServerSignIn onlineLogin)
+    private IEnumerable<SiteSchedule> Execute_DownloadSchedulesList(TableauServerSignIn onlineLogin)
     {
         _statusLog.AddStatusHeader("Download schedules list");
         try
@@ -464,12 +475,58 @@ internal partial class TaskMaster
             schedules.ExecuteRequest();
 
             //Store them in our object
-            _downloadedList_Schedules = schedules.Schedules;
+            var siteSchedules = schedules.Schedules;
+            _downloadedList_Schedules = siteSchedules;
+            return siteSchedules;
         }
         catch (Exception exDownload)
         {
             _statusLog.AddError("Error during schedules list download, " + exDownload.ToString());
+            return null;
         }
+    }
+
+
+    /// <summary>
+    /// Download the list of tasks for the specified schedules
+    /// </summary>
+    /// <param name="serverLogin"></param>
+    /// <param name="enumerable"></param>
+    private void Execute_DownloadExtractTasksList(
+        TableauServerSignIn serverLogin, 
+        IEnumerable<SiteSchedule> schedules)
+    {
+        _statusLog.AddStatusHeader("Download extract refresh tasks list");
+
+        //Missing schedules set? Something is wrong...
+        if (schedules == null)
+        {
+            this.StatusLog.AddError("NULL set of schedules");
+            return;
+        }
+
+        var extractRefreshTasks = new List<SiteTaskExtractRefresh>();
+
+        //For each schedule, download its list of extract refresh tasks
+        foreach(var thisSchedule in schedules)
+        {
+            try
+            {
+                var tasksDownloader = new DownloadTasksExtractRefreshesList(_onlineUrls, serverLogin, thisSchedule.Id);
+                tasksDownloader.ExecuteRequest();
+
+                //Add the tasks to the set
+                extractRefreshTasks.AddRange(tasksDownloader.Tasks);
+            }
+            catch(Exception exDownload)
+            {
+                _statusLog.AddError("Error during extract refresh tasks download, " + exDownload.ToString());
+            }
+        }
+
+        //Store the set of extract refresh tasks
+        _downloadedList_ExtractRefreshTasks = extractRefreshTasks;
+
     }
 
     /// <summary>
@@ -937,9 +994,18 @@ internal partial class TaskMaster
         //===================================================================================
         //List of schedules? 
         //===================================================================================
-        if (taskOptions.IsOptionSet(TaskMasterOptions.Option_GetSchedulesList))
+        if ((taskOptions.IsOptionSet(TaskMasterOptions.Option_GetSchedulesList))
+            || (taskOptions.IsOptionSet(TaskMasterOptions.Option_GetExtractTasksList)))
         {
-            Execute_DownloadSchedulesList(serverLogin);
+            var schedules  = Execute_DownloadSchedulesList(serverLogin);
+
+            //See if we should download the list of extract refresh tasks
+            if (taskOptions.IsOptionSet(TaskMasterOptions.Option_GetExtractTasksList))
+            {
+                Execute_DownloadExtractTasksList(
+                    serverLogin, 
+                    SiteSchedule.FilterListToExtractSchedules(schedules));
+            }
         }
 
         //===================================================================================
@@ -1086,6 +1152,7 @@ internal partial class TaskMaster
         _statusLog.AddStatusHeader("Sign out");
         serverLogin.SignOut(onlineUrls);
     }
+
 
 
     /// <summary>
@@ -1255,6 +1322,7 @@ internal partial class TaskMaster
                 this.GroupsList,
                 this.SubscriptionsList,
                 this.SchedulesList,
+                this.TasksExtractRefreshesList,
                 _statusLog);
 
             reportGenerator.GenerateCSVFile(pathReport);

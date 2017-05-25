@@ -95,6 +95,7 @@
     <Compile Include="RESTHelpers\DatasourcePublishSettings.cs" />
     <Compile Include="RESTHelpers\WorkbooksPublishSettings_statics.cs" />
     <Compile Include="RESTRequests\DownloadGroupsList.cs" />
+    <Compile Include="RESTRequests\DownloadTasksExtractRefreshesList.cs" />
     <Compile Include="RESTRequests\DownloadSchedulesList.cs" />
     <Compile Include="RESTRequests\DownloadViewsList.cs" />
     <Compile Include="RESTRequests\DownloadSubscriptionsList.cs" />
@@ -114,7 +115,9 @@
     <Compile Include="ServerData\SiteGroup.cs" />
     <Compile Include="ServerData\SiteConnection.cs" />
     <Compile Include="ServerData\KeyedLookup.cs" />
+    <Compile Include="ServerData\SiteTaskExtractRefresh.cs" />
     <Compile Include="ServerData\SiteSchedule.cs" />
+    <Compile Include="ServerData\SiteSchedule_static.cs" />
     <Compile Include="ServerData\SiteView.cs" />
     <Compile Include="ServerData\SiteSubscription.cs" />
     <Compile Include="ServerData\SiteTag.cs" />

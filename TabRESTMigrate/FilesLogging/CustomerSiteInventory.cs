@@ -16,6 +16,7 @@ class CustomerSiteInventory : CsvDataGenerator
     const string ContentConnectionUserName = "connection-user-name";
     const string ContentProjectId = "project-id";
     const string ContentWorkbookId = "workbook-id";
+    const string ContentDatasourceId = "datasource-id";
     const string ContentViewCount = "view-count";
     const string ContentWorkbookName = "workbook-name";
     const string ContentViewId = "view-id";
@@ -32,8 +33,10 @@ class CustomerSiteInventory : CsvDataGenerator
     const string ContentTags = "tags";
     const string ContentSubscriptionId = "subscription-id";
     const string ContentScheduleId = "schedule-id";
+    const string ExtractRefreshType = "refresh-type";
     const string ContentScheduleName = "schedule-name";
     const string ContentSubscriptionType = "subscription-type";
+    const string ExtractRefreshTargetContentType = "extract-target-type";
     const string WorkbookShowTabs = "workbook-show-tabs";
     const string SiteRole = "user-role";
     const string DeveloperNotes = "developer-notes";
@@ -81,6 +84,7 @@ class CustomerSiteInventory : CsvDataGenerator
       IEnumerable<SiteGroup> groups,
       IEnumerable<SiteSubscription> subscriptions,
       IEnumerable<SiteSchedule> schedules,
+      IEnumerable<SiteTaskExtractRefresh> extractRefreshTasks,
       TaskStatusLogs statusLogger)
   {
         //Somewhere to store status logs
@@ -117,6 +121,7 @@ class CustomerSiteInventory : CsvDataGenerator
       AddViewsData(views);
       AddSubscriptionsData(subscriptions);
       AddSchedulesData(schedules);
+      AddExtractRefreshTasksData(extractRefreshTasks);
   }
 
     /// <summary>
@@ -202,24 +207,26 @@ class CustomerSiteInventory : CsvDataGenerator
               new string[] { 
                    ContentType         //1
                   ,ContentId           //2
-                  ,ContentName         //3
-                  ,ContentProjectId    //4
-                  ,ContentProjectName  //5
-                  ,ContentOwnerId      //6
-                  ,ContentOwnerName    //7
-                  ,ContentTags         //8
-                  ,DeveloperNotes      //9
+                  ,ContentDatasourceId //3
+                  ,ContentName         //4
+                  ,ContentProjectId    //5
+                  ,ContentProjectName  //6
+                  ,ContentOwnerId      //7
+                  ,ContentOwnerName    //8
+                  ,ContentTags         //9
+                  ,DeveloperNotes      //10
                   },
               new string[] { 
                    "datasource"                //1
                   ,thisDatasource.Id           //2
-                  ,thisDatasource.Name         //3
-                  ,thisDatasource.ProjectId    //4
-                  ,thisDatasource.ProjectName  //5
-                  ,thisDatasource.OwnerId      //6
-                  ,ownerName                   //7
-                  ,thisDatasource.TagSetText   //8
-                  ,thisDatasource.DeveloperNotes //9
+                  ,thisDatasource.Id           //3
+                  ,thisDatasource.Name         //4
+                  ,thisDatasource.ProjectId    //5
+                  ,thisDatasource.ProjectName  //6
+                  ,thisDatasource.OwnerId      //7
+                  ,ownerName                   //8
+                  ,thisDatasource.TagSetText   //9
+                  ,thisDatasource.DeveloperNotes //10
                   });
       }
   }
@@ -431,6 +438,45 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,thisSchedule.NextRunUTCText          //9
                     ,thisSchedule.EndScheduleIfHourlyUTC  //10
                     ,thisSchedule.DeveloperNotes          //11
+                                });
+        }
+    }
+
+    /// <summary>
+    /// Add CSV rows for all the extract refresh tasks data
+    /// </summary>
+    /// <param name="views"></param>
+    private void AddExtractRefreshTasksData(IEnumerable<SiteTaskExtractRefresh> tasks)
+    {
+        //No data to add? do nothing.
+        if (tasks == null) return;
+
+        
+        //Add each item as a row in the CSV file we will generate
+        foreach (var thisTask in tasks)
+        {
+            this.AddKeyValuePairs(
+                new string[] {
+                     ContentType               //1
+                    ,ContentId                 //2
+                    ,ContentScheduleId         //3
+                    ,SchedulePriority          //4
+                    ,ExtractRefreshType        //5
+                    ,ExtractRefreshTargetContentType         //6
+                    ,ContentWorkbookId         //7
+                    ,ContentDatasourceId       //8
+                    ,DeveloperNotes            //9
+                             },
+                new string[] {
+                    "extract-refresh-task"                //1
+                    ,thisTask.Id                          //2
+                    ,thisTask.ScheduleId                  //3
+                    ,thisTask.PriorityText                //4
+                    ,thisTask.RefreshType                 //5
+                    ,thisTask.RefreshContentType          //6
+                    ,thisTask.WorkbookId                  //7
+                    ,thisTask.DatasourceId                //8
+                    ,thisTask.DeveloperNotes              //9
                                 });
         }
     }

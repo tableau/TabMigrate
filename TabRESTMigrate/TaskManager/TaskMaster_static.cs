@@ -137,6 +137,7 @@ internal partial class TaskMaster
             options.AddOption(TaskMasterOptions.Option_GetSiteInfo);
             options.AddOption(TaskMasterOptions.Option_GetGroupsList);
             options.AddOption(TaskMasterOptions.Option_GetSchedulesList);
+            options.AddOption(TaskMasterOptions.Option_GetExtractTasksList);
         }
 
         //Do we want to create a Tableau Workbook that uses the inventory CSV file?

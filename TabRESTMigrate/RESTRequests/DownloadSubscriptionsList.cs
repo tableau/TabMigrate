@@ -124,25 +124,6 @@ class DownloadSubscriptionsList : TableauServerSignedInRequestBase
         }
     }
 
-    /*
-    /// <summary>
-    /// Finds a subscription with matching name
-    /// </summary>
-    /// <param name="findSubscriptionName"></param>
-    /// <returns></returns>
-    public SiteSubscription FindSubscriptionWithName(string findSubscriptionName)
-    {
-        foreach(var proj in _subscriptions)
-        {
-            if(proj.Name == findSubscriptionName)
-            {
-                return proj;
-            }
-        }
-
-        return null; //Not found
-    }
-    */
     /// <summary>
     /// 
     /// </summary>
