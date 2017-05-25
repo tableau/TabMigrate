@@ -36,6 +36,7 @@
             this.chkVerboseLog = new System.Windows.Forms.CheckBox();
             this.textBoxErrors = new System.Windows.Forms.TextBox();
             this.panelImportSite = new System.Windows.Forms.Panel();
+            this.chkImportRemapContentOwnership = new System.Windows.Forms.CheckBox();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
@@ -78,7 +79,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.txtInventoryExampleCommandLine = new System.Windows.Forms.TextBox();
             this.btnLinkInventoryCommandLine = new System.Windows.Forms.LinkLabel();
-            this.chkInventoryUserIsSystemAdmin = new System.Windows.Forms.CheckBox();
+            this.chkInventoryUserIsAdmin = new System.Windows.Forms.CheckBox();
             this.txtUrlInventoryFrom = new System.Windows.Forms.TextBox();
             this.txtIdInventoryFromUserId = new System.Windows.Forms.TextBox();
             this.txtPasswordInventoryFrom = new System.Windows.Forms.TextBox();
@@ -88,7 +89,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.comboBoxChooseAction = new System.Windows.Forms.ComboBox();
             this.panelTopSplitter = new System.Windows.Forms.Panel();
-            this.chkImportRemapContentOwnership = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerStatus)).BeginInit();
             this.splitContainerStatus.Panel1.SuspendLayout();
             this.splitContainerStatus.Panel2.SuspendLayout();
@@ -216,6 +216,20 @@
             this.panelImportSite.Name = "panelImportSite";
             this.panelImportSite.Size = new System.Drawing.Size(1170, 440);
             this.panelImportSite.TabIndex = 52;
+            // 
+            // chkImportRemapContentOwnership
+            // 
+            this.chkImportRemapContentOwnership.AutoSize = true;
+            this.chkImportRemapContentOwnership.Checked = true;
+            this.chkImportRemapContentOwnership.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkImportRemapContentOwnership.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkImportRemapContentOwnership.Location = new System.Drawing.Point(33, 207);
+            this.chkImportRemapContentOwnership.Name = "chkImportRemapContentOwnership";
+            this.chkImportRemapContentOwnership.Size = new System.Drawing.Size(269, 21);
+            this.chkImportRemapContentOwnership.TabIndex = 98;
+            this.chkImportRemapContentOwnership.Text = "Attempt content ownership assignment";
+            this.chkImportRemapContentOwnership.UseVisualStyleBackColor = true;
+            this.chkImportRemapContentOwnership.CheckedChanged += new System.EventHandler(this.chkImportRemapContentOwnership_CheckedChanged);
             // 
             // label17
             // 
@@ -656,7 +670,7 @@
             this.panelInventorySite.Controls.Add(this.label6);
             this.panelInventorySite.Controls.Add(this.txtInventoryExampleCommandLine);
             this.panelInventorySite.Controls.Add(this.btnLinkInventoryCommandLine);
-            this.panelInventorySite.Controls.Add(this.chkInventoryUserIsSystemAdmin);
+            this.panelInventorySite.Controls.Add(this.chkInventoryUserIsAdmin);
             this.panelInventorySite.Controls.Add(this.txtUrlInventoryFrom);
             this.panelInventorySite.Controls.Add(this.txtIdInventoryFromUserId);
             this.panelInventorySite.Controls.Add(this.txtPasswordInventoryFrom);
@@ -737,16 +751,16 @@
             this.btnLinkInventoryCommandLine.Text = "Generate command line showing password";
             this.btnLinkInventoryCommandLine.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.btnLinkInventoryCommandLine_LinkClicked);
             // 
-            // chkInventoryUserIsSystemAdmin
+            // chkInventoryUserIsAdmin
             // 
-            this.chkInventoryUserIsSystemAdmin.AutoSize = true;
-            this.chkInventoryUserIsSystemAdmin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkInventoryUserIsSystemAdmin.Location = new System.Drawing.Point(11, 85);
-            this.chkInventoryUserIsSystemAdmin.Name = "chkInventoryUserIsSystemAdmin";
-            this.chkInventoryUserIsSystemAdmin.Size = new System.Drawing.Size(496, 21);
-            this.chkInventoryUserIsSystemAdmin.TabIndex = 83;
-            this.chkInventoryUserIsSystemAdmin.Text = "User is system admin (site users, and site info will be included in inventory)";
-            this.chkInventoryUserIsSystemAdmin.UseVisualStyleBackColor = true;
+            this.chkInventoryUserIsAdmin.AutoSize = true;
+            this.chkInventoryUserIsAdmin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.chkInventoryUserIsAdmin.Location = new System.Drawing.Point(11, 85);
+            this.chkInventoryUserIsAdmin.Name = "chkInventoryUserIsAdmin";
+            this.chkInventoryUserIsAdmin.Size = new System.Drawing.Size(448, 21);
+            this.chkInventoryUserIsAdmin.TabIndex = 83;
+            this.chkInventoryUserIsAdmin.Text = "User is admin (site users, and site info will be included in inventory)";
+            this.chkInventoryUserIsAdmin.UseVisualStyleBackColor = true;
             // 
             // txtUrlInventoryFrom
             // 
@@ -848,33 +862,19 @@
             this.panelTopSplitter.TabIndex = 59;
             this.panelTopSplitter.Visible = false;
             // 
-            // chkImportRemapContentOwnership
-            // 
-            this.chkImportRemapContentOwnership.AutoSize = true;
-            this.chkImportRemapContentOwnership.Checked = true;
-            this.chkImportRemapContentOwnership.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkImportRemapContentOwnership.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.chkImportRemapContentOwnership.Location = new System.Drawing.Point(33, 207);
-            this.chkImportRemapContentOwnership.Name = "chkImportRemapContentOwnership";
-            this.chkImportRemapContentOwnership.Size = new System.Drawing.Size(269, 21);
-            this.chkImportRemapContentOwnership.TabIndex = 98;
-            this.chkImportRemapContentOwnership.Text = "Attempt content ownership assignment";
-            this.chkImportRemapContentOwnership.UseVisualStyleBackColor = true;
-            this.chkImportRemapContentOwnership.CheckedChanged += new System.EventHandler(this.chkImportRemapContentOwnership_CheckedChanged);
-            // 
             // FormSiteExportImport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1274, 615);
-            this.Controls.Add(this.panelImportSite);
-            this.Controls.Add(this.panelExportSite);
             this.Controls.Add(this.panelInventorySite);
+            this.Controls.Add(this.panelExportSite);
             this.Controls.Add(this.panelTopSplitter);
             this.Controls.Add(this.comboBoxChooseAction);
             this.Controls.Add(this.panelRunCommandLine);
             this.Controls.Add(this.splitContainerStatus);
+            this.Controls.Add(this.panelImportSite);
             this.MinimumSize = new System.Drawing.Size(1100, 600);
             this.Name = "FormSiteExportImport";
             this.Text = "Online - Site export/import";
@@ -929,7 +929,7 @@
         private System.Windows.Forms.TextBox txtPasswordInventoryFrom;
         private System.Windows.Forms.Button buttonRunInventorySite;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.CheckBox chkInventoryUserIsSystemAdmin;
+        private System.Windows.Forms.CheckBox chkInventoryUserIsAdmin;
         private System.Windows.Forms.TextBox txtInventoryExampleCommandLine;
         private System.Windows.Forms.Panel panelRunCommandLine;
         private System.Windows.Forms.Label label4;

@@ -37,6 +37,12 @@ class CustomerSiteInventory : CsvDataGenerator
     const string WorkbookShowTabs = "workbook-show-tabs";
     const string SiteRole = "user-role";
     const string DeveloperNotes = "developer-notes";
+    const string ScheduleState = "schedule-state";
+    const string ScheduleFrequency = "schedule-frequency";
+    const string ScheduleType = "schedule-type";
+    const string SchedulePriority = "schedule-priority";
+    const string ScheduleNextRunUTC = "schedule-next-run-utc";
+    const string ScheduleHourlyEndUTC = "schedule-hourly-end-utc";
 
     /// <summary>
     /// Efficent store for looking up user names
@@ -74,6 +80,7 @@ class CustomerSiteInventory : CsvDataGenerator
       IEnumerable<SiteUser> users,
       IEnumerable<SiteGroup> groups,
       IEnumerable<SiteSubscription> subscriptions,
+      IEnumerable<SiteSchedule> schedules,
       TaskStatusLogs statusLogger)
   {
         //Somewhere to store status logs
@@ -109,6 +116,7 @@ class CustomerSiteInventory : CsvDataGenerator
       AddGroupsData(groups);
       AddViewsData(views);
       AddSubscriptionsData(subscriptions);
+      AddSchedulesData(schedules);
   }
 
     /// <summary>
@@ -358,7 +366,7 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
         //No data to add? do nothing.
         if (views == null) return;
 
-        //Add each project as a row in the CSV file we will generate
+        //Add each item as a row in the CSV file we will generate
         foreach (var thisView in views)
         {
             this.AddKeyValuePairs(
@@ -381,6 +389,48 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,thisView.WorkbookId        //6
                     ,thisView.TotalViewCount.ToString() //7  UNDONE: Could expland CSV generation to be integers and strings, rather than make this a string   
                     ,thisView.DeveloperNotes    //8
+                                });
+        }
+    }
+
+    /// <summary>
+    /// Add CSV rows for all the schedules data
+    /// </summary>
+    /// <param name="views"></param>
+    private void AddSchedulesData(IEnumerable<SiteSchedule> schedules)
+    {
+        //No data to add? do nothing.
+        if (schedules == null) return;
+
+        //Add each item as a row in the CSV file we will generate
+        foreach (var thisSchedule in schedules)
+        {
+            this.AddKeyValuePairs(
+                new string[] {
+                    ContentType                //1
+                    ,ContentId                 //2
+                    ,ContentScheduleId         //3
+                    ,ContentName               //4
+                    ,ScheduleType              //5
+                    ,ScheduleState             //6
+                    ,SchedulePriority          //7
+                    ,ScheduleFrequency         //8
+                    ,ScheduleNextRunUTC        //9
+                    ,ScheduleHourlyEndUTC      //10
+                    ,DeveloperNotes            //11
+                                },
+                new string[] {
+                     "schedule"                           //1
+                    ,thisSchedule.Id                      //2
+                    ,thisSchedule.Id                      //3
+                    ,thisSchedule.ScheduleName            //4
+                    ,thisSchedule.ScheduleType            //5
+                    ,thisSchedule.ScheduleState           //6
+                    ,thisSchedule.PriorityText            //7
+                    ,thisSchedule.ScheduleFrequency       //8
+                    ,thisSchedule.NextRunUTCText          //9
+                    ,thisSchedule.EndScheduleIfHourlyUTC  //10
+                    ,thisSchedule.DeveloperNotes          //11
                                 });
         }
     }

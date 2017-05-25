@@ -101,7 +101,7 @@ internal partial class TaskMaster
     /// <param name="urlToServerSite"></param>
     /// <param name="userName"></param>
     /// <param name="password"></param>
-    /// <param name="isSystemAdmin"></param>
+    /// <param name="isAdmin"></param>
     /// <param name="options"></param>
     /// <returns></returns>
     private static TaskMaster helper_CreateTaskMaster_SiteInventory(
@@ -109,7 +109,7 @@ internal partial class TaskMaster
         string urlToServerSite, 
         string userName, 
         string password,
-        bool isSystemAdmin,
+        bool isAdmin,
         bool generateTwbFile,
         TaskMasterOptions options)
     {
@@ -130,17 +130,17 @@ internal partial class TaskMaster
         options.AddOption(TaskMasterOptions.Option_GetSubscriptionsList);
         options.AddOption(TaskMasterOptions.Option_GetViewsList);
 
-        //Some features are only accessible to System Admins
-        //NOTE: When the APIs support site-admin getting this information, they will be moved into the more general block above
-        if (isSystemAdmin)
+        //Some features are only accessible to System/Site Admins
+        if (isAdmin)
         {
             options.AddOption(TaskMasterOptions.Option_GetSiteUsers);
             options.AddOption(TaskMasterOptions.Option_GetSiteInfo);
             options.AddOption(TaskMasterOptions.Option_GetGroupsList);
+            options.AddOption(TaskMasterOptions.Option_GetSchedulesList);
         }
 
         //Do we want to create a Tableau Workbook that uses the inventory CSV file?
-        if(generateTwbFile)
+        if (generateTwbFile)
         {
             options.AddOption(TaskMasterOptions.Option_GenerateInventoryTwb);
         }

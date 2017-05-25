@@ -118,6 +118,20 @@ internal partial class TaskMaster
 
 
     /// <summary>
+    /// If we downloaded the list of schedules, it will be here
+    /// </summary>
+    public IEnumerable<SiteSchedule> SchedulesList
+    {
+        get
+        {
+            return _downloadedList_Schedules;
+        }
+    }
+    private IEnumerable<SiteSchedule> _downloadedList_Schedules;
+
+
+
+    /// <summary>
     /// If we downloaded the list of workbooks, it will be here
     /// </summary>
     public IEnumerable<SiteWorkbook> WorkbooksList
@@ -415,7 +429,7 @@ internal partial class TaskMaster
 
 
     /// <summary>
-    /// Download the data sources
+    /// Download the data sources list
     /// </summary>
     /// <param name="onlineLogin"></param>
     private void Execute_DownloadDatasourcesList(TableauServerSignIn onlineLogin)
@@ -423,7 +437,7 @@ internal partial class TaskMaster
         _statusLog.AddStatusHeader("Download datasources list");
         try
         {
-            //Get the list of workbooks
+            //Get the list of datasources
             var datasources = new DownloadDatasourcesList(_onlineUrls, onlineLogin);
             datasources.ExecuteRequest();
 
@@ -433,6 +447,28 @@ internal partial class TaskMaster
         catch (Exception exDatasourceDownload)
         {
             _statusLog.AddError("Error during datasource list download, " + exDatasourceDownload.ToString());
+        }
+    }
+
+    /// <summary>
+    /// Download the schedules list
+    /// </summary>
+    /// <param name="onlineLogin"></param>
+    private void Execute_DownloadSchedulesList(TableauServerSignIn onlineLogin)
+    {
+        _statusLog.AddStatusHeader("Download schedules list");
+        try
+        {
+            //Get the list of schedules
+            var schedules = new DownloadSchedulesList(_onlineUrls, onlineLogin);
+            schedules.ExecuteRequest();
+
+            //Store them in our object
+            _downloadedList_Schedules = schedules.Schedules;
+        }
+        catch (Exception exDownload)
+        {
+            _statusLog.AddError("Error during schedules list download, " + exDownload.ToString());
         }
     }
 
@@ -899,6 +935,14 @@ internal partial class TaskMaster
         }
 
         //===================================================================================
+        //List of schedules? 
+        //===================================================================================
+        if (taskOptions.IsOptionSet(TaskMasterOptions.Option_GetSchedulesList))
+        {
+            Execute_DownloadSchedulesList(serverLogin);
+        }
+
+        //===================================================================================
         //Datasources download...
         //===================================================================================
         if (taskOptions.IsOptionSet(TaskMasterOptions.Option_DownloadDatasources))
@@ -1210,6 +1254,7 @@ internal partial class TaskMaster
                 this.UsersList,
                 this.GroupsList,
                 this.SubscriptionsList,
+                this.SchedulesList,
                 _statusLog);
 
             reportGenerator.GenerateCSVFile(pathReport);

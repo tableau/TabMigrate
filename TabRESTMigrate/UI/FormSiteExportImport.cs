@@ -301,7 +301,7 @@ namespace OnlineContentDownloader
             string siteUrl = txtUrlInventoryFrom.Text;
             string signInUser = txtIdInventoryFromUserId.Text;
             string signInPassword = txtPasswordInventoryFrom.Text;
-            bool isSystemAdmin = chkInventoryUserIsSystemAdmin.Checked;
+            bool isSystemAdmin = chkInventoryUserIsAdmin.Checked;
             var nowTime = DateTime.Now;
 
             //----------------------------------------------------------------------

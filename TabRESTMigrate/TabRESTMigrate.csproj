@@ -23,7 +23,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>13</ApplicationRevision>
+    <ApplicationRevision>14</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -95,6 +95,7 @@
     <Compile Include="RESTHelpers\DatasourcePublishSettings.cs" />
     <Compile Include="RESTHelpers\WorkbooksPublishSettings_statics.cs" />
     <Compile Include="RESTRequests\DownloadGroupsList.cs" />
+    <Compile Include="RESTRequests\DownloadSchedulesList.cs" />
     <Compile Include="RESTRequests\DownloadViewsList.cs" />
     <Compile Include="RESTRequests\DownloadSubscriptionsList.cs" />
     <Compile Include="RESTRequests\SendUpdateDatasourceOwner.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="ServerData\SiteGroup.cs" />
     <Compile Include="ServerData\SiteConnection.cs" />
     <Compile Include="ServerData\KeyedLookup.cs" />
+    <Compile Include="ServerData\SiteSchedule.cs" />
     <Compile Include="ServerData\SiteView.cs" />
     <Compile Include="ServerData\SiteSubscription.cs" />
     <Compile Include="ServerData\SiteTag.cs" />
