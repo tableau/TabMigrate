@@ -32,9 +32,9 @@ class CustomerSiteInventory : CsvDataGenerator
     const string ContentOwnerName = "owner-name";
     const string ContentTags = "tags";
     const string ContentSubscriptionId = "subscription-id";
-    const string ContentScheduleId = "schedule-id";
+    const string ScheduleId = "schedule-id";
     const string ExtractRefreshType = "refresh-type";
-    const string ContentScheduleName = "schedule-name";
+    const string ScheduleName = "schedule-name";
     const string ContentSubscriptionType = "subscription-type";
     const string ExtractRefreshTargetContentType = "extract-target-type";
     const string WorkbookShowTabs = "workbook-show-tabs";
@@ -481,7 +481,7 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                 new string[] {
                     ContentType                //1
                     ,ContentId                 //2
-                    ,ContentScheduleId         //3
+                    ,ScheduleId                //3
                     ,ContentName               //4
                     ,ScheduleType              //5
                     ,ScheduleState             //6
@@ -489,7 +489,8 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,ScheduleFrequency         //8
                     ,ScheduleNextRunUTC        //9
                     ,ScheduleHourlyEndUTC      //10
-                    ,DeveloperNotes            //11
+                    ,ScheduleName              //11
+                    ,DeveloperNotes            //12
                                 },
                 new string[] {
                      "schedule"                           //1
@@ -502,7 +503,8 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,thisSchedule.ScheduleFrequency       //8
                     ,thisSchedule.NextRunUTCText          //9
                     ,thisSchedule.EndScheduleIfHourlyUTC  //10
-                    ,thisSchedule.DeveloperNotes          //11
+                    ,thisSchedule.ScheduleName            //11
+                    ,thisSchedule.DeveloperNotes          //12
                                 });
         }
     }
@@ -525,17 +527,20 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
             string scheduleFrequency = "";
             string scheduleNextRunUtc = "";
             string scheduleName = "";
+            string scheduleState = "";
             var schedule = helper_AttemptScheduleLookup(thisTask.ScheduleId);
             if(schedule != null)
             {
                 scheduleFrequency = schedule.ScheduleFrequency;
                 scheduleNextRunUtc = schedule.NextRunUTCText;
                 scheduleName = schedule.ScheduleName;
+                scheduleState = schedule.ScheduleState;
             }
 
             //Try to look up the workbook or datasource name
             string projectId = "";
             string contentName = "";
+            string ownerId = "";
             string workbookId = thisTask.WorkbookId;
             if (!string.IsNullOrWhiteSpace(thisTask.WorkbookId))
             {
@@ -543,6 +548,7 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                 if(workbook != null)
                 {
                     contentName = workbook.Name;
+                    ownerId = workbook.OwnerId;
                     projectId = workbook.ProjectId;
                 }
             }
@@ -553,6 +559,7 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                 if (datasource != null)
                 {
                     contentName = datasource.Name;
+                    ownerId = datasource.OwnerId;
                     projectId = datasource.ProjectId;
                 }
             }
@@ -568,12 +575,18 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                 }
             }
 
+            //If we have an owner id, try to look up the owner name
+            string ownerName = "";
+            if(!string.IsNullOrWhiteSpace(ownerId))
+            {
+                ownerName = helper_AttemptUserNameLookup(ownerId);
+            }
 
             this.AddKeyValuePairs(
                 new string[] {
                      ContentType               //1
                     ,ContentId                 //2
-                    ,ContentScheduleId         //3
+                    ,ScheduleId                //3
                     ,SchedulePriority          //4
                     ,ExtractRefreshType        //5
                     ,ExtractRefreshTargetContentType         //6
@@ -581,11 +594,14 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,ContentDatasourceId       //8
                     ,ScheduleFrequency         //9
                     ,ScheduleNextRunUTC        //10
-                    ,ContentScheduleName       //11
-                    ,ContentName               //12
-                    ,ContentProjectId          //13
-                    ,ContentProjectName        //14
-                    ,DeveloperNotes            //15
+                    ,ScheduleName              //11
+                    ,ScheduleState             //12
+                    ,ContentName               //13
+                    ,ContentProjectId          //14
+                    ,ContentProjectName        //15
+                    ,ContentOwnerId            //16
+                    ,ContentOwnerName          //17
+                    ,DeveloperNotes            //18
                              },
                 new string[] {
                     "extract-refresh-task"                //1
@@ -599,10 +615,13 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,scheduleFrequency                    //9
                     ,scheduleNextRunUtc                   //10
                     ,scheduleName                         //11
-                    ,contentName                          //12
-                    ,projectId                            //13
-                    ,projectName                          //14
-                    ,thisTask.DeveloperNotes              //15
+                    ,scheduleState                        //12
+                    ,contentName                          //13
+                    ,projectId                            //14
+                    ,projectName                          //15
+                    ,ownerId                              //16
+                    ,ownerName                            //17
+                    ,thisTask.DeveloperNotes              //18
                                 });
         }
     }
@@ -672,8 +691,8 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                 ,ContentDescription       //4
                 ,ContentOwnerId           //5
                 ,ContentOwnerName         //6
-                ,ContentScheduleId        //7
-                ,ContentScheduleName      //8
+                ,ScheduleId               //7
+                ,ScheduleName             //8
                 ,ContentSubscriptionType  //9
                 ,ContentWorkbookId        //10
                 ,ContentViewId            //11
