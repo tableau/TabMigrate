@@ -63,6 +63,21 @@ class CustomerSiteInventory : CsvDataGenerator
     private readonly KeyedLookup<SiteWorkbook> _siteWorkbookMapping;
 
     /// <summary>
+    /// Look up datasources by ID
+    /// </summary>
+    private readonly KeyedLookup<SiteDatasource> _siteDatasourceMapping;
+
+    /// <summary>
+    /// Look up projects by ID
+    /// </summary>
+    private readonly KeyedLookup<SiteProject> _siteProjectMapping;
+
+    /// <summary>
+    /// Lookup Schedules by ID
+    /// </summary>
+    private readonly KeyedLookup<SiteSchedule> _siteScheduleMapping;
+
+    /// <summary>
     /// Status log data
     /// </summary>
     public readonly TaskStatusLogs StatusLog;
@@ -112,6 +127,23 @@ class CustomerSiteInventory : CsvDataGenerator
         {
             _siteWorkbookMapping = new KeyedLookup<SiteWorkbook>(workbooks, statusLogger);
         }
+        
+        if(dataSources != null)
+        {
+            _siteDatasourceMapping = new KeyedLookup<SiteDatasource>(dataSources, statusLogger);
+        }
+
+        if(projects != null)
+        {
+            _siteProjectMapping = new KeyedLookup<SiteProject>(projects, statusLogger);
+        }
+
+        //Want to be able to map
+        if(schedules != null)
+        {
+            _siteScheduleMapping = new KeyedLookup<SiteSchedule>(schedules, statusLogger);
+        }
+
 
       AddProjectsData(projects);
       AddDatasourcesData(dataSources);
@@ -178,6 +210,17 @@ class CustomerSiteInventory : CsvDataGenerator
     }
 
     /// <summary>
+    /// If we have cached views, look them up
+    /// </summary>
+    /// <param name="viewId"></param>
+    /// <returns></returns>
+    private SiteSchedule helper_AttemptScheduleLookup(string id)
+    {
+        if (_siteScheduleMapping == null) return null;
+        return _siteScheduleMapping.FindItem(id);
+    }
+
+    /// <summary>
     /// If we have cached workbooks, look them up
     /// </summary>
     /// <param name="viewId"></param>
@@ -186,6 +229,28 @@ class CustomerSiteInventory : CsvDataGenerator
     {
         if (_siteWorkbookMapping == null) return null;
         return _siteWorkbookMapping.FindItem(workbookId);
+    }
+
+    /// <summary>
+    /// If we have cached datasources, look them up
+    /// </summary>
+    /// <param name="viewId"></param>
+    /// <returns></returns>
+    private SiteDatasource helper_AttemptDatasourceLookup(string id)
+    {
+        if (_siteDatasourceMapping == null) return null;
+        return _siteDatasourceMapping.FindItem(id);
+    }
+
+    /// <summary>
+    /// If we have cached projects, look them up
+    /// </summary>
+    /// <param name="viewId"></param>
+    /// <returns></returns>
+    private SiteProject helper_AttemptProjectLookup(string id)
+    {
+        if (_siteProjectMapping == null) return null;
+        return _siteProjectMapping.FindItem(id);
     }
 
     /// <summary>
@@ -455,6 +520,55 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
         //Add each item as a row in the CSV file we will generate
         foreach (var thisTask in tasks)
         {
+
+            //If it's available, then look up the schedule name
+            string scheduleFrequency = "";
+            string scheduleNextRunUtc = "";
+            string scheduleName = "";
+            var schedule = helper_AttemptScheduleLookup(thisTask.ScheduleId);
+            if(schedule != null)
+            {
+                scheduleFrequency = schedule.ScheduleFrequency;
+                scheduleNextRunUtc = schedule.NextRunUTCText;
+                scheduleName = schedule.ScheduleName;
+            }
+
+            //Try to look up the workbook or datasource name
+            string projectId = "";
+            string contentName = "";
+            string workbookId = thisTask.WorkbookId;
+            if (!string.IsNullOrWhiteSpace(thisTask.WorkbookId))
+            {
+                var workbook = helper_AttemptWorkbookLookup(thisTask.WorkbookId);
+                if(workbook != null)
+                {
+                    contentName = workbook.Name;
+                    projectId = workbook.ProjectId;
+                }
+            }
+            string datasourceId = thisTask.DatasourceId;
+            if(!string.IsNullOrWhiteSpace(datasourceId))
+            {
+                var datasource = helper_AttemptDatasourceLookup(thisTask.DatasourceId);
+                if (datasource != null)
+                {
+                    contentName = datasource.Name;
+                    projectId = datasource.ProjectId;
+                }
+            }
+
+            //If we got a project ID from the Workbook or Data Source, try to look up the project name
+            string projectName = "";
+            if(!string.IsNullOrWhiteSpace(projectId))
+            {
+                var project = helper_AttemptProjectLookup(projectId);
+                if(project != null)
+                {
+                    projectName = project.Name;
+                }
+            }
+
+
             this.AddKeyValuePairs(
                 new string[] {
                      ContentType               //1
@@ -465,7 +579,13 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,ExtractRefreshTargetContentType         //6
                     ,ContentWorkbookId         //7
                     ,ContentDatasourceId       //8
-                    ,DeveloperNotes            //9
+                    ,ScheduleFrequency         //9
+                    ,ScheduleNextRunUTC        //10
+                    ,ContentScheduleName       //11
+                    ,ContentName               //12
+                    ,ContentProjectId          //13
+                    ,ContentProjectName        //14
+                    ,DeveloperNotes            //15
                              },
                 new string[] {
                     "extract-refresh-task"                //1
@@ -476,7 +596,13 @@ private void AddWorkbookConnectionData(SiteWorkbook thisWorkbook)
                     ,thisTask.RefreshContentType          //6
                     ,thisTask.WorkbookId                  //7
                     ,thisTask.DatasourceId                //8
-                    ,thisTask.DeveloperNotes              //9
+                    ,scheduleFrequency                    //9
+                    ,scheduleNextRunUtc                   //10
+                    ,scheduleName                         //11
+                    ,contentName                          //12
+                    ,projectId                            //13
+                    ,projectName                          //14
+                    ,thisTask.DeveloperNotes              //15
                                 });
         }
     }
