@@ -1,5 +1,5 @@
-﻿# TabMigrate
-
+# TabMigrate
+[![Community Supported](https://img.shields.io/badge/Support%20Level-Community%20Supported-457387.svg)](https://www.tableau.com/support-levels-it-and-developer-tools)
 
 ## What is TabMigrate?
 TabMigrate is a lightweight tool for moving Tableau content between multiple Tableau Server environments, such as test and production Tableau Servers or sites. It can also be used to provision sites with Workbooks and Data Sources from a local file system. TabMigrate also allows you to produce a CSV file containing an inventory of the site’s users and content; useful for analysis in Tableau.
@@ -89,6 +89,6 @@ The source code also contains example files in a “_SampleFiles” subdirectory
 
 
 ## Is TabMigrate supported? 
-A standard disclaimer: TabMigrate is made available AS-IS with no support and no warranty whatsoever. Using it you can accidentally modify or delete your content, just as you can by accidentally do so in the user interface. Despite efforts to write good and useful code there may be bugs that cause unexpected and undesirable behavior. The software is strictly “use at your own risk.”
+Community supported. Using it you can accidentally modify or delete your content, just as you can by accidentally do so in the user interface. Despite efforts to write good and useful code there may be bugs that cause unexpected and undesirable behavior. The software is strictly “use at your own risk.”
 
 The good news: This is intended to be a self-service tool. You are free to modify it in any way to meet your needs.
