@@ -43,7 +43,7 @@ abstract class TableauServerRequestBase
         byte[] byteArray = Encoding.UTF8.GetBytes(bodyText);
         request.ContentLength = byteArray.Length;
 
-        //Fix for TLS1.2;
+        // Include TLS1.2 protocols for custom SSL/TLS settings in Tableau Server
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
         
         // Get the request stream.
