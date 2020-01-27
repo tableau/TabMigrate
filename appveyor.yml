@@ -1,3 +1,7 @@
+skip_commits:
+  files:
+    - README.md
+configuration: Release
 version: 4.8.{build}
 assembly_info:
   patch: true
