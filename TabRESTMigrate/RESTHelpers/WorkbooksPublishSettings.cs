@@ -10,7 +10,7 @@ internal partial class WorkbookPublishSettings
     /// TRUE: The published workbook should show tabs to navigate the sheets/dashboards/stories
     /// FALSE: No Tabs (each sheet/dashboard/story is accessed by its URL)
     /// </summary>
-    public readonly bool ShowTabs = false;
+    public readonly bool ShowTabs = true;
 
 
     /// <summary>

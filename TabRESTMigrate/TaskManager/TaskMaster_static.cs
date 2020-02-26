@@ -79,6 +79,7 @@ internal partial class TaskMaster
         {
             return helper_CreateTaskMaster_SiteImport(
                 commandLine.GetParameterValue(CommandLineParser.Parameter_ImportDirectory)
+                ,commandLine.GetParameterValue(CommandLineParser.Parameter_ProjectName)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToSiteUrl)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserId)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserPassword)
@@ -255,6 +256,7 @@ internal partial class TaskMaster
     /// <returns></returns>
     private static TaskMaster helper_CreateTaskMaster_SiteImport(
         string dirImportFromDirectory,
+        string project,
         string urlToServerSite,
         string userName,
         string password,
@@ -272,6 +274,7 @@ internal partial class TaskMaster
 
         //The local file system path we want to upload from
         options.AddOption(TaskMasterOptions.OptionParameter_PathUploadFrom, dirImportFromDirectory);
+        options.AddOption(TaskMasterOptions.OptionParameter_ProjectName, project);
 
         //Things we want to upload
         options.AddOption(TaskMasterOptions.Option_UploadDatasources);

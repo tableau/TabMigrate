@@ -207,6 +207,7 @@ namespace OnlineContentDownloader
             bool isSiteAdmin = chkImportIsSiteAdmin.Checked;
             string localPathImportFrom = txtSiteImportContentPath.Text;
             bool remapContentOwnership = chkImportRemapContentOwnership.Checked;
+			string project = txtProject.Text;
 
             //Check that this contains Workbooks or Data Sources; otherwise it's not a valid path with content
             if (!TaskMaster.IsValidImportFromDirectory(localPathImportFrom))
@@ -269,6 +270,7 @@ namespace OnlineContentDownloader
             CommandLineParser.GenerateCommandLine_SiteImport(
                  showPasswordInUi,
                  localPathImportFrom,
+				 project,
                  siteUrl,
                  signInUser,
                  signInPassword,
@@ -527,6 +529,12 @@ namespace OnlineContentDownloader
                 if(!string.IsNullOrWhiteSpace(exportDirectory))
                 {
                     AttemptToShellFile(Path.Combine(exportDirectory, "."));
+                }
+				
+                string project = taskMaster.ProjectName;
+                if (!string.IsNullOrWhiteSpace(project))
+                {
+                    project = "Dafault";
                 }
             }
         }

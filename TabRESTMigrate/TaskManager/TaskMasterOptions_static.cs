@@ -39,6 +39,7 @@ public partial class TaskMasterOptions
     //Take values associated with the parameters
     public const string OptionParameter_PathUploadFrom = "PathUploadFrom";
     public const string OptionParameter_PathDownloadTo = "PathDownloadTo";
+    public const string OptionParameter_ProjectName = "ProjectName";
     public const string OptionParameter_UploadChunkSizeBytes = "UploadChunkSizeBytes";
     public const string OptionParameter_UploadChunkDelaySeconds = "UploadChunkDelaySeconds";
     public const string OptionParameter_ArbitraryCommand1 = "ArbitraryPostLoginCommand-1";

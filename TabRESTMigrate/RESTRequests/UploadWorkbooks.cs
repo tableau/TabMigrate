@@ -30,6 +30,10 @@ partial class UploadWorkbooks : TableauServerSignedInRequestBase
     /// </summary>
     private readonly string _localPathTempWorkspace;
 
+    /// <summary>
+    /// Project name
+    /// </summary>
+    private readonly string _project;
 
     /// <summary>
     /// Do we create new projects on server if they are not there?  Fallback behavior if we cannot create projects
@@ -57,6 +61,7 @@ partial class UploadWorkbooks : TableauServerSignedInRequestBase
     /// Constructor
     /// </summary>
     /// <param name="onlineUrls"></param>
+    ///  /// <param name="project"></param>
     /// <param name="login"></param>
     /// <param name="credentialManager">Set of database credentials to attach to associated content being published</param>
     /// <param name="localUploadPath">Path to upload from</param>
@@ -72,6 +77,7 @@ partial class UploadWorkbooks : TableauServerSignedInRequestBase
         TableauServerSignIn login,
         CredentialManager credentialManager,
         string localUploadPath,
+        string project,
         bool remapWorkbookReferences,
         string localPathTempWorkspace,
         UploadBehaviorProjects uploadProjectBehavior,
@@ -83,6 +89,7 @@ partial class UploadWorkbooks : TableauServerSignedInRequestBase
         : base(login)
     {
         _onlineUrls = onlineUrls;
+        _project = project;
         _localUploadPath = localUploadPath;
         _remapWorkbookReferences = remapWorkbookReferences;
         _localPathTempWorkspace = localPathTempWorkspace;
@@ -162,14 +169,26 @@ partial class UploadWorkbooks : TableauServerSignedInRequestBase
         //Look up the project name based on directory name, and creating a project on demand
         //--------------------------------------------------------------------------------------------
         string projectName;
-        if (rootContentPath == currentContentPath) //If we are in the root upload directory, then assume any content goes to the Default project
+        //if (rootContentPath == currentContentPath) //If we are in the root upload directory, then assume any content goes to the Default project
+        //{
+        //    projectName = ""; //Default project
+        //}
+        //else
+        //{
+        //    projectName = FileIOHelper.Undo_GenerateWindowsSafeFilename(Path.GetFileName(currentContentPath));
+        //}
+
+        if (_project == "" || _project == null) //If we are in the root upload directory, then assume any content goes to the Default project
         {
-            projectName = ""; //Default project
+            projectName = "Default"; //Default project
         }
         else
         {
-            projectName = FileIOHelper.Undo_GenerateWindowsSafeFilename(Path.GetFileName(currentContentPath));
+            projectName = _project;
         }
+
+
+
 
         //Start off with no project ID -- we'll look it up as needed
         string projectIdForUploads = null;

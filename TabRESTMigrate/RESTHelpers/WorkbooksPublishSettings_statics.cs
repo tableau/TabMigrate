@@ -150,7 +150,7 @@ internal partial class WorkbookPublishSettings
     /// </summary>
     internal static WorkbookPublishSettings GenerateDefaultSettings()
     {
-        return new WorkbookPublishSettings(false, null);
+        return new WorkbookPublishSettings(true, null);
     }
 
     /// <summary>
