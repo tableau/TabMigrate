@@ -80,8 +80,7 @@ class DownloadSubscriptionsList : TableauServerSignedInRequestBase
         webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var response = GetWebReponseLogErrors(webRequest, "get subscriptions list");
-        var xmlDoc = GetWebResponseAsXml(response);
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get subscriptions list");
 
         //Get all the subscription nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

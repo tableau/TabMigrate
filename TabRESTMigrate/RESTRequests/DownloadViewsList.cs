@@ -80,8 +80,7 @@ class DownloadViewsList : TableauServerSignedInRequestBase
         webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var response = GetWebReponseLogErrors(webRequest, "get views list");
-        var xmlDoc = GetWebResponseAsXml(response);
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get views list");
 
         //Get all the view nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

@@ -346,24 +346,20 @@ class UploadDatasources : TableauServerSignedInRequestBase
         //NOTE: The publish finalization step can take several minutes, because server needs to unpack the uploaded ZIP and file it away.
         //      For this reason, we pass in a long timeout
         var webRequest = this.CreateAndSendMimeLoggedInRequest(urlFinalizeUpload, "POST", mimeGenerator, TableauServerWebClient.DefaultLongRequestTimeOutMs); 
-        var response = GetWebReponseLogErrors(webRequest, "finalize datasource publish");
-        using (response)
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "finalize datasource publish");
+
+        //Get all the datasource node from the response
+        var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
+        var dataSourceXml = xmlDoc.SelectSingleNode("//iwsOnline:datasource", nsManager);
+
+        try
         {
-            var xmlDoc = GetWebResponseAsXml(response);
-
-            //Get all the datasource node from the response
-            var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
-            var dataSourceXml = xmlDoc.SelectSingleNode("//iwsOnline:datasource", nsManager);
-
-            try
-            {
-                return new SiteDatasource(dataSourceXml);
-            }
-            catch(Exception parseXml)
-            {
-                StatusLog.AddError("Data source upload, error parsing XML response " + parseXml.Message + "\r\n" + dataSourceXml.InnerXml);
-                return null;
-            }
+            return new SiteDatasource(dataSourceXml);
+        }
+        catch(Exception parseXml)
+        {
+            StatusLog.AddError("Data source upload, error parsing XML response " + parseXml.Message + "\r\n" + dataSourceXml.InnerXml);
+            return null;
         }
     }
 

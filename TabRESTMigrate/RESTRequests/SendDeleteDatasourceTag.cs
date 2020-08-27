@@ -89,7 +89,13 @@ class SendDeleteDatasourceTag : TableauServerSignedInRequestBase
         //Create a web request 
         var urlDeleteContentTag = _onlineUrls.Url_DeleteDatasourceTag(_onlineSession, datasourceId, tagText);
         var webRequest = this.CreateLoggedInWebRequest(urlDeleteContentTag, "DELETE");
-        var response = GetWebReponseLogErrors(webRequest, "delete tag from content request");         
+        var response = GetWebReponseLogErrors(webRequest, "delete tag from content request");  
+        
+        using(response)
+        {
+            //No work to do...
+        }
+
     }
 
 }

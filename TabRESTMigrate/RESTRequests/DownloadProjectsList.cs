@@ -80,8 +80,7 @@ class DownloadProjectsList : TableauServerSignedInRequestBase, IProjectsList
         webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var response = GetWebReponseLogErrors(webRequest, "get projects list");
-        var xmlDoc = GetWebResponseAsXml(response);
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get projects list");
 
         //Get all the project nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

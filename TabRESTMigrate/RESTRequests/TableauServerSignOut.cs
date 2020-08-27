@@ -43,6 +43,10 @@ class TableauServerSignOut : TableauServerSignedInRequestBase
         //Request the data from server
         _onlineSession.StatusLog.AddStatus("Web request: " + urlRequest, -10);
         var response = GetWebReponseLogErrors(webRequest, "sign out");
+        using(response)
+        {
+            //No work to do....
+        }
 
     }
 }

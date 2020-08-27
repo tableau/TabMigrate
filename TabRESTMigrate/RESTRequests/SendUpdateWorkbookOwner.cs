@@ -79,30 +79,22 @@ class SendUpdateWorkbookOwner: TableauServerSignedInRequestBase
         var urlUpdateWorkbook = _onlineUrls.Url_UpdateWorkbook(_onlineSession, workbookId);
         var webRequest = this.CreateLoggedInWebRequest(urlUpdateWorkbook, "PUT");
         TableauServerRequestBase.SendPutContents(webRequest, xmlText);
-        
+
         //Get the response
-        var response = GetWebReponseLogErrors(webRequest, "update workbook (change owner)");
-        using (response)
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "update workbook (change owner)");
+            
+        //Get all the workbook nodes
+        var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
+        var xNodeWb = xmlDoc.SelectSingleNode("//iwsOnline:workbook", nsManager);
+
+        try
         {
-            var xmlDoc = GetWebResponseAsXml(response);
-
-            
-            //Get all the workbook nodes
-            var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
-            var xNodeWb = xmlDoc.SelectSingleNode("//iwsOnline:workbook", nsManager);
-
-            try
-            {
-                return new SiteWorkbook(xNodeWb);
-            }
-            catch (Exception parseXml)
-            {
-                StatusLog.AddError("Change workbook owner, error parsing XML response " + parseXml.Message + "\r\n" + xNodeWb.InnerXml);
-                return null;
-            }
-            
+            return new SiteWorkbook(xNodeWb);
         }
+        catch (Exception parseXml)
+        {
+            StatusLog.AddError("Change workbook owner, error parsing XML response " + parseXml.Message + "\r\n" + xNodeWb.InnerXml);
+            return null;
+        }            
     }
-
-
 }

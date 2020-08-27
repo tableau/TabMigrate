@@ -48,8 +48,11 @@ class SendPostLogInCommand : TableauServerSignedInRequestBase
         _onlineSession.StatusLog.AddStatus("Custom web request: " + url, -10);
         var response = GetWebReponseLogErrors(webRequest, "custom request");
         
-        var responseText = GetWebResponseAsText(response);
-        _commandResult = responseText;
-        return responseText;
+        using(response)
+        {
+            var responseText = GetWebResponseAsText(response);
+            _commandResult = responseText;
+            return responseText;
+        }
     }
 }

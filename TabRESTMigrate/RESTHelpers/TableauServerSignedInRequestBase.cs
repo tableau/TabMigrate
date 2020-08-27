@@ -169,6 +169,23 @@ abstract class TableauServerSignedInRequestBase : TableauServerRequestBase
         _onlineSession.StatusLog.AddStatus("Append header X-Tableau-Auth: " + _onlineSession.LogInAuthToken, -20);
     }
 
+
+
+    /// <summary>
+    /// Get the web-response as an XML document (handles releasing the response object)
+    /// </summary>
+    /// <param name="webRequest"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    protected System.Xml.XmlDocument GetWebReponseLogErrors_AsXmlDoc(WebRequest webRequest, string description)
+    {
+        var response = GetWebReponseLogErrors(webRequest, description);
+        using (response)
+        {
+            return GetWebResponseAsXml(response);
+        }
+    }
+
     /// <summary>
     /// Get the web response; log any error codes that occur and rethrow the exception.
     /// This allows us to get error log data with detailed information

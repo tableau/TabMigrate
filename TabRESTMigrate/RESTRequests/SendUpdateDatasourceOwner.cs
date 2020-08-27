@@ -81,27 +81,22 @@ class SendUpdateDatasourceOwner: TableauServerSignedInRequestBase
         TableauServerRequestBase.SendPutContents(webRequest, xmlText);
         
         //Get the response
-        var response = GetWebReponseLogErrors(webRequest, "update datasource (change owner)");
-        using (response)
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "update datasource (change owner)");
+            
+        //Get all the datasource nodes
+        var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
+        var xNodeDs = xmlDoc.SelectSingleNode("//iwsOnline:datasource", nsManager);
+
+        try
         {
-            var xmlDoc = GetWebResponseAsXml(response);
-
-            
-            //Get all the datasource nodes
-            var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
-            var xNodeDs = xmlDoc.SelectSingleNode("//iwsOnline:datasource", nsManager);
-
-            try
-            {
-                return new SiteDatasource(xNodeDs);
-            }
-            catch (Exception parseXml)
-            {
-                StatusLog.AddError("Change datasource owner, error parsing XML response " + parseXml.Message + "\r\n" + xNodeDs.InnerXml);
-                return null;
-            }
-            
+            return new SiteDatasource(xNodeDs);
         }
+        catch (Exception parseXml)
+        {
+            StatusLog.AddError("Change datasource owner, error parsing XML response " + parseXml.Message + "\r\n" + xNodeDs.InnerXml);
+            return null;
+        }
+            
     }
 
 

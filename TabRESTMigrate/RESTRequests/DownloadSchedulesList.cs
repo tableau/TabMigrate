@@ -79,8 +79,7 @@ class DownloadSchedulesList : TableauServerSignedInRequestBase
         webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var response = GetWebReponseLogErrors(webRequest, "get schedules list");
-        var xmlDoc = GetWebResponseAsXml(response);
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get schedules list");
 
         //Get all the schedule nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

@@ -168,8 +168,7 @@ class UploadFile : TableauServerSignedInRequestBase
         var urlInitiateFileUpload = _onlineUrls.Url_InitiateFileUpload(_onlineSession);
 
         var webRequest = this.CreateLoggedInWebRequest(urlInitiateFileUpload, "POST"); //NOTE: This command requires a POST not a GET
-        var response = GetWebReponseLogErrors(webRequest, "get datasources list");
-        var xmlDoc = GetWebResponseAsXml(response);
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get datasources list");
 
         //Get all the workbook nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

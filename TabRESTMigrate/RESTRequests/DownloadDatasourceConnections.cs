@@ -55,8 +55,7 @@ class DownloadDatasourceConnections : TableauServerSignedInRequestBase
         webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var response = GetWebReponseLogErrors(webRequest, "get datasources's connections list");
-        var xmlDoc = GetWebResponseAsXml(response);
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get datasources's connections list");
 
         //Get all the workbook nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

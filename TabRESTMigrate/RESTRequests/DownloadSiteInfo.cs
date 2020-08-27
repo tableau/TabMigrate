@@ -50,10 +50,8 @@ class DownloadSiteInfo : TableauServerSignedInRequestBase
 
         //Request the data from server
         _onlineSession.StatusLog.AddStatus("Web request: " + urlRequest, -10);
-        var response = GetWebReponseLogErrors(webRequest, "get site info");
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get site info");
         
-        var xmlDoc = GetWebResponseAsXml(response);
-
         //Get all the workbook nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
         var sites = xmlDoc.SelectNodes("//iwsOnline:site", nsManager);

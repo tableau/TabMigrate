@@ -72,29 +72,24 @@ class SendCreateProject : TableauServerSignedInRequestBase
         var urlCreateProject = _onlineUrls.Url_CreateProject(_onlineSession);
         var webRequest = this.CreateLoggedInWebRequest(urlCreateProject, "POST");
         TableauServerRequestBase.SendPostContents(webRequest, xmlText);
-        
+
         //Get the response
-        var response = GetWebReponseLogErrors(webRequest, "create project");
-        using (response)
+        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "create project");
+            
+        //Get all the workbook nodes
+        var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
+        var xNodeProject = xmlDoc.SelectSingleNode("//iwsOnline:project", nsManager);
+
+        try
         {
-            var xmlDoc = GetWebResponseAsXml(response);
-
-            
-            //Get all the workbook nodes
-            var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
-            var xNodeProject = xmlDoc.SelectSingleNode("//iwsOnline:project", nsManager);
-
-            try
-            {
-                return new SiteProject(xNodeProject);
-            }
-            catch (Exception parseXml)
-            {
-                StatusLog.AddError("Create project, error parsing XML response " + parseXml.Message + "\r\n" + xNodeProject.InnerXml);
-                return null;
-            }
-            
+            return new SiteProject(xNodeProject);
         }
+        catch (Exception parseXml)
+        {
+            StatusLog.AddError("Create project, error parsing XML response " + parseXml.Message + "\r\n" + xNodeProject.InnerXml);
+            return null;
+        }
+            
     }
 
 
