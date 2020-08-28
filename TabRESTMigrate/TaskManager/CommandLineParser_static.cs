@@ -33,6 +33,7 @@ partial class CommandLineParser
     public const string Parameter_InventoryOutputFile   = "-inventoryOutputFile"; //Where the inventory output goes
     public const string Parameter_ExportDirectory       = "-exportDirectory";     //Where the site gets exported to
     public const string Parameter_ImportDirectory       = "-importDirectory";     //Where the site gets imported from
+    public const string Parameter_ProjectName = "-project";     //Where the site proect
     public const string Parameter_ExitWhenDone          = "-exitWhenDone";        //When running as command line, if 'true' we will exit when the work is done
     public const string Parameter_ImportAssignContentOwnership  = "-remapContentOwnership"; //On site import, look for content metadata files that tell us what owner to assign the content to
     public const string Parameter_RemapDataserverReferences     = "-remapDataserverReferences"; //On site import, workbook XML should be examined and have data server references updated to point to the target server/site
@@ -232,6 +233,7 @@ partial class CommandLineParser
     internal static void GenerateCommandLine_SiteImport(
         bool showPasswordInUi,
         string pathToImportFrom,
+        string projectName,
         string siteUrl,
         string userName,
         string password,
@@ -255,6 +257,7 @@ partial class CommandLineParser
         helper_AppendParameter(arguments, sb, Parameter_ToUserId, userName);
         helper_AppendParameter(arguments, sb, Parameter_ToUserPassword, password, uiPassword);
         helper_AppendParameter(arguments, sb, Parameter_ImportDirectory, pathToImportFrom);
+        helper_AppendParameter(arguments, sb, Parameter_ProjectName, projectName);
         helper_AppendParameter(arguments, sb, Parameter_ToSiteUrl, siteUrl);
         helper_AppendParameter(arguments, sb, Parameter_ToSiteIsSiteAdmin, helper_BoolToText(isSiteAdmin));
         helper_AppendParameter(arguments, sb, Parameter_RemapDataserverReferences, helper_BoolToText(remapDataServerReferences));

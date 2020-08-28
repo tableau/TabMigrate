@@ -28,7 +28,7 @@ partial class CredentialManager
         {
             try
             {
-                helper_parseCredentialNode(credentialManager, credentialNode);
+                helper_parseCredentialNode(credentialManager, credentialNode, statusLog);
             }
             catch(Exception ex)
             {
@@ -45,7 +45,7 @@ partial class CredentialManager
     /// </summary>
     /// <param name="credentialManager"></param>
     /// <param name="credentialNode"></param>
-    private static void helper_parseCredentialNode(CredentialManager credentialManager, XmlNode credentialNode)
+    private static void helper_parseCredentialNode(CredentialManager credentialManager, XmlNode credentialNode, TaskStatusLogs statusLog)
     {
         var contentType =  XmlHelper.ReadTextAttribute(credentialNode, "contentType", "");
         var contentProjectName = XmlHelper.ReadTextAttribute(credentialNode, "contentProjectName");
@@ -61,7 +61,15 @@ partial class CredentialManager
             throw new Exception("Credential is missing content name");
         }
 
-        if(contentType == "workbook")
+        // display info about credentials
+        statusLog.AddStatus("****************************************************************");
+        statusLog.AddStatus("contentType: " + contentType);
+        statusLog.AddStatus("contentProjectName: " + contentProjectName);
+        statusLog.AddStatus("contentName: " + contentName);
+        statusLog.AddStatus("dbUser: " + dbUserName);
+        statusLog.AddStatus("credentialIsEmbedded: " + isEmbedded);
+
+        if (contentType == "workbook")
         {
             credentialManager.AddWorkbookCredential(contentName, contentProjectName, dbUserName, dbPassword, isEmbedded);
         }

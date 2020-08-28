@@ -10,6 +10,7 @@ internal partial class TaskMaster
     Thread _thread = null;
 
     private readonly string _exportToLocalPath;
+    private readonly string _project;
     private readonly string _userName;
     private readonly string _password;
     private readonly TableauServerUrls _onlineUrls;
@@ -184,6 +185,11 @@ internal partial class TaskMaster
         get { return _exportToLocalPath; }
     }
 
+    public string ProjectName
+    {
+        get { return _project; }
+    }
+
     bool _isDone = false;
     KeepAliveBackgroundTaskBase _asyncKeepAliveBackgroundTasks = null;
 
@@ -214,6 +220,7 @@ internal partial class TaskMaster
         }
         //Get any export path
         _exportToLocalPath = taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_PathDownloadTo);
+        _project = taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_ProjectName);
         _onlineUrls = onlineUrls;
         _userName = userName;
         _password = password;
@@ -864,7 +871,8 @@ internal partial class TaskMaster
     /// </summary>
     private void ExecuteTask_InternalAllTasks()
     {
-        string exportToPath = _exportToLocalPath; 
+        string exportToPath = _exportToLocalPath;
+        string project = _project;
         var onlineUrls = _onlineUrls;
         var taskOptions = _taskOptions;
 
@@ -1090,7 +1098,8 @@ internal partial class TaskMaster
         {            
             Execute_UploadWorkbooks(
                 serverLogin,
-                taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_PathUploadFrom), 
+                taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_PathUploadFrom),
+                taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_ProjectName),
                 taskOptions.IsOptionSet(TaskMasterOptions.Option_RemapWorkbookReferencesOnUpload),
                 uploadCredentialManager,
                 taskOptions.IsOptionSet(TaskMasterOptions.Option_AssignContentOwnershipAfterPublish),
@@ -1576,7 +1585,8 @@ internal partial class TaskMaster
     /// <param name="siteUsers">Users in site, needed for content ownership remapping</param>
     private void Execute_UploadWorkbooks(
         TableauServerSignIn onlineLogin, 
-        string localBasePath, 
+        string localBasePath,
+        string project,
         bool remapWorkbookReferences, 
         CredentialManager credentialManager,
         bool attemptContentOwnershipAssignment,
@@ -1614,7 +1624,8 @@ internal partial class TaskMaster
             _onlineUrls, 
             onlineLogin,
             credentialManager,
-            pathWorkbooks, 
+            pathWorkbooks,
+            project,
             remapWorkbookReferences, 
             pathRemappingTempspace, 
             uploadProjectBehavior, 
