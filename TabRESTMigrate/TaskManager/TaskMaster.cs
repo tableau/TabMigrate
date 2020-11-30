@@ -12,6 +12,7 @@ internal partial class TaskMaster
     private readonly string _exportToLocalPath;
     private readonly string _userName;
     private readonly string _password;
+    private readonly bool _useAccessToken;
     private readonly TableauServerUrls _onlineUrls;
     private readonly TaskStatusLogs _statusLog = null;
     private readonly TaskMasterOptions _taskOptions;
@@ -199,7 +200,8 @@ internal partial class TaskMaster
     /// <param name="manualActions"></param>
     public TaskMaster(
         string jobName,
-        TableauServerUrls onlineUrls, 
+        TableauServerUrls onlineUrls,
+        bool useAccessToken,
         string userName, 
         string password,
         TaskMasterOptions taskOptions,
@@ -215,6 +217,7 @@ internal partial class TaskMaster
         //Get any export path
         _exportToLocalPath = taskOptions.GetOptionValue(TaskMasterOptions.OptionParameter_PathDownloadTo);
         _onlineUrls = onlineUrls;
+        _useAccessToken = useAccessToken;
         _userName = userName;
         _password = password;
 
@@ -871,7 +874,7 @@ internal partial class TaskMaster
         //========================================================================================
         //Log into Tableau Online
         //========================================================================================
-        var serverLogin = new TableauServerSignIn(onlineUrls, _userName, _password, _statusLog);
+        var serverLogin = new TableauServerSignIn(onlineUrls, _useAccessToken, _userName, _password, _statusLog);
         try
         { 
             serverLogin.ExecuteRequest();
