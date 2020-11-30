@@ -19,7 +19,7 @@ partial class CommandLineParser
     public const string Parameter_ToSiteUrl             = "-toSiteUrl";           //URL to site we are accessing
     public const string Parameter_ToUserId              = "-toSiteUserId";        //User ID we are downloading content from
     public const string Parameter_ToUserPassword        = "-toSiteUserPassword";  //Password for user id
-    public const string Parameter_ToUseAccessToken = "-toUseAccessToken";         //Is the authentication method access token? false if missing
+    public const string Parameter_ToUseAccessToken      = "-toSiteUseAccessToken";//Is the authentication method access token? false if missing
     public const string Parameter_ToSiteIsSystemAdmin   = "-toSiteIsSystemAdmin"; //Is the user id a System Admin account?
     public const string Parameter_ToSiteIsSiteAdmin     = "-toSiteIsSiteAdmin";   //Is the user id a Site Admin account?
     public const string Parameter_ExportSingleProject   = "-exportSingleProject"; //If specified, only a single projects content will be exported
