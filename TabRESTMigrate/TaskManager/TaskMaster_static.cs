@@ -53,6 +53,7 @@ internal partial class TaskMaster
             return helper_CreateTaskMaster_SiteInventory(
                 commandLine.GetParameterValue(CommandLineParser.Parameter_InventoryOutputFile)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromSiteUrl)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromUseAccessToken, false)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserId)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserPassword)
                 ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromSiteIsSystemAdmin)
@@ -65,6 +66,7 @@ internal partial class TaskMaster
             return helper_CreateTaskMaster_SiteExport(
                 commandLine.GetParameterValue(CommandLineParser.Parameter_ExportDirectory)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromSiteUrl)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromUseAccessToken, false)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserId)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_FromUserPassword)
                 ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromSiteIsSystemAdmin) || commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_FromSiteIsSiteAdmin)
@@ -80,6 +82,7 @@ internal partial class TaskMaster
             return helper_CreateTaskMaster_SiteImport(
                 commandLine.GetParameterValue(CommandLineParser.Parameter_ImportDirectory)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToSiteUrl)
+                ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ToUseAccessToken, false)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserId)
                 ,commandLine.GetParameterValue(CommandLineParser.Parameter_ToUserPassword)
                 ,commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ToSiteIsSystemAdmin) || commandLine.GetParameterValueAsBool(CommandLineParser.Parameter_ToSiteIsSiteAdmin)
@@ -99,6 +102,7 @@ internal partial class TaskMaster
     /// </summary>
     /// <param name="pathToWriteInventoryFile"></param>
     /// <param name="urlToServerSite"></param>
+    /// <param name="useAccessToken"></param>
     /// <param name="userName"></param>
     /// <param name="password"></param>
     /// <param name="isAdmin"></param>
@@ -106,7 +110,8 @@ internal partial class TaskMaster
     /// <returns></returns>
     private static TaskMaster helper_CreateTaskMaster_SiteInventory(
         string pathToWriteInventoryFile, 
-        string urlToServerSite, 
+        string urlToServerSite,
+        bool useAccessToken,
         string userName, 
         string password,
         bool isAdmin,
@@ -154,6 +159,7 @@ internal partial class TaskMaster
         return new TaskMaster(
             JobName_SiteInventory,
             onlineUrls,
+            useAccessToken,
             userName,
             password,
             options);
@@ -165,6 +171,7 @@ internal partial class TaskMaster
     /// </summary>
     /// <param name="dirExportDirectory"></param>
     /// <param name="urlToServerSite"></param>
+    /// <param name="useAccessToken"></param>
     /// <param name="userName"></param>
     /// <param name="password"></param>
     /// <param name="isSystemAdmin"></param>
@@ -173,6 +180,7 @@ internal partial class TaskMaster
     private static TaskMaster helper_CreateTaskMaster_SiteExport(
         string dirExportDirectory,
         string urlToServerSite,
+        bool useAccessToken,
         string userName,
         string password,
         bool isSiteAdmin,
@@ -234,6 +242,7 @@ internal partial class TaskMaster
         return new TaskMaster(
             JobName_SiteExport,
             onlineUrls,
+            useAccessToken,
             userName,
             password,
             options);
@@ -245,6 +254,7 @@ internal partial class TaskMaster
     /// </summary>
     /// <param name="dirImportFromDirectory"></param>
     /// <param name="urlToServerSite"></param>
+    /// <param name="useAccessToken"></param>
     /// <param name="userName"></param>
     /// <param name="password"></param>
     /// <param name="isSystemAdmin"></param>
@@ -256,6 +266,7 @@ internal partial class TaskMaster
     private static TaskMaster helper_CreateTaskMaster_SiteImport(
         string dirImportFromDirectory,
         string urlToServerSite,
+        bool useAccessToken,
         string userName,
         string password,
         bool isSiteAdmin,
@@ -306,6 +317,7 @@ internal partial class TaskMaster
         return new TaskMaster(
             JobName_SiteImport,
             onlineUrls,
+            useAccessToken,
             userName,
             password,
             options);

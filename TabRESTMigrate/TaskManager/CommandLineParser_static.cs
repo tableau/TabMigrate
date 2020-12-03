@@ -12,12 +12,14 @@ partial class CommandLineParser
     public const string Parameter_Command               = "-command";             //Specifies the top level command to the REST applicaiton
     public const string Parameter_FromSiteUrl           = "-fromSiteUrl";         //URL to site we are accessing
     public const string Parameter_FromUserId            = "-fromSiteUserId";      //User ID we are downloading content from
-    public const string Parameter_FromUserPassword      = "-fromSiteUserPassword";//Password for user id 
+    public const string Parameter_FromUserPassword      = "-fromSiteUserPassword";//Password for user id
+    public const string Parameter_FromUseAccessToken    = "-fromSiteUseAccessToken";//Is the authentication method access token? false if missing
     public const string Parameter_FromSiteIsSiteAdmin   = "-fromSiteIsSiteAdmin";   //Is the user id a Site Admin account?
     public const string Parameter_FromSiteIsSystemAdmin = "-fromSiteIsSystemAdmin"; //Is the user id a System Admin account?
     public const string Parameter_ToSiteUrl             = "-toSiteUrl";           //URL to site we are accessing
     public const string Parameter_ToUserId              = "-toSiteUserId";        //User ID we are downloading content from
-    public const string Parameter_ToUserPassword        = "-toSiteUserPassword";  //Password for user id 
+    public const string Parameter_ToUserPassword        = "-toSiteUserPassword";  //Password for user id
+    public const string Parameter_ToUseAccessToken      = "-toSiteUseAccessToken";//Is the authentication method access token? false if missing
     public const string Parameter_ToSiteIsSystemAdmin   = "-toSiteIsSystemAdmin"; //Is the user id a System Admin account?
     public const string Parameter_ToSiteIsSiteAdmin     = "-toSiteIsSiteAdmin";   //Is the user id a Site Admin account?
     public const string Parameter_ExportSingleProject   = "-exportSingleProject"; //If specified, only a single projects content will be exported
@@ -70,6 +72,7 @@ partial class CommandLineParser
     /// </summary>
     /// <param name="pathToOutputFile"></param>
     /// <param name="siteUrl"></param>
+    /// <param name="useAccessToken"></param>
     /// <param name="userName"></param>
     /// <param name="password"></param>
     /// <param name="isSystemAdmin"></param>
@@ -79,6 +82,7 @@ partial class CommandLineParser
         bool showPasswordInUi,
         string pathToOutputFile, 
         string siteUrl, 
+        bool useAccessToken,
         string userName, 
         string password, 
         bool isSystemAdmin,
@@ -97,6 +101,7 @@ partial class CommandLineParser
         helper_AppendParameter(arguments, sb, Parameter_Command              , ParameterValue_Command_Inventory); //Command is 'take inventory'
         helper_AppendParameter(arguments, sb, Parameter_FromUserId           , userName);
         helper_AppendParameter(arguments, sb, Parameter_FromUserPassword     , password, uiPassword);
+        helper_AppendParameter(arguments, sb, Parameter_FromUseAccessToken   , helper_BoolToText(useAccessToken));
         helper_AppendParameter(arguments, sb, Parameter_InventoryOutputFile  , pathToOutputFile);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteUrl          , siteUrl);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteIsSystemAdmin, helper_BoolToText(isSystemAdmin));
@@ -146,6 +151,7 @@ partial class CommandLineParser
         bool showPasswordInUi,
         string pathToExportDir,
         string siteUrl,
+        bool useAccessToken,
         string userName,
         string password,
         bool isSiteAdmin,
@@ -168,6 +174,7 @@ partial class CommandLineParser
         helper_AppendParameter(arguments, sb, Parameter_Command, ParameterValue_Command_Export);
         helper_AppendParameter(arguments, sb, Parameter_FromUserId, userName);
         helper_AppendParameter(arguments, sb, Parameter_FromUserPassword, password, uiPassword);
+        helper_AppendParameter(arguments, sb, Parameter_FromUseAccessToken, helper_BoolToText(useAccessToken));
         helper_AppendParameter(arguments, sb, Parameter_ExportDirectory, pathToExportDir);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteUrl, siteUrl);
         helper_AppendParameter(arguments, sb, Parameter_FromSiteIsSystemAdmin, helper_BoolToText(isSiteAdmin));
@@ -233,6 +240,7 @@ partial class CommandLineParser
         bool showPasswordInUi,
         string pathToImportFrom,
         string siteUrl,
+        bool useAccessToken,
         string userName,
         string password,
         bool isSiteAdmin,
@@ -254,6 +262,7 @@ partial class CommandLineParser
         helper_AppendParameter(arguments, sb, Parameter_Command, ParameterValue_Command_Import);
         helper_AppendParameter(arguments, sb, Parameter_ToUserId, userName);
         helper_AppendParameter(arguments, sb, Parameter_ToUserPassword, password, uiPassword);
+        helper_AppendParameter(arguments, sb, Parameter_ToUseAccessToken, helper_BoolToText(useAccessToken));
         helper_AppendParameter(arguments, sb, Parameter_ImportDirectory, pathToImportFrom);
         helper_AppendParameter(arguments, sb, Parameter_ToSiteUrl, siteUrl);
         helper_AppendParameter(arguments, sb, Parameter_ToSiteIsSiteAdmin, helper_BoolToText(isSiteAdmin));
