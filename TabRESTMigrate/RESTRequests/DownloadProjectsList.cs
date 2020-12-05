@@ -76,11 +76,9 @@ class DownloadProjectsList : TableauServerSignedInRequestBase, IProjectsList
         int pageSize = _onlineUrls.PageSize;
         //Create a web request, in including the users logged-in auth information in the request headers
         var urlQuery = _onlineUrls.Url_ProjectsList(_onlineSession, pageSize, pageToRequest);
-        var webRequest = CreateLoggedInWebRequest(urlQuery);
-        webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get projects list");
+        var xmlDoc = ResourceSafe_PerformWebRequest_GetXmlDocument(urlQuery, "get projects list");
 
         //Get all the project nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

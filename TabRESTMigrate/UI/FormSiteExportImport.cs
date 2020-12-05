@@ -103,13 +103,13 @@ namespace OnlineContentDownloader
         /// <param name="signInUser"></param>
         /// <param name="signInPassword"></param>
         /// <returns></returns>
-        private bool ValidateSignInPossible(string siteUrl, string signInUser, string signInPassword)
+        private bool ValidateSignInPossible(string siteUrl, bool useAccessToken, string signInUser, string signInPassword)
         {
             var testSignInStatusLog = new TaskStatusLogs();
             testSignInStatusLog.SetStatusLoggingLevel(int.MinValue);
             try
             {
-                TableauServerSignIn.VerifySignInPossible(siteUrl, signInUser, signInPassword, testSignInStatusLog);
+                TableauServerSignIn.VerifySignInPossible(siteUrl, useAccessToken, signInUser, signInPassword, testSignInStatusLog);
             }
             catch 
             {
@@ -129,6 +129,7 @@ namespace OnlineContentDownloader
         private TaskMaster CreateAsyncExportTask(bool showPasswordInUi)
         {
             string siteUrl = txtUrlExportFrom.Text;
+            bool useAccessToken = (comboBoxAuthMethodExportFrom.SelectedIndex == 1);
             string signInUser = txtIdExportFrom.Text;
             string signInPassword = txtPasswordExportFrom.Text;
             bool isSiteAdmin = chkExportUserIsAdmin.Checked;
@@ -140,7 +141,7 @@ namespace OnlineContentDownloader
             //Sanity test the sign in.  If this fails, then there is no point in 
             //moving forward
             //----------------------------------------------------------------------
-            bool signInTest = ValidateSignInPossible(siteUrl, signInUser, signInPassword);
+            bool signInTest = ValidateSignInPossible(siteUrl, useAccessToken, signInUser, signInPassword);
             if (!signInTest)
             {
                 return null;
@@ -170,6 +171,7 @@ namespace OnlineContentDownloader
                 showPasswordInUi,
                 localPathForSiteOutput,
                 siteUrl,
+                useAccessToken,
                 signInUser,
                 signInPassword,
                 isSiteAdmin,
@@ -202,6 +204,7 @@ namespace OnlineContentDownloader
         private TaskMaster CreateAsyncImportTask(bool showPasswordInUi)
         {
             string siteUrl = txtUrlImportTo.Text;
+            bool useAccessToken = (comboBoxAuthMethodImportTo.SelectedIndex == 1);
             string signInUser = txtIdImportTo.Text;
             string signInPassword = txtPasswordImportTo.Text;
             bool isSiteAdmin = chkImportIsSiteAdmin.Checked;
@@ -228,7 +231,7 @@ namespace OnlineContentDownloader
             //Sanity test the sign in.  If this fails, then there is no point in 
             //moving forward
             //----------------------------------------------------------------------
-            bool signInTest = ValidateSignInPossible(siteUrl, signInUser, signInPassword);
+            bool signInTest = ValidateSignInPossible(siteUrl, useAccessToken, signInUser, signInPassword);
             if (!signInTest)
             {
                 return null;
@@ -270,6 +273,7 @@ namespace OnlineContentDownloader
                  showPasswordInUi,
                  localPathImportFrom,
                  siteUrl,
+                 useAccessToken,
                  signInUser,
                  signInPassword,
                  isSiteAdmin,
@@ -299,6 +303,7 @@ namespace OnlineContentDownloader
         private TaskMaster CreateAsyncInventoryTask(bool showPasswordInUi)
         {
             string siteUrl = txtUrlInventoryFrom.Text;
+            bool useAccessToken = (comboBoxAuthMethodInventoryFrom.SelectedIndex == 1);
             string signInUser = txtIdInventoryFromUserId.Text;
             string signInPassword = txtPasswordInventoryFrom.Text;
             bool isSystemAdmin = chkInventoryUserIsAdmin.Checked;
@@ -308,7 +313,7 @@ namespace OnlineContentDownloader
             //Sanity test the sign in.  If this fails, then there is no point in 
             //moving forward
             //----------------------------------------------------------------------
-            bool signInTest = ValidateSignInPossible(siteUrl, signInUser, signInPassword);
+            bool signInTest = ValidateSignInPossible(siteUrl, useAccessToken, signInUser, signInPassword);
             if(!signInTest)
             {
                 return null;
@@ -343,6 +348,7 @@ namespace OnlineContentDownloader
                 showPasswordInUi,
                 localPathForOutputFile,
                 siteUrl,
+                useAccessToken,
                 signInUser,
                 signInPassword,
                 isSystemAdmin,
@@ -775,6 +781,7 @@ namespace OnlineContentDownloader
             //Hide all the panels
             ShowSinglePanelHideOthers(null);
             PopulateChooseActionUI();
+            PopulateAuthMethodUI();
 
             if (_startupCommandLine != null)
             {
@@ -796,6 +803,22 @@ namespace OnlineContentDownloader
             items.Add(ListAction_ImportSite);
 
             comboBoxChooseAction.SelectedIndex = 0;
+        }
+
+        private const string ListAuthMethod_UserPassword = "User/Password";
+        private const string ListAuthMethod_AccessToken = "Access token";
+        private void PopulateAuthMethodUI()
+        {
+            ComboBox[] authComboBoxes =
+                { comboBoxAuthMethodInventoryFrom, comboBoxAuthMethodExportFrom, comboBoxAuthMethodImportTo };
+            foreach (ComboBox comboBox in authComboBoxes)
+            {
+                comboBox.Items.Clear();
+                comboBox.Items.Add(ListAuthMethod_UserPassword);
+                comboBox.Items.Add(ListAuthMethod_AccessToken);
+
+                comboBox.SelectedIndex = 0;
+            }
         }
 
         private void buttonRunInventorySiteCommandLine_Click(object sender, EventArgs e)
@@ -891,6 +914,51 @@ namespace OnlineContentDownloader
         private void chkImportRemapContentOwnership_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private const string labelSignInId = "sign-in id";
+        private const string labelSignInPassword = "sign-in password";
+        private const string labelTokenName = "token name";
+        private const string labelTokenSecret = "token secret";
+        private void comboBoxAuthMethodExportFrom_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxAuthMethodExportFrom.SelectedIndex == 0)
+            {
+                labelUserExportFrom.Text = labelSignInId;
+                labelPasswordExportFrom.Text = labelSignInPassword;
+            }
+            else
+            {
+                labelUserExportFrom.Text = labelTokenName;
+                labelPasswordExportFrom.Text = labelTokenSecret;
+            }
+        }
+        private void comboBoxAuthMethodInventoryFrom_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxAuthMethodInventoryFrom.SelectedIndex == 0)
+            {
+                labelUserInventoryFrom.Text = labelSignInId;
+                labelPasswordInventoryFrom.Text = labelSignInPassword;
+            }
+            else
+            {
+                labelUserInventoryFrom.Text = labelTokenName;
+                labelPasswordInventoryFrom.Text = labelTokenSecret;
+            }
+        }
+
+        private void comboBoxAuthMethodImportTo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxAuthMethodImportTo.SelectedIndex == 0)
+            {
+                labelUserImportTo.Text = labelSignInId;
+                labelPasswordImportTo.Text = labelSignInPassword;
+            }
+            else
+            {
+                labelUserImportTo.Text = labelTokenName;
+                labelPasswordImportTo.Text = labelTokenSecret;
+            }
         }
     }
 }

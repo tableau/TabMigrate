@@ -33,6 +33,9 @@ class TableauServerUrls : ITableauServerSiteInfo
     /// Template for URL to acess workbooks list
     /// </summary>
     private readonly string _urlListWorkbooksForUserTemplate;
+    //    private readonly string _urlListDatasourcesForUserTemplate;
+    private readonly string _urlListFlowsForUserTemplate;
+    private readonly string _urlListFlowsTemplate;
     private readonly string _urlListWorkbookConnectionsTemplate;
     private readonly string _urlListDatasourcesTemplate;
     private readonly string _urlListProjectsTemplate;
@@ -51,10 +54,22 @@ class TableauServerUrls : ITableauServerSiteInfo
     private readonly string _urlFinalizeUploadDatasourceTemplate;
     private readonly string _urlFinalizeUploadWorkbookTemplate;
     private readonly string _urlCreateProjectTemplate;
+    private readonly string _urlCreateSiteUserTemplate;
+    private readonly string _urlCreateSiteGroupTemplate;
+    private readonly string _urlUpdateSiteUserTemplate;
+    private readonly string _urlUpdateSiteGroupTemplate;
     private readonly string _urlDeleteWorkbookTagTemplate;
     private readonly string _urlDeleteDatasourceTagTemplate;
     private readonly string _urlUpdateWorkbookTemplate;
     private readonly string _urlUpdateDatasourceTemplate;
+    private readonly string _urlRecentContentListTemplate;
+    private readonly string _urlDownloadWorkbookThumbnailTemplate;
+    private readonly string _urlDownloadWorkbookViewThumbnailTemplate;
+    private readonly string _urlWorkbooksInfoTemplate;
+    private readonly string _urlAddUserToGroupTemplate;
+    private readonly string _urlDeleteUserFromGroupTemplate;
+    private readonly string _urlDeleteUserFromSiteTemplate;
+    private readonly string _urlUpdateFlowTemplate;
 
     /// <summary>
     /// Server url with protocol
@@ -88,32 +103,48 @@ class TableauServerUrls : ITableauServerSiteInfo
         this._serverVersion = serverVersion;
         this.SiteUrlSegement = siteUrlSegment;
         this.ServerName = serverName;
-        this.ServerUrlWithProtocol                 = serverNameWithProtocol;
-        this.UrlLogin                              = serverNameWithProtocol + "/api/2.3/auth/signin";
-        this.UrlLogout                             = serverNameWithProtocol + "/api/2.3/auth/signout";
-        this._urlListWorkbooksForUserTemplate      = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/users/{{iwsUserId}}/workbooks?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListWorkbookConnectionsTemplate   = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}/connections";
-        this._urlListDatasourcesTemplate           = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/datasources?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListProjectsTemplate              = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/projects?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListSubscriptionsTemplate         = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/subscriptions?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListSchedulesTemplate             = serverNameWithProtocol + "/api/2.3/schedules?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListTasksInScheduleTemplate       = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/schedules/{{iwsScheduleId}}/extracts?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListViewsTemplate                 = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/views?includeUsageStatistics=true&pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListGroupsTemplate                = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/groups?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListUsersTemplate                 = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/users?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
-        this._urlListUsersInGroupTemplate          = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/groups/{{iwsGroupId}}/users?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}"; 
-        this._urlDownloadDatasourceTemplate        = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/datasources/{{iwsRepositoryId}}/content";
-        this._urlDownloadWorkbookTemplate          = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/workbooks/{{iwsRepositoryId}}/content";
-        this._urlSiteInfoTemplate                  = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}";
-        this._urlInitiateUploadTemplate            = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/fileUploads";
-        this._urlAppendUploadChunkTemplate         = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/fileUploads/{{iwsUploadSession}}";
-        this._urlFinalizeUploadDatasourceTemplate  = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/datasources?uploadSessionId={{iwsUploadSession}}&datasourceType={{iwsDatasourceType}}&overwrite=true";
-        this._urlFinalizeUploadWorkbookTemplate    = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/workbooks?uploadSessionId={{iwsUploadSession}}&workbookType={{iwsWorkbookType}}&overwrite=true";
-        this._urlCreateProjectTemplate             = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/projects";
-        this._urlDeleteWorkbookTagTemplate         = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}/tags/{{iwsTagText}}";
-        this._urlDeleteDatasourceTagTemplate       = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/datasources/{{iwsDatasourceId}}/tags/{{iwsTagText}}";
-        this._urlUpdateWorkbookTemplate            = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}";
-        this._urlUpdateDatasourceTemplate          = serverNameWithProtocol + "/api/2.3/sites/{{iwsSiteId}}/datasources/{{iwsDatasourceId}}";
+        this.ServerUrlWithProtocol = serverNameWithProtocol;
+        this.UrlLogin = serverNameWithProtocol + "/api/3.8/auth/signin";
+        this.UrlLogout = serverNameWithProtocol + "/api/3.8/auth/signout";
+        this._urlListWorkbooksForUserTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/users/{{iwsUserId}}/workbooks?{{iwsSortDirective}}{{iwsOwnedByDirective}}pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        //        this._urlListDatasourcesForUserTemplate    = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/users/{{iwsUserId}}/datasources?{{iwsSortDirective}}{{iwsOwnedByDirective}}pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListFlowsForUserTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/users/{{iwsUserId}}/flows?{{iwsSortDirective}}{{iwsOwnedByDirective}}pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListFlowsTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/flows?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListWorkbookConnectionsTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}/connections";
+        this._urlListDatasourcesTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/datasources?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListProjectsTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/projects?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListSubscriptionsTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/subscriptions?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListSchedulesTemplate = serverNameWithProtocol + "/api/3.8/schedules?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListTasksInScheduleTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/schedules/{{iwsScheduleId}}/extracts?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListViewsTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/views?includeUsageStatistics=true&pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListGroupsTemplate = serverNameWithProtocol + "/api/3.9/sites/{{iwsSiteId}}/groups?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListUsersTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/users?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlListUsersInGroupTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/groups/{{iwsGroupId}}/users?pageSize={{iwsPageSize}}&pageNumber={{iwsPageNumber}}";
+        this._urlDownloadDatasourceTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/datasources/{{iwsRepositoryId}}/content";
+        this._urlDownloadWorkbookTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/workbooks/{{iwsRepositoryId}}/content";
+        this._urlDownloadWorkbookThumbnailTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/workbooks/{{iwsRepositoryId}}/previewImage";
+        this._urlDownloadWorkbookViewThumbnailTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/workbooks/{{iwsRepositoryId}}/views/{{iwsViewId}}/previewImage";
+        this._urlSiteInfoTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}";
+        this._urlInitiateUploadTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/fileUploads";
+        this._urlAppendUploadChunkTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/fileUploads/{{iwsUploadSession}}";
+        this._urlFinalizeUploadDatasourceTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/datasources?uploadSessionId={{iwsUploadSession}}&datasourceType={{iwsDatasourceType}}&overwrite=true";
+        this._urlFinalizeUploadWorkbookTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/workbooks?uploadSessionId={{iwsUploadSession}}&workbookType={{iwsWorkbookType}}&overwrite=true";
+        this._urlCreateProjectTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/projects";
+        this._urlCreateSiteUserTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/users";
+        this._urlCreateSiteGroupTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/groups";
+        this._urlAddUserToGroupTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/groups/{{iwsGroupId}}/users";
+        this._urlDeleteUserFromGroupTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/groups/{{iwsGroupId}}/users/{{iwsUserId}}";
+        this._urlUpdateSiteUserTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/users/{{iwsUserId}}";
+        this._urlDeleteWorkbookTagTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}/tags/{{iwsTagText}}";
+        this._urlDeleteDatasourceTagTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/datasources/{{iwsDatasourceId}}/tags/{{iwsTagText}}";
+        this._urlUpdateWorkbookTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}";
+        this._urlUpdateDatasourceTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/datasources/{{iwsDatasourceId}}";
+        this._urlRecentContentListTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/content/recent";
+        this._urlWorkbooksInfoTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/workbooks/{{iwsWorkbookId}}";
+        this._urlUpdateSiteGroupTemplate = serverNameWithProtocol + "/api/3.9/sites/{{iwsSiteId}}/groups/{{iwsGroupId}}";
+        this._urlDeleteUserFromSiteTemplate = serverNameWithProtocol + "/api/3.9/sites/{{iwsSiteId}}/users/{{iwsUserId}}";
+        this._urlUpdateFlowTemplate = serverNameWithProtocol + "/api/3.8/sites/{{iwsSiteId}}/flows/{{iwsFlowId}}";
+
         //Any server version specific things we want to do?
         switch (serverVersion)
         {
@@ -132,7 +163,7 @@ class TableauServerUrls : ITableauServerSiteInfo
     {
         const string protocolIndicator = "://";
         int idxProtocol = url.IndexOf(protocolIndicator);
-        if(idxProtocol < 1)
+        if (idxProtocol < 1)
         {
             throw new Exception("No protocol found in " + url);
         }
@@ -168,7 +199,7 @@ class TableauServerUrls : ITableauServerSiteInfo
             siteUrlSegment = ""; //Default site
             serverVersion = ServerVersion.server9;
         }
-        else if((urlParts[1] == "#") && (urlParts[2] == "site"))
+        else if ((urlParts[1] == "#") && (urlParts[2] == "site"))
         {
             siteUrlSegment = urlParts[3];
             serverVersion = ServerVersion.server9;
@@ -182,7 +213,7 @@ class TableauServerUrls : ITableauServerSiteInfo
         {
             throw new Exception("Site URL not recognized as Tableau Server");
         }
-         
+
         return new TableauServerUrls(foundProtocol, serverName, siteUrlSegment, pageSize, serverVersion);
     }
 
@@ -211,6 +242,20 @@ class TableauServerUrls : ITableauServerSiteInfo
 
         return workingText;
     }
+
+    /// <summary>
+    /// URL to get recently updated content
+    /// </summary>
+    /// <param name="onlineSession"></param>
+    /// <returns></returns>
+    internal string Url_RecentContentList(TableauServerSignIn logInInfo)
+    {
+        string workingText = _urlRecentContentListTemplate.Replace("{{iwsSiteId}}", logInInfo.SiteId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
 
     /// <summary>
     /// The URL to start a upload
@@ -268,13 +313,107 @@ class TableauServerUrls : ITableauServerSiteInfo
     /// </summary>
     /// <param name="siteUrlSegment"></param>
     /// <returns></returns>
-    public string Url_WorkbooksListForUser(TableauServerSignIn session, string userId, int pageSize, int pageNumber = 1)
+    public string Url_WorkbooksListForUser(TableauServerSignIn session, string userId, bool filterOwnedByUserOnly, int pageSize, int pageNumber = 1, string sortDirective = "")
     {
+        string directiveFilterOwnedBy = "";
+        if (filterOwnedByUserOnly)
+        {
+            directiveFilterOwnedBy = "ownedBy=true&";
+        }
+
+
+        string sortParameter = "";
+        if (!string.IsNullOrWhiteSpace(sortDirective))
+        {
+            sortParameter = sortDirective + "&";
+        }
+
         string workingText = _urlListWorkbooksForUserTemplate;
         workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
         workingText = workingText.Replace("{{iwsUserId}}", userId);
         workingText = workingText.Replace("{{iwsPageSize}}", pageSize.ToString());
         workingText = workingText.Replace("{{iwsPageNumber}}", pageNumber.ToString());
+        workingText = workingText.Replace("{{iwsSortDirective}}", sortParameter);
+        workingText = workingText.Replace("{{iwsOwnedByDirective}}", directiveFilterOwnedBy);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+    /*
+    /// <summary>
+    /// URL for the Workbooks list
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_DatasourcesListForUser(TableauServerSignIn session, string userId, bool filterOwnedByUserOnly, int pageSize, int pageNumber = 1, string sortDirective = "")
+    {
+        string directiveFilterOwnedBy = "";
+        if (filterOwnedByUserOnly)
+        {
+            directiveFilterOwnedBy = "ownedBy=true&";
+        }
+
+
+        string sortParameter = "";
+        if (!string.IsNullOrWhiteSpace(sortDirective))
+        {
+            sortParameter = sortDirective + "&";
+        }
+
+        string workingText = _urlListDatasourcesForUserTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsUserId}}", userId);
+        workingText = workingText.Replace("{{iwsPageSize}}", pageSize.ToString());
+        workingText = workingText.Replace("{{iwsPageNumber}}", pageNumber.ToString());
+        workingText = workingText.Replace("{{iwsSortDirective}}", sortParameter);
+        workingText = workingText.Replace("{{iwsOwnedByDirective}}", directiveFilterOwnedBy);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+    */
+    /// <summary>
+    /// URL for the Workbooks list
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_FlowsListForUser(TableauServerSignIn session, string userId, bool filterOwnedByUserOnly, int pageSize, int pageNumber = 1, string sortDirective = "")
+    {
+        string directiveFilterOwnedBy = "";
+        if (filterOwnedByUserOnly)
+        {
+            directiveFilterOwnedBy = "ownedBy=true&";
+        }
+
+
+        string sortParameter = "";
+        if (!string.IsNullOrWhiteSpace(sortDirective))
+        {
+            sortParameter = sortDirective + "&";
+        }
+
+        string workingText = _urlListFlowsForUserTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsUserId}}", userId);
+        workingText = workingText.Replace("{{iwsPageSize}}", pageSize.ToString());
+        workingText = workingText.Replace("{{iwsPageNumber}}", pageNumber.ToString());
+        workingText = workingText.Replace("{{iwsSortDirective}}", sortParameter);
+        workingText = workingText.Replace("{{iwsOwnedByDirective}}", directiveFilterOwnedBy);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for the Workbooks list
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_WorkbookInfo(TableauServerSignIn session, string workbookId)
+    {
+        string workingText = _urlWorkbooksInfoTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsWorkbookId}}", workbookId);
         ValidateTemplateReplaceComplete(workingText);
 
         return workingText;
@@ -324,6 +463,22 @@ class TableauServerUrls : ITableauServerSiteInfo
     }
 
     /// <summary>
+    /// URL for the Datasources list
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_FlowsList(TableauServerSignIn session, int pageSize, int pageNumber = 1)
+    {
+        string workingText = _urlListFlowsTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsPageSize}}", pageSize.ToString());
+        workingText = workingText.Replace("{{iwsPageNumber}}", pageNumber.ToString());
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
     /// URL for creating a project
     /// </summary>
     /// <param name="siteUrlSegment"></param>
@@ -331,6 +486,50 @@ class TableauServerUrls : ITableauServerSiteInfo
     public string Url_CreateProject(TableauServerSignIn session)
     {
         string workingText = _urlCreateProjectTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for creating a site user
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_CreateSiteUser(TableauServerSignIn session)
+    {
+        string workingText = _urlCreateSiteUserTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for creating a site user
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_AddUserToGroup(TableauServerSignIn session, string groupId)
+    {
+        string workingText = _urlAddUserToGroupTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsGroupId}}", groupId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+
+    /// <summary>
+    /// URL for creating a site group
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_CreateSiteGroup(TableauServerSignIn session)
+    {
+        string workingText = _urlCreateSiteGroupTemplate;
         workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
         ValidateTemplateReplaceComplete(workingText);
 
@@ -356,6 +555,24 @@ class TableauServerUrls : ITableauServerSiteInfo
     }
 
     /// <summary>
+    /// URL for deleting a user from a group
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="userId"></param>
+    /// <param name="groupId">Tag we want to delete</param>
+    /// <returns></returns>
+    public string Url_DeleteUserFromGroup(TableauServerSignIn session, string userId, string groupId)
+    {
+        string workingText = _urlDeleteUserFromGroupTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsUserId}}", userId);
+        workingText = workingText.Replace("{{iwsGroupId}}", groupId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
     /// URL for updating workbook metadata (e.g. owners, show tabs)
     /// </summary>
     /// <param name="session"></param>
@@ -375,15 +592,55 @@ class TableauServerUrls : ITableauServerSiteInfo
     /// <summary>
     /// URL for updating datasource metadata (e.g. owner id)
     /// </summary>
-    /// <param name="session"></param>
-    /// <param name="workbookId"></param>
-    /// <param name="tagText">Tag we want to delete</param>
     /// <returns></returns>
     public string Url_UpdateDatasource(TableauServerSignIn session, string datasourceId)
     {
         string workingText = _urlUpdateDatasourceTemplate;
         workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
         workingText = workingText.Replace("{{iwsDatasourceId}}", datasourceId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for updating datasource metadata (e.g. owner id)
+    /// </summary>
+    /// <returns></returns>
+    public string Url_UpdateFlow(TableauServerSignIn session, string flowId)
+    {
+        string workingText = _urlUpdateFlowTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsFlowId}}", flowId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+
+    /// <summary>
+    /// URL for updating user's metadata 
+    /// </summary>
+    /// <returns></returns>
+    public string Url_UpdateSiteUser(TableauServerSignIn session, string userId)
+    {
+        string workingText = _urlUpdateSiteUserTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsUserId}}", userId);
+        ValidateTemplateReplaceComplete(workingText);
+
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL for updating a group
+    /// </summary>
+    /// <returns></returns>
+    public string Url_UpdateSiteGroup(TableauServerSignIn session, string groupId)
+    {
+        string workingText = _urlUpdateSiteGroupTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsGroupId}}", groupId);
         ValidateTemplateReplaceComplete(workingText);
 
         return workingText;
@@ -562,6 +819,39 @@ class TableauServerUrls : ITableauServerSiteInfo
     }
 
     /// <summary>
+    /// URL to download a workbook Thumbnail
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_WorkbookThumbnailDownload(TableauServerSignIn session, SiteWorkbook contentInfo)
+    {
+        string workingText = _urlDownloadWorkbookThumbnailTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsRepositoryId}}", contentInfo.Id);
+
+        ValidateTemplateReplaceComplete(workingText);
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL to download a workbook's view
+    /// </summary>
+    /// <param name="siteUrlSegment"></param>
+    /// <returns></returns>
+    public string Url_WorkbookViewThumbnailDownload(TableauServerSignIn session, SiteWorkbook contentInfo, string viewId)
+    {
+        string workingText = _urlDownloadWorkbookViewThumbnailTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsRepositoryId}}", contentInfo.Id);
+        workingText = workingText.Replace("{{iwsViewId}}", viewId);
+
+        ValidateTemplateReplaceComplete(workingText);
+        return workingText;
+    }
+
+
+
+    /// <summary>
     /// URL to download a datasource
     /// </summary>
     /// <param name="siteUrlSegment"></param>
@@ -571,6 +861,22 @@ class TableauServerUrls : ITableauServerSiteInfo
         string workingText = _urlDownloadDatasourceTemplate;
         workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
         workingText = workingText.Replace("{{iwsRepositoryId}}", contentInfo.Id);
+
+        ValidateTemplateReplaceComplete(workingText);
+        return workingText;
+    }
+
+    /// <summary>
+    /// URL to delete a user from a site
+    /// </summary>
+    /// <param name="onlineSession"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    internal string Url_DeleteUserFromSite(TableauServerSignIn session, string userId)
+    {
+        string workingText = _urlDeleteUserFromSiteTemplate;
+        workingText = workingText.Replace("{{iwsSiteId}}", session.SiteId);
+        workingText = workingText.Replace("{{iwsUserId}}", userId);
 
         ValidateTemplateReplaceComplete(workingText);
         return workingText;
@@ -595,15 +901,15 @@ class TableauServerUrls : ITableauServerSiteInfo
 
     string ITableauServerSiteInfo.ServerName
     {
-        get 
+        get
         {
-            return this.ServerName; 
+            return this.ServerName;
         }
     }
 
     ServerProtocol ITableauServerSiteInfo.Protocol
     {
-        get 
+        get
         {
             if (this.ServerProtocol == "https://") return global::ServerProtocol.https;
             if (this.ServerProtocol == "http://") return global::ServerProtocol.http;
@@ -613,7 +919,7 @@ class TableauServerUrls : ITableauServerSiteInfo
 
     string ITableauServerSiteInfo.SiteId
     {
-        get 
+        get
         {
             return this.SiteUrlSegement;
         }

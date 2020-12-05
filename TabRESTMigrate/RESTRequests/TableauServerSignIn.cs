@@ -12,6 +12,7 @@ class TableauServerSignIn : TableauServerRequestBase
     private readonly TableauServerUrls _onlineUrls;
     private readonly string _userName;
     private readonly string _password;
+    private readonly bool _useAccessToken;
     public readonly string SiteUrlSegment;
     private string _logInCookies;
     private string _logInToken;
@@ -20,6 +21,16 @@ class TableauServerSignIn : TableauServerRequestBase
     public readonly TaskStatusLogs StatusLog;
     private bool _isSignedIn; //True while we are signed in
 
+    /// <summary>
+    /// Returns the URL manager
+    /// </summary>
+    public TableauServerUrls ServerUrls
+    {
+        get
+        {
+            return _onlineUrls;
+        }
+    }
 
     /// <summary>
     /// TRUE if we are currently signed in to a tableau server
@@ -57,10 +68,10 @@ class TableauServerSignIn : TableauServerRequestBase
     /// <param name="userId"></param>
     /// <param name="userPassword"></param>
     /// <param name="statusLog"></param>
-    public static void VerifySignInPossible(string url, string userId, string userPassword, TaskStatusLogs statusLog)
+    public static void VerifySignInPossible(string url, bool useAccessToken, string userId, string userPassword, TaskStatusLogs statusLog)
     {
         var urlManager = TableauServerUrls.FromContentUrl(url, TaskMasterOptions.RestApiReponsePageSizeDefault);
-        var signIn = new TableauServerSignIn(urlManager, userId, userPassword, statusLog);
+        var signIn = new TableauServerSignIn(urlManager, useAccessToken, userId, userPassword, statusLog);
         bool success = signIn.ExecuteRequest();
 
         if(!success)
@@ -76,7 +87,7 @@ class TableauServerSignIn : TableauServerRequestBase
     /// <param name="userName"></param>
     /// <param name="password"></param>
     /// <param name="statusLog"></param>
-    public TableauServerSignIn(TableauServerUrls onlineUrls, string userName, string password, TaskStatusLogs statusLog)
+    public TableauServerSignIn(TableauServerUrls onlineUrls, bool useAccessToken, string userName, string password, TaskStatusLogs statusLog)
     {
         if (statusLog == null) { statusLog = new TaskStatusLogs(); }
         this.StatusLog = statusLog;
@@ -84,6 +95,7 @@ class TableauServerSignIn : TableauServerRequestBase
         _onlineUrls = onlineUrls;
         _userName = userName;
         _password = password;
+        _useAccessToken = useAccessToken;
         SiteUrlSegment = onlineUrls.SiteUrlSegement;
     }
 
@@ -128,8 +140,18 @@ class TableauServerSignIn : TableauServerRequestBase
         
         xmlWriter.WriteStartElement("tsRequest");
             xmlWriter.WriteStartElement("credentials"); //<credentials>
-                xmlWriter.WriteAttributeString("name", _userName);
-                xmlWriter.WriteAttributeString("password", _password);
+                if (_useAccessToken)
+                {
+                    // Access token method
+                    xmlWriter.WriteAttributeString("personalAccessTokenName", _userName);
+                    xmlWriter.WriteAttributeString("personalAccessTokenSecret", _password);
+                }
+                else
+                {
+                    // User/Password method
+                    xmlWriter.WriteAttributeString("name", _userName);
+                    xmlWriter.WriteAttributeString("password", _password);
+                }
                 xmlWriter.WriteStartElement("site");       //<site>
                 xmlWriter.WriteAttributeString("contentUrl", SiteUrlSegment);
                 xmlWriter.WriteEndElement();               //</site>

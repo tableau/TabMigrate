@@ -51,11 +51,9 @@ class DownloadWorkbookConnections : TableauServerSignedInRequestBase
 
         //Create a web request, in including the users logged-in auth information in the request headers
         var urlQuery = _onlineUrls.Url_WorkbookConnectionsList(_onlineSession, _workbookId);
-        var webRequest = CreateLoggedInWebRequest(urlQuery);
-        webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get workbook's connections list");
+        var xmlDoc = ResourceSafe_PerformWebRequest_GetXmlDocument(urlQuery, "get wb connections list");
 
         //Get all the workbook nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

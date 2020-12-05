@@ -64,7 +64,7 @@ class SendDeleteDatasourceTag : TableauServerSignedInRequestBase
         //** Remove this error when Server has implemented and this has been tested
         //**********************************************************************************
         throw new Exception("2015-10-28: API does not yet exist on server for Remove Tag from Datasource");
-
+        /*
         try
         {
             //Attempt the delete
@@ -76,6 +76,7 @@ class SendDeleteDatasourceTag : TableauServerSignedInRequestBase
             this.StatusLog.AddError("Error attempting to delete content tag " + _contentId + "/" + _tagText + "', " + exProject.Message);
             return;
         }
+        */
     }
 
 
@@ -84,18 +85,17 @@ class SendDeleteDatasourceTag : TableauServerSignedInRequestBase
     /// </summary>
     /// <param name="datasourceId"></param>
     /// <param name="tagText"></param>
-    private void DeleteTagFromContent(string datasourceId, string tagText)
+    private bool DeleteTagFromContent(string datasourceId, string tagText)
     {
         //Create a web request 
-        var urlDeleteContentTag = _onlineUrls.Url_DeleteDatasourceTag(_onlineSession, datasourceId, tagText);
-        var webRequest = this.CreateLoggedInWebRequest(urlDeleteContentTag, "DELETE");
-        var response = GetWebReponseLogErrors(webRequest, "delete tag from content request");  
-        
-        using(response)
-        {
-            //No work to do...
-        }
+        var urlRequest = _onlineUrls.Url_DeleteDatasourceTag(_onlineSession, datasourceId, tagText);
+        //var webRequest = this.CreateLoggedInWebRequest(urlRequest, "DELETE");
+        //var response = GetWebReponseLogErrors(webRequest, "delete tag from content request");
 
+        return ResourceSafe_PerformWebRequestResponseLogErrors(
+            urlRequest,
+            "delete tag from content request",
+            "DELETE");
     }
 
 }

@@ -92,12 +92,11 @@ class DownloadWorkbooksList : TableauServerSignedInRequestBase
     {
         int pageSize = _onlineUrls.PageSize;
         //Create a web request, in including the users logged-in auth information in the request headers
-        var urlQuery = _onlineUrls.Url_WorkbooksListForUser(_onlineSession, _userId, pageSize, pageToRequest);
-        var webRequest = CreateLoggedInWebRequest(urlQuery);
-        webRequest.Method = "GET";
+        var urlQuery = _onlineUrls.Url_WorkbooksListForUser(_onlineSession, _userId, false, pageSize, pageToRequest);
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get workbooks list");
+        var xmlDoc = ResourceSafe_PerformWebRequest_GetXmlDocument(urlQuery, "get workbooks list");
+
 
         //Get all the workbook nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

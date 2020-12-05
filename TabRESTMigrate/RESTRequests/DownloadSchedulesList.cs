@@ -75,11 +75,9 @@ class DownloadSchedulesList : TableauServerSignedInRequestBase
         int pageSize = _onlineUrls.PageSize;
         //Create a web request, in including the users logged-in auth information in the request headers
         var urlQuery = _onlineUrls.Url_SchedulesList(_onlineSession, pageSize, pageToRequest);
-        var webRequest = CreateLoggedInWebRequest(urlQuery);
-        webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get schedules list");
+        var xmlDoc = ResourceSafe_PerformWebRequest_GetXmlDocument(urlQuery, "get schedules list");
 
         //Get all the schedule nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

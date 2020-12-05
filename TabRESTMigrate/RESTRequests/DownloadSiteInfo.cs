@@ -45,14 +45,12 @@ class DownloadSiteInfo : TableauServerSignedInRequestBase
 
         //Create a web request, in including the users logged-in auth information in the request headers
         var urlRequest = _onlineUrls.Url_SiteInfo(_onlineSession);
-        var webRequest = CreateLoggedInWebRequest(urlRequest);
-        webRequest.Method = "GET";
 
         //Request the data from server
         _onlineSession.StatusLog.AddStatus("Web request: " + urlRequest, -10);
-        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get site info");
-        
-        //Get all the workbook nodes
+        var xmlDoc = ResourceSafe_PerformWebRequest_GetXmlDocument(urlRequest, "get site info");
+
+        //Get all the nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");
         var sites = xmlDoc.SelectNodes("//iwsOnline:site", nsManager);
 

@@ -76,11 +76,9 @@ class DownloadViewsList : TableauServerSignedInRequestBase
         int pageSize = _onlineUrls.PageSize;
         //Create a web request, in including the users logged-in auth information in the request headers
         var urlQuery = _onlineUrls.Url_ViewsList(_onlineSession, pageSize, pageToRequest);
-        var webRequest = CreateLoggedInWebRequest(urlQuery);
-        webRequest.Method = "GET";
 
         _onlineSession.StatusLog.AddStatus("Web request: " + urlQuery, -10);
-        var xmlDoc = GetWebReponseLogErrors_AsXmlDoc(webRequest, "get views list");
+        var xmlDoc = ResourceSafe_PerformWebRequest_GetXmlDocument(urlQuery, "get views list");
 
         //Get all the view nodes
         var nsManager = XmlHelper.CreateTableauXmlNamespaceManager("iwsOnline");

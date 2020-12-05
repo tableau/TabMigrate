@@ -57,14 +57,19 @@ abstract class TableauServerSignedInRequestBase : TableauServerRequestBase
         return outputPath;
     }
 
-     /// <summary>
+    /// <summary>
     /// Downloads a file
     /// </summary>
     /// <param name="urlDownload"></param>
     /// <param name="downloadToDirectory"></param>
     /// <param name="baseFileName">Filename without extension</param>
     /// <returns>The path to the downloaded file</returns>
-    private string DownloadFile_inner(string urlDownload, string downloadToDirectory, string baseFilename, DownloadPayloadTypeHelper downloadTypeMapper)
+    private string DownloadFile_inner(
+        string urlDownload,
+        string downloadToDirectory,
+        string baseFilename,
+        DownloadPayloadTypeHelper downloadTypeMapper,
+        bool overwriteExistingFile = true)
     {
 
         //[2016-05-06] Interestingly 'GetFileNameWithoutExtension' does more than remove a ".xxxx" extension; it will also remove a preceding
@@ -82,6 +87,12 @@ abstract class TableauServerSignedInRequestBase : TableauServerRequestBase
         { 
             //Choose a temp file name to download to
             var starterName = System.IO.Path.Combine(downloadToDirectory, baseFilename + ".tmp");
+            //If the temp file exists, delete it
+            if(System.IO.File.Exists(starterName))
+            {
+                System.IO.File.Delete(starterName);
+            }
+
             _onlineSession.StatusLog.AddStatus("Attempting file download: " + urlDownload, -10);
             webClient.DownloadFile(urlDownload, starterName); //Download the file
 
@@ -89,6 +100,19 @@ abstract class TableauServerSignedInRequestBase : TableauServerRequestBase
             var contentType = webClient.ResponseHeaders["Content-Type"];
             var fileExtension = downloadTypeMapper.GetFileExtension(contentType);
             var finishName = System.IO.Path.Combine(downloadToDirectory, baseFilename + fileExtension);
+
+            //See if a preexisting file is there
+            if (System.IO.File.Exists(finishName))
+            {
+                if(overwriteExistingFile)
+                {
+                    System.IO.File.Delete(finishName);
+                }
+                else
+                {
+                    throw new Exception("1025-1152: File exists already " + finishName);
+                }
+            }
 
             //Rename the downloaded file
             System.IO.File.Move(starterName, finishName);
@@ -108,6 +132,70 @@ abstract class TableauServerSignedInRequestBase : TableauServerRequestBase
         AppendLoggedInHeadersForRequest(webClient.Headers);
         return webClient;
     }
+
+
+
+    /// <summary>
+    /// Get the web-response as an XML document (handles releasing the response object)
+    /// </summary>
+    /// <param name="webRequest"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    protected System.Xml.XmlDocument GetWebReponseLogErrors_AsXmlDoc(WebRequest webRequest, string description)
+    {
+        var response = GetWebReponseLogErrors(webRequest, description);
+        using (response)
+        {
+            return GetWebResponseAsXml(response);
+        }
+    }
+
+    /// <summary>
+    /// Get a web response back, and parse it as an XML document
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="actionDescription"></param>
+    /// <param name="protocol"></param>
+    /// <param name="requestTimeout"></param>
+    /// <returns></returns>
+    protected System.Xml.XmlDocument ResourceSafe_PerformWebRequest_GetXmlDocument(string url, string actionDescription, string protocol = "GET", Nullable<int> requestTimeout = null)
+    {
+        var webRequest = this.CreateLoggedInWebRequest(url, protocol, requestTimeout);
+        var response = GetWebReponseLogErrors(webRequest, actionDescription);
+
+        if (response != null)
+        {
+            using (response)
+            {
+                System.Xml.XmlDocument xmlDoc = GetWebResponseAsXml(response);
+                return xmlDoc;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Performs a request/response, and makes sure we clean up after the response
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="protocol"></param>
+    /// <param name="actionaDescription"></param>
+    /// <param name="requestTimeout"></param>
+    /// <returns></returns>
+    protected bool ResourceSafe_PerformWebRequestResponseLogErrors(string url, string actionDescription, string protocol = "GET", Nullable<int> requestTimeout = null)
+    {
+        var webRequest = this.CreateLoggedInWebRequest(url, protocol, requestTimeout);        
+        var response = GetWebReponseLogErrors(webRequest, actionDescription);
+        if(response != null)
+        {
+            response.Dispose();
+            return true; //Success
+        }
+
+        return false; //Failure, we did not get a response
+    }
+
 
     /// <summary>
     /// Creates a web request and appends the user credential tokens necessary
@@ -166,24 +254,8 @@ abstract class TableauServerSignedInRequestBase : TableauServerRequestBase
     private void AppendLoggedInHeadersForRequest(WebHeaderCollection webHeaders)
     {
         webHeaders.Add("X-Tableau-Auth", _onlineSession.LogInAuthToken);
-        _onlineSession.StatusLog.AddStatus("Append header X-Tableau-Auth: " + _onlineSession.LogInAuthToken, -20);
-    }
-
-
-
-    /// <summary>
-    /// Get the web-response as an XML document (handles releasing the response object)
-    /// </summary>
-    /// <param name="webRequest"></param>
-    /// <param name="description"></param>
-    /// <returns></returns>
-    protected System.Xml.XmlDocument GetWebReponseLogErrors_AsXmlDoc(WebRequest webRequest, string description)
-    {
-        var response = GetWebReponseLogErrors(webRequest, description);
-        using (response)
-        {
-            return GetWebResponseAsXml(response);
-        }
+        ///_onlineSession.StatusLog.AddStatus("Append header X-Tableau-Auth: " + _onlineSession.LogInAuthToken, -20);
+        _onlineSession.StatusLog.AddStatus("Append header X-Tableau-Auth: " + "****redacted****", -20);
     }
 
     /// <summary>
@@ -222,16 +294,27 @@ abstract class TableauServerSignedInRequestBase : TableauServerRequestBase
             {
                 description = "web request failed";
             }
+            string responseText = "";
+
+            //NOTE: In some cases (e.g. time-out) the response may be NULL
             var response = webException.Response;
-            var responseText = GetWebResponseAsText(response);
-            response.Close();
-            if(responseText == null) responseText = "";
+            if(response != null)
+            {
+                responseText = GetWebResponseAsText(response);
+                response.Close();
+            }
+            
+            //Cannonicalize a blank result...
+            if(string.IsNullOrEmpty(responseText))
+            {
+                responseText = "";
+            }
 
             onlineStatusLog.AddError(description +  ": " + webException.Message + "\r\n" + responseText + "\r\n");
         }
         catch (Exception ex)
         {
-            onlineStatusLog.AddError("Error in web request exception: " + ex.Message);
+            onlineStatusLog.AddError("811-830: Error in web request exception: " + ex.Message);
             return;
         }
     }
