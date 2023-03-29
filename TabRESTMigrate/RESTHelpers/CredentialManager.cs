@@ -58,10 +58,10 @@ partial class CredentialManager
     /// <param name="credentialId"></param>
     /// <param name="password"></param>
     /// <param name="isEmbedded"></param>
-    public void AddWorkbookCredential(string workbookName, string projectName, string credentialId, string password, bool isEmbedded)
+    public void AddWorkbookCredential(string workbookName, string projectName, string serverAddress, string serverPort, string credentialId, string password, bool isEmbedded)
     {
         _workbookCredentials.Add(new CredentialNode(
-            workbookName, projectName, new Credential(credentialId, password, isEmbedded)));
+            workbookName, projectName, new Credential(credentialId, password, isEmbedded, new Connection(serverAddress, serverPort))));
     }
 
     /// <summary>
