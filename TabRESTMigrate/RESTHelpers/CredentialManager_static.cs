@@ -49,8 +49,10 @@ partial class CredentialManager
     {
         var contentType =  XmlHelper.ReadTextAttribute(credentialNode, "contentType", "");
         var contentProjectName = XmlHelper.ReadTextAttribute(credentialNode, "contentProjectName");
-        var contentName = XmlHelper.ReadTextAttribute(credentialNode, "contentName"); 
+        var contentName = XmlHelper.ReadTextAttribute(credentialNode, "contentName");
 
+        var serverAddress = XmlHelper.ReadTextAttribute(credentialNode, "serverAddress");
+        var serverPort = XmlHelper.ReadTextAttribute(credentialNode, "serverPort");
         var dbUserName = XmlHelper.ReadTextAttribute(credentialNode, "dbUser");
         var dbPassword = XmlHelper.ReadTextAttribute(credentialNode, "dbPassword");
         var isEmbedded = XmlHelper.ReadBooleanAttribute(credentialNode, "credentialIsEmbedded", false);
@@ -63,7 +65,7 @@ partial class CredentialManager
 
         if(contentType == "workbook")
         {
-            credentialManager.AddWorkbookCredential(contentName, contentProjectName, dbUserName, dbPassword, isEmbedded);
+            credentialManager.AddWorkbookCredential(contentName, contentProjectName, serverAddress, serverPort, dbUserName, dbPassword, isEmbedded);
         }
         else if(contentType == "datasource")
         {

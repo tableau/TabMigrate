@@ -572,15 +572,15 @@ partial class UploadWorkbooks : TableauServerSignedInRequestBase
             xmlWriter.WriteStartElement("workbook");
             xmlWriter.WriteAttributeString("name", publishedContentName);
             xmlWriter.WriteAttributeString("showTabs", XmlHelper.BoolToXmlText(publishSettings.ShowTabs));
-
+                xmlWriter.WriteStartElement("connections");
                 //If we have an associated database credential, write it out
-        if (dbCredentials != null)
+                if (dbCredentials != null)
                 {
                     CredentialXmlHelper.WriteCredential(
-                        xmlWriter, 
-                        dbCredentials);
+                            xmlWriter, 
+                                dbCredentials);
                 }
-
+                xmlWriter.WriteEndElement();
                 xmlWriter.WriteStartElement("project"); //<project>
                 xmlWriter.WriteAttributeString("id", projectId);
                 xmlWriter.WriteEndElement();            //</project>
